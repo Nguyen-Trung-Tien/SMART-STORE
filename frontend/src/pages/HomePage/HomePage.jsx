@@ -6,6 +6,7 @@ import image1 from "../../assets/images/image1.webp";
 import image2 from "../../assets/images/image2.webp";
 import image3 from "../../assets/images/image3.webp";
 import CardComponent from "../../components/CardComponent/CardComponent";
+import NavbarComponent from "../../components/NavbarComponent/NavbarComponent";
 
 const HomePage = () => {
   const arr = [
@@ -45,6 +46,7 @@ const HomePage = () => {
         >
           <CardComponent />
         </div>
+        <NavbarComponent />
       </div>
     </>
   );

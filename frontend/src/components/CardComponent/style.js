@@ -7,6 +7,16 @@ export const WrapperCardStyle = styled(Card)`
     width: 200px;
     height: 200px;
   }
+  position: relative;
+`;
+
+export const WrapperImageStyle = styled.img`
+  top: -1;
+  left: -1;
+  border-top-left-radius: 3px;
+  position: absolute;
+  height: 14px !important;
+  width: 50px !important;
 `;
 
 export const StyleNameProducts = styled.div`
