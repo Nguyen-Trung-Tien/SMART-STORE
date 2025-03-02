@@ -8,7 +8,6 @@ import {
 } from "./style";
 import { StarOutlined } from "@ant-design/icons";
 import logo from "../../assets/ImageSmall/logo.png";
-import { Image } from "antd";
 
 const CardComponent = () => {
   return (
