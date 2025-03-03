@@ -23,7 +23,7 @@ const HomePage = () => {
   ];
   return (
     <>
-      <div style={{ padding: "0 120px" }}>
+      <div style={{ padding: "0 120px", boxSizing: "border-box" }}>
         <WrapperTypeProducts>
           {arr.map((item) => {
             return <TypeProducts name={item} key={item} />;
@@ -37,6 +37,7 @@ const HomePage = () => {
           padding: "0 120px",
           height: "1000px",
           width: "100%",
+          boxSizing: "border-box",
         }}
       >
         <SliderComponent arrImages={[image1, image2, image3]} />
