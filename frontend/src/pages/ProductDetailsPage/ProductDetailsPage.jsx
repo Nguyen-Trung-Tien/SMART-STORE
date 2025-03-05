@@ -10,6 +10,7 @@ const ProductDetailsPage = () => {
         height: "1000px",
       }}
     >
+      <h5>Trang chủ</h5>
       <ProDuctDetailsComponent />
     </div>
   );
