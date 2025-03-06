@@ -16,7 +16,7 @@ import {
 import { MinusOutlined, PlusOutlined, StarFilled } from "@ant-design/icons";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 
-const ProDuctDetailsComponent = () => {
+const ProductDetailsComponent = () => {
   const onChange = () => {};
   return (
     <Row
@@ -117,7 +117,7 @@ const ProDuctDetailsComponent = () => {
               fontSize: "15px",
               fontWeight: "700",
             }}
-          ></ButtonComponent>
+          />
           <ButtonComponent
             size={40}
             styleButton={{
@@ -136,4 +136,4 @@ const ProDuctDetailsComponent = () => {
   );
 };
 
-export default ProDuctDetailsComponent;
+export default ProductDetailsComponent;

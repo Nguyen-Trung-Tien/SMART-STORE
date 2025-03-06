@@ -1,5 +1,5 @@
 import React from "react";
-import ProDuctDetailsComponent from "../../components/ProDuctDetailsComponent/ProDuctDetailsComponent";
+import ProductDetailsComponent from "../../components/ProductDetailsComponent/ProductDetailsComponent";
 
 const ProductDetailsPage = () => {
   return (
@@ -11,7 +11,7 @@ const ProductDetailsPage = () => {
       }}
     >
       <h5>Trang chủ</h5>
-      <ProDuctDetailsComponent />
+      <ProductDetailsComponent />
     </div>
   );
 };
