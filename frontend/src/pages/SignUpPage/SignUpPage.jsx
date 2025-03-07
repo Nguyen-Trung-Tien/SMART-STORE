@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   WrapperContainerLeft,
   WrapperContainerRight,
@@ -8,8 +8,12 @@ import { Image } from "antd";
 import InputForm from "../../components/InputForm/InputForm";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import imageLogo from "../../assets/ImageSmall/imageTiki.png";
+import { EyeFilled, EyeInvisibleFilled } from "@ant-design/icons";
 
 const SignUpPage = () => {
+  const [isShowPassWord, setIsShowPassWord] = useState(false);
+  const [isShowConfirmPassWord, setIsShowConfirmPassWord] = useState(false);
+
   return (
     <div
       style={{
@@ -36,8 +40,42 @@ const SignUpPage = () => {
             style={{ marginBottom: "10px" }}
             placeholder="abc@gmail.com"
           />
-          <InputForm placeholder="password" style={{ marginBottom: "10px" }} />
-          <InputForm placeholder="confirm password" />
+          <div style={{ position: "relative" }}>
+            <span
+              style={{
+                zIndex: 10,
+                position: "absolute",
+                top: "4px",
+                right: "8px",
+                cursor: "pointer",
+              }}
+              onClick={() => setIsShowPassWord(!isShowPassWord)}
+            >
+              {isShowPassWord ? <EyeFilled /> : <EyeInvisibleFilled />}
+            </span>
+            <InputForm
+              placeholder="password"
+              type={isShowPassWord ? "text" : "password"}
+            />
+          </div>
+          <div style={{ position: "relative" }}>
+            <span
+              style={{
+                zIndex: 10,
+                position: "absolute",
+                top: "4px",
+                right: "8px",
+                cursor: "pointer",
+              }}
+              onClick={() => setIsShowConfirmPassWord(!isShowConfirmPassWord)}
+            >
+              {isShowConfirmPassWord ? <EyeFilled /> : <EyeInvisibleFilled />}
+            </span>
+            <InputForm
+              placeholder="confirm password"
+              type={isShowConfirmPassWord ? "text" : "password"}
+            />
+          </div>
 
           <ButtonComponent
             size={40}
