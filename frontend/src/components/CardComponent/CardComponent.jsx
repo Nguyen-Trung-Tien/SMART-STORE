@@ -41,7 +41,7 @@ const CardComponent = () => {
       <WrapperReportText>
         <span style={{ marginRight: "5px" }}>
           <span>4.5</span>
-          <StarFilled style={{ color: "#fadb14", fontSize: "18px" }} />
+          <StarFilled style={{ color: "#fadb14", fontSize: "14px" }} />
         </span>
         <WrapperStyleTextSell> | Đã bán: 1000+ </WrapperStyleTextSell>
       </WrapperReportText>

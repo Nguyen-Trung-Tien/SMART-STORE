@@ -35,7 +35,7 @@ const SignUpPage = () => {
       >
         <WrapperContainerLeft>
           <h1>Xin Chào</h1>
-          <p>Thông tin đăng nhập của bạn!</p>
+          <p>Đăng ký tài khoản của bạn!</p>
           <InputForm
             style={{ marginBottom: "10px" }}
             placeholder="abc@gmail.com"

@@ -54,10 +54,10 @@ const ProductDetailsComponent = () => {
       <Col span={14} style={{ paddingLeft: "10px" }}>
         <WrapperStyLeNameProduct>Kỷ Luật Bản Thân</WrapperStyLeNameProduct>
         <div>
-          <StarFilled style={{ color: "#fadb14", fontSize: "18px" }} />
-          <StarFilled style={{ color: "#fadb14", fontSize: "18px" }} />
-          <StarFilled style={{ color: "#fadb14", fontSize: "18px" }} />
-          <StarFilled style={{ color: "#fadb14", fontSize: "18px" }} />
+          <StarFilled style={{ color: "#fadb14", fontSize: "14px" }} />
+          <StarFilled style={{ color: "#fadb14", fontSize: "14px" }} />
+          <StarFilled style={{ color: "#fadb14", fontSize: "14px" }} />
+          <StarFilled style={{ color: "#fadb14", fontSize: "14px" }} />
           <WrapperStyleTextSell> | Đã bán 1000+ </WrapperStyleTextSell>
         </div>
         <WrapperPriceProduct>
