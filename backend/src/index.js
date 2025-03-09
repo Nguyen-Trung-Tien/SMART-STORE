@@ -1,18 +1,21 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const routes = require("./routes");
+const bodyParser = require("body-parser");
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3001;
 
+app.use(bodyParser.json());
+
+routes(app);
 mongoose
-  .connect(
-    `mongodb+srv://project-ecommer:${process.env.MONGO_DB}@cluster0.1lnoi.mongodb.net/project_web?retryWrites=true&w=majority&appName=Cluster0`
-  )
+  .connect(`${process.env.MONGO_DB}`)
   .then(() => {
-    console.log("Connected to MongoDB successfully");
+    console.log("Kết nối với Mongoose thành công!");
   })
   .catch((error) => {});
 
