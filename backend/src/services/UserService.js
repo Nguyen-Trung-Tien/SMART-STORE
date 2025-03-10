@@ -48,13 +48,13 @@ const loginUser = (userLogin) => {
       }
 
       const access_token = await generalAccessToken({
-        id: checkUser.id,
-        isAdmin: checkUser.isAdmin,
+        id: checkUser._id,
+        isAdmin: checkUser._isAdmin,
       });
 
       const refresh_token = await generalRefreshToken({
-        id: checkUser.id,
-        isAdmin: checkUser.isAdmin,
+        id: checkUser._id,
+        isAdmin: checkUser._isAdmin,
       });
 
       resolve({
@@ -69,7 +69,30 @@ const loginUser = (userLogin) => {
   });
 };
 
+const updateUser = (id, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const checkUser = await User.findOne({ _id: id });
+      console.log("checkUser", checkUser);
+      if (checkUser === null) {
+        resolve({ status: "OK", message: "The user is not defined" });
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
+      console.log("updatedUser", updatedUser);
+      resolve({
+        status: "OK",
+        message: "SUCCESS",
+        data: updatedUser,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   createUser,
   loginUser,
+  updateUser,
 };
