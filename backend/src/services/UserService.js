@@ -48,12 +48,12 @@ const loginUser = (userLogin) => {
       }
 
       const access_token = await generalAccessToken({
-        id: checkUser._id,
+        id: checkUser.id,
         isAdmin: checkUser.isAdmin,
       });
 
       const refresh_token = await generalRefreshToken({
-        id: checkUser._id,
+        id: checkUser.id,
         isAdmin: checkUser.isAdmin,
       });
 
