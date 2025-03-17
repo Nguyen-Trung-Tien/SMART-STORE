@@ -9,8 +9,28 @@ import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import { Image } from "antd";
 import imageLogo from "../../assets/ImageSmall/imageTiki.png";
 import { EyeFilled, EyeInvisibleFilled } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 const SignInPage = () => {
+  const navigate = useNavigate();
+
   const [isShowPassWord, setIsShowPassWord] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const handleNavigateSignUp = () => {
+    navigate("/sign-up");
+  };
+
+  const handleOnChangeEmail = (value) => {
+    setEmail(value);
+  };
+
+  const handleOnChangePassword = (value) => {
+    setPassword(value);
+  };
+
+  const handleSignIn = () => {
+    console.log("signin", email, password);
+  };
   return (
     <div
       style={{
@@ -36,6 +56,8 @@ const SignInPage = () => {
           <InputForm
             style={{ marginBottom: "10px" }}
             placeholder="abc@gmail.com"
+            value={email}
+            onChange={handleOnChangeEmail}
           />
           <div style={{ position: "relative" }}>
             <span
@@ -53,10 +75,14 @@ const SignInPage = () => {
             <InputForm
               placeholder="password"
               type={isShowPassWord ? "text" : "password"}
+              value={password}
+              onChange={handleOnChangePassword}
             />
           </div>
 
           <ButtonComponent
+            disabled={!email.length || !password.length}
+            onClick={handleSignIn}
             size={40}
             styleButton={{
               background: "rgb(255, 66, 78)",
@@ -78,7 +104,9 @@ const SignInPage = () => {
           </p>
           <p>
             Bạn chưa có tài khoản?
-            <WrapperTextLight>Tạo tài khoản</WrapperTextLight>
+            <WrapperTextLight onClick={handleNavigateSignUp}>
+              Tạo tài khoản
+            </WrapperTextLight>
           </p>
         </WrapperContainerLeft>
         <WrapperContainerRight>
