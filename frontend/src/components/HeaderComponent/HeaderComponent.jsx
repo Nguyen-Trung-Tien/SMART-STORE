@@ -30,13 +30,13 @@ const HeaderComponent = () => {
     >
       <WrapperHeader>
         <Col span={5}>
-          <WrapperTextHeader>STORE</WrapperTextHeader>
+          <WrapperTextHeader>SMART-STORE</WrapperTextHeader>
         </Col>
         <Col span={13}>
           <ButtonInputSearch
             size="large"
             textButton="Tìm kiếm"
-            placeholder="input search text"
+            placeholder="Tìm kiếm sản phẩm ..."
             // onSearch={onSearch}
           />
         </Col>
