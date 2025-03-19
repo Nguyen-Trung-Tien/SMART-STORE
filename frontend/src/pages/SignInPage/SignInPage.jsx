@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   WrapperContainerLeft,
   WrapperContainerRight,
@@ -13,16 +13,45 @@ import { useNavigate } from "react-router-dom";
 import * as UserService from "../../services/UserServices";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import Loading from "../../components/LoadingComponent/Loading";
+import * as message from "../../components/Message/Message";
+import { jwtDecode } from "jwt-decode";
+import { useDispatch } from "react-redux";
+import { updateUser } from "../../redux/slices/userSlice";
+
 const SignInPage = () => {
   const navigate = useNavigate();
 
   const [isShowPassWord, setIsShowPassWord] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
 
   const mutation = useMutationHooks((data) => UserService.loginUser(data));
 
-  const { data, isPending } = mutation;
+  const { data, isPending, isSuccess, isError } = mutation;
+  useEffect(() => {
+    if (isSuccess) {
+      message.success("Đăng nhập thành công");
+      navigate("/");
+      localStorage.setItem("access_token", data?.access_token);
+      if (data?.access_token) {
+        const decoded = jwtDecode(data?.access_token);
+        console.log("decoded", decoded);
+        if (decoded?.id) {
+          handleGetDetailsUser(decoded?.id, data?.access_token);
+        }
+      }
+    }
+    if (isError) {
+      message.error("Đăng nhập thất bại");
+    }
+  }, [isSuccess, isError]);
+
+  const handleGetDetailsUser = async (id, token) => {
+    const res = await UserService.getDetailsUser(id, token);
+    dispatch(updateUser({ ...res?.data, access_token: token }));
+  };
+
   const handleNavigateSignUp = () => {
     navigate("/sign-up");
   };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   WrapperContainerLeft,
   WrapperContainerRight,
@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import * as UserService from "../../services/UserServices";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import Loading from "../../components/LoadingComponent/Loading";
+import * as message from "../../components/Message/Message";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -24,8 +25,17 @@ const SignUpPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const mutation = useMutationHooks((data) => UserService.signupUser(data));
-  const { data, isPending } = mutation;
+  const { data, isPending, isSuccess, isError } = mutation;
 
+  useEffect(() => {
+    if (isSuccess) {
+      message.success("Đăng ký tài khoản thành công");
+      handleNavigateSignUp();
+    }
+    if (isError) {
+      message.error("Đăng ký tài khoản thất bại");
+    }
+  }, [isSuccess, isError]);
   const handleOnChangeEmail = (value) => {
     setEmail(value);
   };
