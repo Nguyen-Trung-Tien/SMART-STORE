@@ -31,7 +31,6 @@ function App() {
 
   UserService.axiosJWT.interceptors.request.use(
     async (config) => {
-      // Do something before request is sent
       const currentTime = new Date();
       const { decoded } = handleDecoded();
       if (decoded?.exp < currentTime.getTime() / 1000) {

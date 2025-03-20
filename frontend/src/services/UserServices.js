@@ -36,3 +36,8 @@ export const refreshToken = async () => {
   );
   return res.data;
 };
+
+export const logoutUser = async () => {
+  const res = await axios.post(`${process.env.REACT_APP_API_KEY}/user/log-out`);
+  return res.data;
+};
