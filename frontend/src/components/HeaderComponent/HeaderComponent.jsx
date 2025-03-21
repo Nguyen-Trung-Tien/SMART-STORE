@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Badge, Col, Popover } from "antd";
 import {
   WrapperHeader,
@@ -24,6 +24,7 @@ const HeaderComponent = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const [userName, setUserName] = useState("");
   const [pending, setPending] = useState(false);
   const handleNavigateLogin = () => {
     navigate("/sign-in");
@@ -35,6 +36,12 @@ const HeaderComponent = () => {
     dispatch(resetUser());
     setPending(false);
   };
+
+  useEffect(() => {
+    setPending(true);
+    setUserName(user?.name);
+    setPending(false);
+  }, [user?.name]);
 
   const content = (
     <div>
@@ -57,7 +64,12 @@ const HeaderComponent = () => {
     >
       <WrapperHeader>
         <Col span={5}>
-          <WrapperTextHeader>SMART-STORE</WrapperTextHeader>
+          <WrapperTextHeader
+            onClick={() => navigate("/")}
+            style={{ cursor: "pointer" }}
+          >
+            SMART-STORE
+          </WrapperTextHeader>
         </Col>
         <Col span={13}>
           <ButtonInputSearch
@@ -78,7 +90,7 @@ const HeaderComponent = () => {
                 <>
                   <Popover content={content} trigger="click">
                     <div style={{ cursor: "pointer" }}>
-                      {user?.name?.length ? user?.name : user?.email}
+                      {userName?.length ? userName : user?.email}
                     </div>
                   </Popover>
                 </>

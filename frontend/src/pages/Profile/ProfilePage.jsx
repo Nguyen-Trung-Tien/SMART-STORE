@@ -12,6 +12,7 @@ import * as UserService from "../../services/UserServices";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import Loading from "../../components/LoadingComponent/Loading";
 import * as message from "../../components/Message/Message";
+import { updateUser } from "../../redux/slices/userSlice";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -22,9 +23,10 @@ const ProfilePage = () => {
   const [address, setAddress] = useState("");
   const [avatar, setAvatar] = useState("");
 
-  const mutation = useMutationHooks((id, data) =>
-    UserService.updateUser(id, data)
-  );
+  const mutation = useMutationHooks((data) => {
+    const { id, access_token, ...rests } = data;
+    UserService.updateUser(id, rests, access_token);
+  });
   const { data, isPending, isSuccess, isError } = mutation;
 
   useEffect(() => {
@@ -46,7 +48,7 @@ const ProfilePage = () => {
 
   const handleGetDetailsUser = async (id, token) => {
     const res = await UserService.getDetailsUser(id, token);
-    dispatch(UserService.updateUser({ ...res?.data, access_token: token }));
+    dispatch(updateUser({ ...res?.data, access_token: token }));
   };
 
   const handleOnChangeName = (value) => {
@@ -66,12 +68,14 @@ const ProfilePage = () => {
   };
 
   const handleUpdate = () => {
-    mutation.mutate(user?.id, {
+    mutation.mutate({
+      id: user?.id,
       name,
       email,
       phone,
       address,
       avatar,
+      access_token: user?.access_token,
     });
   };
   return (
