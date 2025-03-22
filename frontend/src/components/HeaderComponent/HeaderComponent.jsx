@@ -25,6 +25,7 @@ const HeaderComponent = () => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [userName, setUserName] = useState("");
+  const [userAvatar, setUserAvatar] = useState("");
   const [pending, setPending] = useState(false);
   const handleNavigateLogin = () => {
     navigate("/sign-in");
@@ -40,8 +41,9 @@ const HeaderComponent = () => {
   useEffect(() => {
     setPending(true);
     setUserName(user?.name);
+    setUserAvatar(user?.avatar);
     setPending(false);
-  }, [user?.name]);
+  }, [user?.name, user?.avatar]);
 
   const content = (
     <div>
@@ -85,7 +87,20 @@ const HeaderComponent = () => {
         >
           <Loading isLoading={pending}>
             <WrapperHeaderAccount>
-              <UserOutlined style={{ fontSize: "30px" }} />
+              {userAvatar ? (
+                <img
+                  src={userAvatar}
+                  alt="avatar"
+                  style={{
+                    height: "30px",
+                    width: "30px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <UserOutlined style={{ fontSize: "30px" }} />
+              )}
               {user?.access_token ? (
                 <>
                   <Popover content={content} trigger="click">

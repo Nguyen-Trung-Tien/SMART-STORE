@@ -4,6 +4,7 @@ import {
   WrapperHeader,
   WrapperInput,
   WrapperLabel,
+  WrapperUploadFile,
 } from "./style";
 import InputForm from "../../components/InputForm/InputForm";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
@@ -13,6 +14,9 @@ import { useMutationHooks } from "../../hooks/useMutationHook";
 import Loading from "../../components/LoadingComponent/Loading";
 import * as message from "../../components/Message/Message";
 import { updateUser } from "../../redux/slices/userSlice";
+import { Button, Upload } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import { getBase64 } from "../../utils";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -63,8 +67,12 @@ const ProfilePage = () => {
   const handleOnChangeAddress = (value) => {
     setAddress(value);
   };
-  const handleOnChangeAvatar = (value) => {
-    setAvatar(value);
+  const handleOnChangeAvatar = async ({ fileList }) => {
+    const file = fileList[0];
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setAvatar(file.preview);
   };
 
   const handleUpdate = () => {
@@ -193,12 +201,27 @@ const ProfilePage = () => {
           </WrapperInput>
           <WrapperInput>
             <WrapperLabel htmlFor="avatar">Avatar</WrapperLabel>
-            <InputForm
+            <WrapperUploadFile onChange={handleOnChangeAvatar} maxCount={1}>
+              <Button icon={<UploadOutlined />}>Upload png only</Button>
+            </WrapperUploadFile>
+            {avatar && (
+              <img
+                src={avatar}
+                style={{
+                  height: "60px",
+                  width: "60px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
+                alt="avatar"
+              />
+            )}
+            {/* <InputForm
               style={{ width: "300px" }}
               value={avatar}
               id={avatar}
               onChange={handleOnChangeAvatar}
-            />
+            /> */}
             <ButtonComponent
               onClick={handleUpdate}
               size={40}
