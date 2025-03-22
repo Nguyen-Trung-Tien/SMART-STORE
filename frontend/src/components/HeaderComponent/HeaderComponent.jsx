@@ -40,7 +40,7 @@ const HeaderComponent = () => {
 
   useEffect(() => {
     setPending(true);
-    setUserName(user?.name);
+    setUserName(user?.name || user?.email);
     setUserAvatar(user?.avatar);
     setPending(false);
   }, [user?.name, user?.avatar]);
