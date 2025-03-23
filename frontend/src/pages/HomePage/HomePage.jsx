@@ -25,7 +25,6 @@ const HomePage = () => {
   ];
   const fetchProductAll = async () => {
     const res = await ProductService.getAllProduct();
-    console.log("res: ", res);
     return res;
   };
 
@@ -36,7 +35,6 @@ const HomePage = () => {
     retryDelay: 1000,
   });
 
-  console.log("data: ", products);
   return (
     <>
       <div

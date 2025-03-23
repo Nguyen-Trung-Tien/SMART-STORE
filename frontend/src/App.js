@@ -22,6 +22,7 @@ function App() {
     if (decoded?.id) {
       handleGetDetailsUser(decoded?.id, storageData);
     }
+    setIsPending(false);
   }, []);
 
   const handleDecoded = () => {
@@ -66,7 +67,7 @@ function App() {
               return (
                 <Route
                   key={route.path}
-                  path={isCheckAuth ? route.path : undefined}
+                  path={isCheckAuth ? route.path : "*"}
                   element={
                     <Layout>
                       <Page />
