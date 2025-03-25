@@ -10,12 +10,12 @@ const createProduct = (newProduct) => {
       }
       const newProduct = await Product.create({
         name,
+        price,
+        description,
+        rating,
         image,
         type,
-        price,
         countInStock,
-        rating,
-        description,
       });
       if (newProduct) {
         resolve({
