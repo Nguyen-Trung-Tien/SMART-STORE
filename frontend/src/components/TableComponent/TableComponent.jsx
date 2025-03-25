@@ -1,5 +1,5 @@
-import { Divider, Radio, Table } from "antd";
-import React, { useState } from "react";
+import { Divider, Table } from "antd";
+import React from "react";
 
 const TableComponent = (props) => {
   const { selectionType = "checkbox" } = props;
