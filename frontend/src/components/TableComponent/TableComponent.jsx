@@ -1,4 +1,4 @@
-import { Divider, Table } from "antd";
+import { Table } from "antd";
 import React from "react";
 import Loading from "../LoadingComponent/Loading";
 
@@ -30,6 +30,7 @@ const TableComponent = (props) => {
           rowSelection={Object.assign({ type: selectionType }, rowSelection)}
           columns={columns}
           dataSource={data}
+          {...props}
         />
       </Loading>
     </div>
