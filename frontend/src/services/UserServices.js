@@ -41,7 +41,6 @@ export const logoutUser = async () => {
   const res = await axios.post(`${process.env.REACT_APP_API_KEY}/user/log-out`);
   return res.data;
 };
-
 export const updateUser = async (id, data, access_token) => {
   const res = await axiosJWT.put(
     `${process.env.REACT_APP_API_KEY}/user/update-user/${id}`,

@@ -7,12 +7,10 @@ import { jwtDecode } from "jwt-decode";
 import * as UserService from "./services/UserServices";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "./redux/slices/userSlice";
-import axios from "axios";
 import Loading from "./components/LoadingComponent/Loading";
 
 function App() {
   const dispatch = useDispatch();
-
   const user = useSelector((state) => state.user);
   const [isPending, setIsPending] = useState(false);
 
@@ -55,6 +53,7 @@ function App() {
     dispatch(updateUser({ ...res?.data, access_token: token }));
     setIsPending(false);
   };
+
   return (
     <div>
       <Loading isLoading={isPending}>
