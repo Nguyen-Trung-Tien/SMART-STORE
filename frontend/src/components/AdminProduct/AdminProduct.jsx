@@ -1,7 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { WrapperHeader, WrapperUploadFile } from "./style";
-import { Button, Form, Modal } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Form, Space } from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  PlusOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import TableComponent from "../TableComponent/TableComponent";
 import InputComponent from "../InputComponent/InputComponent";
 import * as ProductService from "../../services/ProductServices";
@@ -22,6 +27,9 @@ const AdminProduct = () => {
   const user = useSelector((state) => state?.user);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const searchInput = useRef(null);
   const [stateProduct, setStateProduct] = useState({
     name: "",
     price: "",
@@ -95,23 +103,135 @@ const AdminProduct = () => {
       </div>
     );
   };
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    // setSearchText(selectedKeys[0]);
+    // setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    // setSearchText("");
+  };
+
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
+      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+        <InputComponent
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={`${selectedKeys[0] || ""}`}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ marginBottom: 8, display: "block" }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Reset
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    // render: (text) =>
+    //   searchedColumn === dataIndex ? (
+    //     <Highlighter
+    //       highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
+    //       searchWords={[searchText]}
+    //       autoEscape
+    //       textToHighlight={text ? text.toString() : ""}
+    //     />
+    //   ) : (
+    //     text
+    //   ),
+  });
+
   const columns = [
     {
       title: "Name",
       dataIndex: "name",
-      render: (text) => <a>{text}</a>,
+      sorter: (a, b) => a.name.length - b.name.length,
+      ...getColumnSearchProps("name"),
     },
+
     {
       title: "Price",
       dataIndex: "price",
+      sorter: (a, b) => a.price - b.price,
+      filters: [
+        {
+          text: ">= 50",
+          value: ">=",
+        },
+        {
+          text: "<= 50",
+          value: "<=",
+        },
+      ],
+      onFilter: (value, record) => {
+        if (value === ">=") {
+          return record.price >= 50;
+        } else if (value === "<=") {
+          return record.price <= 50;
+        }
+      },
     },
     {
       title: "Rating",
       dataIndex: "rating",
+      sorter: (a, b) => a.rating - b.rating,
+      filters: [
+        {
+          text: ">= 3",
+          value: ">=",
+        },
+        {
+          text: "<= 3",
+          value: "<=",
+        },
+      ],
+      onFilter: (value, record) => {
+        if (value === ">=") {
+          return record.price >= 3;
+        } else if (value === "<=") {
+          return record.price <= 3;
+        }
+      },
     },
     {
       title: "Type",
       dataIndex: "type",
+      sorter: (a, b) => a.type.length - b.type.length,
     },
     {
       title: "Action",
@@ -202,7 +322,7 @@ const AdminProduct = () => {
   useEffect(() => {
     if (isSuccessDeleted && dataDeleted?.status === "OK") {
       message.success("Xóa sản phẩm thành công!");
-      handleCancelDelete(); // Đóng modal sau khi xóa thành công
+      handleCancelDelete();
     } else if (isErrorDeleted) {
       message.error("Không thể xóa sản phẩm!");
     }
@@ -361,13 +481,13 @@ const AdminProduct = () => {
       >
         <Loading isLoading={isPending}>
           <Form
+            form={form}
             name="basic"
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 16 }}
             style={{ maxWidth: 600 }}
             onFinish={onFinish}
             autoComplete="off"
-            form={form}
           >
             <Form.Item
               label="Name"
@@ -484,12 +604,12 @@ const AdminProduct = () => {
       >
         <Loading isLoading={isPendingUpdate || isPendingUpdated}>
           <Form
+            form={form}
             name="basic"
             labelCol={{ span: 2 }}
             wrapperCol={{ span: 22 }}
             onFinish={onUpdateProduct}
             autoComplete="on"
-            form={form}
           >
             <Form.Item
               label="Name"

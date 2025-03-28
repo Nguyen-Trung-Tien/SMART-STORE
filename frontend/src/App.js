@@ -23,16 +23,6 @@ function App() {
     setIsPending(false);
   }, []);
 
-  const handleDecoded = () => {
-    let storageData = localStorage.getItem("access_token");
-    let decoded = {};
-    if (storageData && isJsonString(storageData)) {
-      storageData = JSON.parse(storageData);
-      decoded = jwtDecode(storageData);
-    }
-    return { decoded, storageData };
-  };
-
   UserService.axiosJWT.interceptors.request.use(
     async (config) => {
       const currentTime = new Date();
@@ -48,10 +38,25 @@ function App() {
     }
   );
 
+  const handleDecoded = () => {
+    let storageData = localStorage.getItem("access_token");
+    let decoded = {};
+    if (storageData && isJsonString(storageData)) {
+      storageData = JSON.parse(storageData);
+      decoded = jwtDecode(storageData);
+    }
+    return { decoded, storageData };
+  };
+
   const handleGetDetailsUser = async (id, token) => {
-    const res = await UserService.getDetailsUser(id, token);
-    dispatch(updateUser({ ...res?.data, access_token: token }));
-    setIsPending(false);
+    try {
+      const res = await UserService.getDetailsUser(id, token);
+      dispatch(updateUser({ ...res?.data, access_token: token }));
+    } catch (error) {
+      console.error("Failed to fetch user details:", error);
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
