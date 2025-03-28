@@ -24,9 +24,8 @@ export const userSlice = createSlice({
         phone = "",
         address = "",
         avatar = "",
-
         _id = "",
-        isAdmin,
+        isAdmin = "",
       } = action.payload;
       state.name = name;
       state.email = email;

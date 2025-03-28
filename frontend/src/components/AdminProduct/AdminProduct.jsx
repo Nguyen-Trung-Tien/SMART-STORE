@@ -27,8 +27,6 @@ const AdminProduct = () => {
   const user = useSelector((state) => state?.user);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
   const [stateProduct, setStateProduct] = useState({
     name: "",
@@ -474,6 +472,7 @@ const AdminProduct = () => {
         />
       </div>
       <ModalComponent
+        forceRender
         title="Tạo sản phẩm"
         open={isModalOpen}
         onCancel={handleCancel}
@@ -595,7 +594,6 @@ const AdminProduct = () => {
           </Form>
         </Loading>
       </ModalComponent>
-
       <DrawerComponent
         title="Chi tiết sản phẩm"
         isOpen={isOpenDrawer}
@@ -719,7 +717,6 @@ const AdminProduct = () => {
           </Form>
         </Loading>
       </DrawerComponent>
-
       <ModalComponent
         title="Xóa sản phẩm"
         open={isModalOpenDelete}
