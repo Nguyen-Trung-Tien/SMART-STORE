@@ -69,7 +69,8 @@ const AdminProduct = () => {
   }, [form, stateProductDetails]);
 
   useEffect(() => {
-    if (rowSelected) {
+    if (rowSelected && !isOpenDrawer) {
+      setIsPendingUpdate(true);
       fetchGetDetailsProduct(rowSelected);
     }
   }, [rowSelected]);
@@ -156,10 +157,12 @@ const AdminProduct = () => {
     ),
     onFilter: (value, record) =>
       record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
+    filterDropdownProps: {
+      onOpenChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
     },
     // render: (text) =>
     //   searchedColumn === dataIndex ? (
@@ -265,9 +268,26 @@ const AdminProduct = () => {
     return res;
   });
 
+  const mutationDeleteMany = useMutationHooks((data) => {
+    const { token, ...ids } = data;
+    const res = ProductService.deleteManyProduct(ids, token);
+    return res;
+  });
+
   const getAllProduct = async () => {
     const res = await ProductService.getAllProduct();
     return res;
+  };
+
+  const handleDeleteManyProduct = (ids) => {
+    mutationDeleteMany.mutate(
+      { ids: ids, token: user?.access_token },
+      {
+        onSettled: () => {
+          queryProduct.refetch();
+        },
+      }
+    );
   };
 
   const { data, isPending, isSuccess, isError } = mutation;
@@ -285,6 +305,13 @@ const AdminProduct = () => {
     isSuccess: isSuccessDeleted,
     isError: isErrorDeleted,
   } = mutationDelete;
+
+  const {
+    data: dataDeletedMany,
+    isPending: isPendingDeletedMany,
+    isSuccess: isSuccessDeletedMany,
+    isError: isErrorDeletedMany,
+  } = mutationDeleteMany;
 
   const queryProduct = useQuery({
     queryKey: ["products"],
@@ -307,6 +334,14 @@ const AdminProduct = () => {
       message.error("Không thể tạo sản phẩm!");
     }
   }, [isSuccess]);
+
+  useEffect(() => {
+    if (isSuccessDeletedMany && dataDeletedMany?.status === "OK") {
+      message.success("Xóa sản phẩm thành công!");
+    } else if (isErrorDeletedMany) {
+      message.error("Không thể xóa sản phẩm!");
+    }
+  }, [isSuccessDeletedMany]);
 
   useEffect(() => {
     if (isSuccessUpdated && dataUpdated?.status === "OK") {
@@ -460,6 +495,7 @@ const AdminProduct = () => {
       <div style={{ marginTop: "20px" }}>
         <TableComponent
           columns={columns}
+          handleDeleteMany={handleDeleteManyProduct}
           isPending={isPendingProducts}
           data={dataTable}
           onRow={(record, rowIndex) => {

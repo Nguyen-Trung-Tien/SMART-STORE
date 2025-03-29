@@ -30,7 +30,6 @@ const createUser = async (req, res) => {
     });
   }
 };
-
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -61,7 +60,6 @@ const loginUser = async (req, res) => {
     });
   }
 };
-
 const updateUser = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -80,7 +78,6 @@ const updateUser = async (req, res) => {
     });
   }
 };
-
 const deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -99,6 +96,23 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const deleteManyUser = async (req, res) => {
+  try {
+    const ids = req.body.ids;
+    if (!ids) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "The ids is required",
+      });
+    }
+    const response = await UserService.deleteManyUser(ids);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
 const getAllUser = async (req, res) => {
   try {
     const response = await UserService.getAllUser();
@@ -109,7 +123,6 @@ const getAllUser = async (req, res) => {
     });
   }
 };
-
 const getDetailsUser = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -127,7 +140,6 @@ const getDetailsUser = async (req, res) => {
     });
   }
 };
-
 const refreshToken = async (req, res) => {
   try {
     const token = req.cookies.refresh_token;
@@ -145,7 +157,6 @@ const refreshToken = async (req, res) => {
     });
   }
 };
-
 const logoutUser = async (req, res) => {
   try {
     res.clearCookie("refresh_token");
@@ -159,6 +170,7 @@ const logoutUser = async (req, res) => {
     });
   }
 };
+
 module.exports = {
   createUser,
   loginUser,
@@ -168,4 +180,5 @@ module.exports = {
   getDetailsUser,
   refreshToken,
   logoutUser,
+  deleteManyUser,
 };

@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { WrapperHeader, WrapperUploadFile } from "./style";
+import { WrapperHeader } from "./style";
 import { Button, Form, Space } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
-  PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import TableComponent from "../TableComponent/TableComponent";
@@ -13,14 +12,12 @@ import ModalComponent from "../ModalComponent/ModalComponent";
 import * as UserService from "../../services/UserServices";
 import Loading from "../LoadingComponent/Loading";
 import DrawerComponent from "../DrawerComponent/DrawerComponent";
-import { getBase64 } from "../../utils";
 import { useQuery } from "@tanstack/react-query";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import * as message from "../../components/Message/Message";
 import { useSelector } from "react-redux";
 
 const AdminUser = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const [rowSelected, setRowSelected] = useState("");
   const [isPendingUpdate, setIsPendingUpdate] = useState(false);
@@ -63,7 +60,8 @@ const AdminUser = () => {
   }, [form, stateUserDetails]);
 
   useEffect(() => {
-    if (rowSelected) {
+    if (rowSelected && !isOpenDrawer) {
+      setIsPendingUpdate(true);
       fetchGetDetailsUser(rowSelected);
     }
   }, [rowSelected]);
@@ -150,10 +148,12 @@ const AdminUser = () => {
     ),
     onFilter: (value, record) =>
       record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
+    filterDropdownProps: {
+      onOpenChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
     },
     // render: (text) =>
     //   searchedColumn === dataIndex ? (
@@ -225,6 +225,12 @@ const AdminUser = () => {
     return res;
   });
 
+  const mutationDeleteMany = useMutationHooks((data) => {
+    const { token, ...ids } = data;
+    const res = UserService.deleteManyUser(ids, token);
+    return res;
+  });
+
   const getAllUser = async () => {
     const res = await UserService.getAllUser();
     console.log(res);
@@ -244,6 +250,13 @@ const AdminUser = () => {
     isSuccess: isSuccessDeleted,
     isError: isErrorDeleted,
   } = mutationDelete;
+
+  const {
+    data: dataDeletedMany,
+    isPending: isPendingDeletedMany,
+    isSuccess: isSuccessDeletedMany,
+    isError: isErrorDeletedMany,
+  } = mutationDeleteMany;
 
   const queryUser = useQuery({
     queryKey: ["user"],
@@ -280,6 +293,15 @@ const AdminUser = () => {
     }
   }, [isSuccessDeleted, isErrorDeleted]);
 
+  useEffect(() => {
+    if (isSuccessDeletedMany && dataDeletedMany?.status === "OK") {
+      message.success("Xóa tài khoản thành công!");
+      handleCancelDelete();
+    } else if (isErrorDeletedMany) {
+      message.error("Không thể xóa tài khoản!");
+    }
+  }, [isSuccessDeleted, isErrorDeleted]);
+
   const handleCloseDrawer = () => {
     setIsOpenDrawer(false);
     setStateUserDetails({
@@ -302,44 +324,18 @@ const AdminUser = () => {
     );
   };
 
+  const handleDeleteManyUser = (ids) => {
+    mutationDeleteMany.mutate(
+      { ids: ids, token: user?.access_token },
+      {
+        onSettled: () => {
+          queryUser.refetch();
+        },
+      }
+    );
+  };
   const handleCancelDelete = () => {
     setIsModalOpenDelete(false);
-  };
-
-  const handleOnChangeImage = async ({ fileList }) => {
-    if (fileList.length > 0) {
-      const file = fileList[0];
-      if (!file.url && !file.preview) {
-        file.preview = await getBase64(file.originFileObj);
-      }
-      setStateUser({
-        ...stateUser,
-        image: file.preview,
-      });
-    } else {
-      setStateUser({
-        ...stateUser,
-        image: "",
-      });
-    }
-  };
-
-  const handleOnChangeImageDetails = async ({ fileList }) => {
-    if (fileList.length > 0) {
-      const file = fileList[0];
-      if (!file.url && !file.preview) {
-        file.preview = await getBase64(file.originFileObj);
-      }
-      setStateUserDetails({
-        ...stateUserDetails,
-        image: file.preview,
-      });
-    } else {
-      setStateUserDetails({
-        ...stateUserDetails,
-        image: "",
-      });
-    }
   };
 
   const handleOnChangeDetails = (e) => {
@@ -369,6 +365,7 @@ const AdminUser = () => {
       <WrapperHeader>Quản lý người dùng</WrapperHeader>
       <div style={{ marginTop: "20px" }}>
         <TableComponent
+          handleDeleteMany={handleDeleteManyUser}
           columns={columns}
           isPending={isPendingUsers}
           data={dataTable}
