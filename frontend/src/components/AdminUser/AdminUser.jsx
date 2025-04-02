@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { WrapperHeader } from "./style";
+import { WrapperHeader, WrapperUploadFile } from "./style";
 import { Button, Form, Space } from "antd";
 import {
   DeleteOutlined,
@@ -16,6 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import * as message from "../../components/Message/Message";
 import { useSelector } from "react-redux";
+import { getBase64 } from "../../utils";
 
 const AdminUser = () => {
   const [form] = Form.useForm();
@@ -25,19 +26,13 @@ const AdminUser = () => {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
   const searchInput = useRef(null);
-  const [stateUser, setStateUser] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-    isAdmin: false,
-  });
 
   const [stateUserDetails, setStateUserDetails] = useState({
     name: "",
     email: "",
     phone: "",
     address: "",
+    avatar: "",
     isAdmin: false,
   });
 
@@ -49,6 +44,7 @@ const AdminUser = () => {
         email: res?.data?.email,
         phone: res?.data?.phone,
         address: res?.data?.address,
+        avatar: res?.data?.avatar,
         isAdmin: res?.data?.isAdmin,
       });
     }
@@ -291,7 +287,7 @@ const AdminUser = () => {
     } else if (isErrorDeleted) {
       message.error("Không thể xóa tài khoản!");
     }
-  }, [isSuccessDeleted, isErrorDeleted]);
+  }, [isSuccessDeleted]);
 
   useEffect(() => {
     if (isSuccessDeletedMany && dataDeletedMany?.status === "OK") {
@@ -300,7 +296,7 @@ const AdminUser = () => {
     } else if (isErrorDeletedMany) {
       message.error("Không thể xóa tài khoản!");
     }
-  }, [isSuccessDeleted, isErrorDeleted]);
+  }, [isSuccessDeleted]);
 
   const handleCloseDrawer = () => {
     setIsOpenDrawer(false);
@@ -309,6 +305,7 @@ const AdminUser = () => {
       email: "",
       phone: "",
       address: "",
+      avatar: "",
       isAdmin: false,
     });
     form.resetFields();
@@ -345,6 +342,24 @@ const AdminUser = () => {
     });
   };
 
+  const handleOnChangeAvatarDetails = async ({ fileList }) => {
+    if (fileList.length > 0) {
+      const file = fileList[0];
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj);
+      }
+      setStateUserDetails({
+        ...stateUserDetails,
+        avatar: file.preview,
+      });
+    } else {
+      setStateUserDetails({
+        ...stateUserDetails,
+        avatar: " ",
+      });
+    }
+  };
+
   const onUpdateUser = () => {
     mutationUpdate.mutate(
       {
@@ -363,6 +378,7 @@ const AdminUser = () => {
   return (
     <div>
       <WrapperHeader>Quản lý người dùng</WrapperHeader>
+
       <div style={{ marginTop: "20px" }}>
         <TableComponent
           handleDeleteMany={handleDeleteManyUser}
@@ -438,8 +454,39 @@ const AdminUser = () => {
               <InputComponent
                 value={stateUserDetails.address}
                 onChange={handleOnChangeDetails}
-                name="price"
+                name="address"
               />
+            </Form.Item>
+
+            <Form.Item
+              label="Avatar"
+              name="avatar"
+              rules={[{ required: true, message: "Please upload an avatar!" }]}
+            >
+              <WrapperUploadFile
+                fileList={
+                  stateUserDetails?.avatar
+                    ? [{ url: stateUserDetails.avatar }]
+                    : []
+                }
+                onChange={handleOnChangeAvatarDetails}
+                maxCount={1}
+              >
+                <Button>Upload File</Button>
+                {stateUserDetails?.avatar && (
+                  <img
+                    src={stateUserDetails?.avatar}
+                    alt="avatar"
+                    style={{
+                      height: "60px",
+                      width: "60px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      marginLeft: "10px",
+                    }}
+                  />
+                )}
+              </WrapperUploadFile>
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
               <Button type="primary" htmlType="submit">
