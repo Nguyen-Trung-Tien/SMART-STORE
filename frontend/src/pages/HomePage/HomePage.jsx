@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { TypeProducts } from "../../components/TypeProducts/TypeProducts";
 import {
   WrapperButtonMore,
@@ -12,8 +12,16 @@ import image3 from "../../assets/images/image3.webp";
 import CardComponent from "../../components/CardComponent/CardComponent";
 import { useQuery } from "@tanstack/react-query";
 import * as ProductService from "../../services/ProductServices";
+import { useSelector } from "react-redux";
+import Loading from "../../components/LoadingComponent/Loading";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const HomePage = () => {
+  const searchProduct = useSelector((state) => state?.product?.search);
+  const [stateProduct, setStateProduct] = useState([]);
+  const searchDebounce = useDebounce(searchProduct, 500);
+  const [pending, setPending] = useState(false);
+  const refSearch = useRef();
   const arr = [
     "TV",
     "Laptop",
@@ -23,10 +31,23 @@ const HomePage = () => {
     "Camera",
     "Headphone",
   ];
-  const fetchProductAll = async () => {
-    const res = await ProductService.getAllProduct();
-    return res;
+  const fetchProductAll = async (search) => {
+    const res = await ProductService.getAllProduct(search);
+    if (search?.length > 0 || refSearch.current) {
+      setStateProduct(res?.data);
+    } else {
+      return res;
+    }
   };
+
+  useEffect(() => {
+    if (refSearch.current) {
+      setPending(true);
+      fetchProductAll(searchDebounce);
+    }
+    refSearch.current = true;
+    setPending(false);
+  }, [searchDebounce]);
 
   const { isPending, data: products } = useQuery({
     queryKey: ["products"],
@@ -35,8 +56,13 @@ const HomePage = () => {
     retryDelay: 1000,
   });
 
+  useEffect(() => {
+    if (products?.data?.length || searchProduct?.length > 0) {
+      setStateProduct(products?.data);
+    }
+  }, [products]);
   return (
-    <>
+    <Loading isLoading={isPending || pending}>
       <div
         style={{
           width: "1270px",
@@ -65,7 +91,7 @@ const HomePage = () => {
         >
           <SliderComponent arrImages={[image1, image2, image3]} />
           <WrapperProducts>
-            {products?.data?.map((product) => {
+            {stateProduct?.map((product) => {
               return (
                 <CardComponent
                   key={product._id}
@@ -107,7 +133,7 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-    </>
+    </Loading>
   );
 };
 

@@ -19,12 +19,14 @@ import * as UserService from "../../services/UserServices";
 import { useDispatch } from "react-redux";
 import { resetUser } from "../../redux/slices/userSlice";
 import Loading from "../LoadingComponent/Loading";
+import { searchProduct } from "../../redux/slices/productSlice";
 
 const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [userName, setUserName] = useState("");
+  const [search, setSearch] = useState("");
   const [userAvatar, setUserAvatar] = useState("");
   const [pending, setPending] = useState(false);
   const handleNavigateLogin = () => {
@@ -60,6 +62,12 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
       </WrapperContentPopup>
     </div>
   );
+
+  const onSearch = (e) => {
+    setSearch(e.target.value);
+    dispatch(searchProduct(e.target.value));
+  };
+
   return (
     <div
       style={{
@@ -89,7 +97,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
               size="large"
               textButton="Tìm kiếm"
               placeholder="Tìm kiếm sản phẩm ..."
-              // onSearch={onSearch}
+              onChange={onSearch}
             />
           </Col>
         )}
