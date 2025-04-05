@@ -30,22 +30,18 @@ const CardComponent = (props) => {
         body: { padding: "10px" },
         header: { width: "200px", height: "200px" },
       }}
-      cover={
-        <img
-          alt="example"
-          src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
-        />
-      }
+      cover={<img alt="example" src={image} />}
     >
       <img
         src={logo}
+        alt="images"
         style={{
-          width: "60px",
-          height: "18px",
+          width: "68px",
+          height: "14px",
           position: "absolute",
           borderTopLeftRadius: "3px",
-          top: 0,
-          left: 0,
+          top: -1,
+          left: -1,
         }}
       />
       <StyleNameProducts>{name}</StyleNameProducts>
@@ -55,13 +51,12 @@ const CardComponent = (props) => {
           <StarFilled style={{ color: "#fadb14", fontSize: "14px" }} />
         </span>
         <WrapperStyleTextSell>
-          {" "}
           | Đã bán: {selling || 1000} +
         </WrapperStyleTextSell>
       </WrapperReportText>
       <WrapperPriceText>
-        <span style={{ marginRight: "8px" }}>{price} </span>{" "}
-        <WrapperDiscountText>{discount || 5} %</WrapperDiscountText>
+        <span style={{ marginRight: "8px" }}>{price.toLocaleString()} </span>
+        <WrapperDiscountText> - {discount || 5} %</WrapperDiscountText>
       </WrapperPriceText>
     </WrapperCardStyle>
   );

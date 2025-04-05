@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { TypeProducts } from "../../components/TypeProducts/TypeProducts";
 import {
   WrapperButtonMore,
@@ -18,10 +18,9 @@ import { useDebounce } from "../../hooks/useDebounce";
 
 const HomePage = () => {
   const searchProduct = useSelector((state) => state?.product?.search);
-  const [stateProduct, setStateProduct] = useState([]);
-  const searchDebounce = useDebounce(searchProduct, 500);
+  const searchDebounce = useDebounce(searchProduct, 1000);
   const [pending, setPending] = useState(false);
-  const refSearch = useRef();
+  const [limit, setLimit] = useState(6);
   const arr = [
     "TV",
     "Laptop",
@@ -31,36 +30,25 @@ const HomePage = () => {
     "Camera",
     "Headphone",
   ];
-  const fetchProductAll = async (search) => {
-    const res = await ProductService.getAllProduct(search);
-    if (search?.length > 0 || refSearch.current) {
-      setStateProduct(res?.data);
-    } else {
-      return res;
-    }
+  const fetchProductAll = async (context) => {
+    const limit = context?.queryKey && context?.queryKey[1];
+    const search = context?.queryKey && context?.queryKey[2];
+    const res = await ProductService.getAllProduct(search, limit);
+    return res;
   };
 
-  useEffect(() => {
-    if (refSearch.current) {
-      setPending(true);
-      fetchProductAll(searchDebounce);
-    }
-    refSearch.current = true;
-    setPending(false);
-  }, [searchDebounce]);
-
-  const { isPending, data: products } = useQuery({
-    queryKey: ["products"],
+  const {
+    isPending,
+    data: products,
+    isPreviousData,
+  } = useQuery({
+    queryKey: ["products", limit, searchDebounce],
     queryFn: fetchProductAll,
     retry: 3,
     retryDelay: 1000,
+    keepPreviousData: true,
   });
 
-  useEffect(() => {
-    if (products?.data?.length || searchProduct?.length > 0) {
-      setStateProduct(products?.data);
-    }
-  }, [products]);
   return (
     <Loading isLoading={isPending || pending}>
       <div
@@ -70,7 +58,7 @@ const HomePage = () => {
         }}
       >
         <WrapperTypeProducts>
-          {arr.map((item) => {
+          {arr?.map((item) => {
             return <TypeProducts name={item} key={item} />;
           })}
         </WrapperTypeProducts>
@@ -91,7 +79,7 @@ const HomePage = () => {
         >
           <SliderComponent arrImages={[image1, image2, image3]} />
           <WrapperProducts>
-            {stateProduct?.map((product) => {
+            {products?.data?.map((product) => {
               return (
                 <CardComponent
                   key={product._id}
@@ -117,18 +105,30 @@ const HomePage = () => {
             }}
           >
             <WrapperButtonMore
-              textButton="Xem thêm"
+              textButton={isPreviousData ? "Load more" : "Xem thêm"}
               type="outline"
               styleButton={{
                 border: "1px solid rgb(11, 116, 229)",
-                color: "rgb(11, 116, 229)",
+                color: `${
+                  products?.total === products?.data?.length
+                    ? "#ccc"
+                    : "rgb(11, 116, 229)"
+                }`,
                 height: "38px",
                 width: "240px",
                 borderRadius: "4px",
                 fontWeight: "500",
                 fontSize: "16px",
               }}
-              styleTextButton={{ fontWeight: 500 }}
+              disabled={
+                products?.total === products?.data?.length ||
+                products?.totalPage === 1
+              }
+              styleTextButton={{
+                fontWeight: 500,
+                color: products?.total === products?.data?.length && "#fff",
+              }}
+              onClick={() => setLimit((prev) => prev + 6)}
             />
           </div>
         </div>
