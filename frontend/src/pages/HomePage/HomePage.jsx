@@ -92,6 +92,7 @@ const HomePage = () => {
                   type={product.type}
                   discount={product.discount}
                   selling={product.selling}
+                  id={product._id}
                 />
               );
             })}

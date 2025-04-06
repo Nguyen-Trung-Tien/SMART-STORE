@@ -9,6 +9,7 @@ import {
 } from "./style";
 import { StarFilled } from "@ant-design/icons";
 import logo from "../../assets/ImageSmall/logo.png";
+import { useNavigate } from "react-router-dom";
 
 const CardComponent = (props) => {
   const {
@@ -21,8 +22,12 @@ const CardComponent = (props) => {
     type,
     discount,
     selling,
+    id,
   } = props;
-
+  const navigate = useNavigate();
+  const handleDetailProduct = (id) => {
+    navigate(`/product-details/${id}`);
+  };
   return (
     <WrapperCardStyle
       style={{ width: 200 }}
@@ -31,6 +36,7 @@ const CardComponent = (props) => {
         header: { width: "200px", height: "200px" },
       }}
       cover={<img alt="example" src={image} />}
+      onClick={() => handleDetailProduct(id)}
     >
       <img
         src={logo}

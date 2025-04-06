@@ -41,32 +41,22 @@ export const WrapperPriceTextProduct = styled.h1`
 
 export const WrapperAddressProduct = styled.div`
   span.address {
-    display: flex;
-    flex-direction: row;
-    -webkit-box-align: center;
-    align-items: center;
-    padding: 8px 0px;
-    border-bottom: 1px solid rgb(235, 235, 240);
+    text-decoration: underline;
     font-size: 14px;
-    line-height: 150%;
-    font-weight: 400;
-    color: rgb(39, 39, 42);
-    gap: 8px;
-  }
-  span.title-address {
-    font-size: 16px;
+    line-height: 24px;
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
+
   span.change-address {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    gap: 4px;
+    color: rgb(0, 122, 255);
     font-size: 14px;
-    font-weight: 400;
-    line-height: 150%;
-    flex: 1 1 0%;
-    min-height: 21px;
+    font-weight: 500;
+    line-height: 24px;
+    flex-shrink: 0;
+    cursor: pointer;
   }
 `;
 
