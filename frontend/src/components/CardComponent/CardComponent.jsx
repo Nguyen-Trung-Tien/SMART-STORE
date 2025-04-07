@@ -42,8 +42,8 @@ const CardComponent = (props) => {
         src={logo}
         alt="images"
         style={{
-          width: "68px",
-          height: "14px",
+          width: "40px",
+          height: "12px",
           position: "absolute",
           borderTopLeftRadius: "3px",
           top: -1,
@@ -61,7 +61,7 @@ const CardComponent = (props) => {
         </WrapperStyleTextSell>
       </WrapperReportText>
       <WrapperPriceText>
-        <span style={{ marginRight: "8px" }}>{price.toLocaleString()} </span>
+        <span style={{ marginRight: "8px" }}>{price?.toLocaleString()} </span>
         <WrapperDiscountText> - {discount || 5} %</WrapperDiscountText>
       </WrapperPriceText>
     </WrapperCardStyle>

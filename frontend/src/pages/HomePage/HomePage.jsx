@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { TypeProducts } from "../../components/TypeProducts/TypeProducts";
 import {
   WrapperButtonMore,
   WrapperProducts,
@@ -10,6 +9,7 @@ import image1 from "../../assets/images/image1.webp";
 import image2 from "../../assets/images/image2.webp";
 import image3 from "../../assets/images/image3.webp";
 import CardComponent from "../../components/CardComponent/CardComponent";
+import TypeProducts from "../../components/TypeProducts/TypeProducts";
 import { useQuery } from "@tanstack/react-query";
 import * as ProductService from "../../services/ProductServices";
 import { useSelector } from "react-redux";
