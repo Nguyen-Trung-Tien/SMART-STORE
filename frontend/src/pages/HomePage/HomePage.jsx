@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TypeProducts } from "../../components/TypeProducts/TypeProducts";
 import {
   WrapperButtonMore,
@@ -21,20 +21,20 @@ const HomePage = () => {
   const searchDebounce = useDebounce(searchProduct, 1000);
   const [pending, setPending] = useState(false);
   const [limit, setLimit] = useState(6);
-  const arr = [
-    "TV",
-    "Laptop",
-    "Phone",
-    "Tablet",
-    "Watch",
-    "Camera",
-    "Headphone",
-  ];
+
+  const [typeProducts, setTypeProducts] = useState([]);
   const fetchProductAll = async (context) => {
     const limit = context?.queryKey && context?.queryKey[1];
     const search = context?.queryKey && context?.queryKey[2];
     const res = await ProductService.getAllProduct(search, limit);
     return res;
+  };
+
+  const fetchAllTypeProduct = async () => {
+    const res = await ProductService.getAllTypeProduct();
+    if (res?.status === "OK") {
+      setTypeProducts(res?.data);
+    }
   };
 
   const {
@@ -49,6 +49,10 @@ const HomePage = () => {
     keepPreviousData: true,
   });
 
+  useEffect(() => {
+    fetchAllTypeProduct();
+  }, []);
+
   return (
     <Loading isLoading={isPending || pending}>
       <div
@@ -58,7 +62,7 @@ const HomePage = () => {
         }}
       >
         <WrapperTypeProducts>
-          {arr?.map((item) => {
+          {typeProducts?.map((item) => {
             return <TypeProducts name={item} key={item} />;
           })}
         </WrapperTypeProducts>

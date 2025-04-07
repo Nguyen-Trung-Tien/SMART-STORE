@@ -13,5 +13,5 @@ router.post(
   authMiddleware,
   ProductController.deleteManyProduct
 );
-
+router.get("/get-all-type", ProductController.getAllType);
 module.exports = router;
