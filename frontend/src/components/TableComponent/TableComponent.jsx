@@ -87,7 +87,7 @@ const TableComponent = (props) => {
             }}
             onClick={handleDeleteAll}
           >
-            Xáo tất cả
+            Xoá tất cả
           </div>
         )}
         <button

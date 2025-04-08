@@ -9,7 +9,7 @@ import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import { Image } from "antd";
 import imageLogo from "../../assets/ImageSmall/imageTiki.png";
 import { EyeFilled, EyeInvisibleFilled } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import * as UserService from "../../services/UserServices";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import Loading from "../../components/LoadingComponent/Loading";
@@ -20,7 +20,7 @@ import { updateUser } from "../../redux/slices/userSlice";
 
 const SignInPage = () => {
   const navigate = useNavigate();
-
+  const location = useLocation();
   const [isShowPassWord, setIsShowPassWord] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,8 +31,12 @@ const SignInPage = () => {
   const { data, isPending, isSuccess, isError } = mutation;
   useEffect(() => {
     if (isSuccess) {
-      message.success("Đăng nhập thành công");
-      navigate("/");
+      if (location?.state) {
+        navigate(location?.state);
+      } else {
+        navigate("/");
+        message.success("Đăng nhập thành công");
+      }
       localStorage.setItem("access_token", JSON.stringify(data?.access_token));
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
@@ -44,7 +48,7 @@ const SignInPage = () => {
     if (isError) {
       message.error("Đăng nhập thất bại");
     }
-  }, [isSuccess, isError]);
+  }, [isSuccess]);
 
   const handleGetDetailsUser = async (id, token) => {
     const res = await UserService.getDetailsUser(id, token);

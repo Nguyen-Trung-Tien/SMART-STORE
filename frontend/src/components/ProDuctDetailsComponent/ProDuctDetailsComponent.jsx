@@ -17,11 +17,16 @@ import { MinusOutlined, PlusOutlined, StarFilled } from "@ant-design/icons";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../LoadingComponent/Loading";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import { addOrderProduct } from "../../redux/slices/orderSlice";
 
 const ProductDetailsComponent = ({ idProduct }) => {
-  const [numProduct, setNumProduct] = useState();
-  const user = useSelector((state) => state?.user);
+  const [numProduct, setNumProduct] = useState(1);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
   const onChange = (value) => {
     setNumProduct(Number(value));
   };
@@ -37,7 +42,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
   const handleChangeCount = (type) => {
     if (type === "increase") {
       setNumProduct(numProduct + 1);
-    } else {
+    } else if (type === "decrease" && numProduct > 1) {
       setNumProduct(numProduct - 1);
     }
   };
@@ -49,6 +54,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
   });
 
   const renderStars = (num) => {
+    if (!num || num <= 0) return null;
     const stars = [];
     for (let i = 0; i < num; i++) {
       stars.push(
@@ -58,6 +64,23 @@ const ProductDetailsComponent = ({ idProduct }) => {
     return stars;
   };
 
+  const handleAddOrderProduct = () => {
+    if (!user?.id) {
+      navigate("/sign-in", { state: location?.pathname });
+    } else {
+      dispatch(
+        addOrderProduct({
+          orderItem: {
+            name: productDetails?.name,
+            amount: numProduct,
+            image: productDetails?.image,
+            price: productDetails?.price,
+            product: productDetails?._id,
+          },
+        })
+      );
+    }
+  };
   return (
     <Loading isLoading={isPending}>
       <Row
@@ -176,6 +199,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
                 borderRadius: "4px",
                 border: "none",
               }}
+              onClick={handleAddOrderProduct}
               textButton={"Chọn mua"}
               styleTextButton={{
                 color: "#fff",
