@@ -15,16 +15,13 @@ export const getAllProduct = async (search, limit) => {
   return res.data;
 };
 
-export const getProductType = async (type) => {
-  let res = {};
+export const getProductType = async (type, page, limit) => {
   if (type) {
     const res = await axios.get(
-      `${process.env.REACT_APP_API_KEY}/product/get-all?filter=type&filter=${type}`
+      `${process.env.REACT_APP_API_KEY}/product/get-all?filter=type&filter=${type}&limit=${limit}&page=${page}`
     );
     return res.data;
   }
-
-  return res.data;
 };
 export const createProduct = async (data) => {
   const res = await axios.post(
@@ -85,3 +82,8 @@ export const getAllTypeProduct = async () => {
   );
   return res.data;
 };
+
+const API_KEY = process.env.REACT_APP_API_KEY;
+if (!API_KEY) {
+  throw new Error("API key is not defined in environment variables.");
+}

@@ -41,7 +41,7 @@ const OrderPage = ({ count = 1 }) => {
                 <span>Đơn giá</span>
                 <span>Số lượng</span>
                 <span>Thành tiền</span>
-                <DeleteOutlined styler={{ cursor: "pointer" }} />
+                <DeleteOutlined style={{ cursor: "pointer" }} />
               </div>
             </WrapperStyleHeader>
             <WrapperListOrder>
@@ -99,7 +99,7 @@ const OrderPage = ({ count = 1 }) => {
             <div style={{ width: "100%" }}>
               <WrapperInfo>
                 <div
-                  styler={{
+                  style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -115,7 +115,7 @@ const OrderPage = ({ count = 1 }) => {
                   ></span>
                 </div>
                 <div
-                  styler={{
+                  style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -131,7 +131,7 @@ const OrderPage = ({ count = 1 }) => {
                   ></span>
                 </div>
                 <div
-                  styler={{
+                  style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -147,7 +147,7 @@ const OrderPage = ({ count = 1 }) => {
                   ></span>
                 </div>
                 <div
-                  styler={{
+                  style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",

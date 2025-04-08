@@ -74,13 +74,15 @@ const NavbarComponent = () => {
       <WrapperContent>
         {renderContent("text", ["TV", "Tu lanh", "May say"])}
       </WrapperContent>
-      <WrapperContent>
+      {/* <WrapperContent>
         {renderContent("checkbox", [
-          { value: "a", label: "A" },
-          { value: "b", label: "B" },
+          { value: "a", label: "Di động" },
+          { value: "b", label: "Máy tính" },
         ])}
+      </WrapperContent> */}
+      <WrapperContent style={{ marginTop: "20px" }}>
+        {renderContent("star", [1, 2, 3, 4, 5])}
       </WrapperContent>
-      <WrapperContent>{renderContent("star", [1, 2, 3, 4, 5])}</WrapperContent>
       <WrapperContent>
         {renderContent("Price", ["dưới 40.000đ", "trên 50.000đ"])}
       </WrapperContent>
