@@ -8,7 +8,6 @@ import {
   WrapperItemOrder,
   WrapperLeft,
   WrapperListOrder,
-  WrapperPriceDiscount,
   WrapperRight,
   WrapperStyleHeader,
   WrapperTotal,
@@ -71,7 +70,7 @@ const OrderPage = () => {
   return (
     <div style={{ background: "#f5f5fa", with: "100%", height: "100vh" }}>
       <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
-        <h3>Giỏ hàng</h3>
+        <h3 style={{ fontSize: "24px", marginTop: "10px" }}>Giỏ hàng</h3>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <WrapperLeft>
             <WrapperStyleHeader>
@@ -80,7 +79,9 @@ const OrderPage = () => {
                   onChange={handleOnChangeCheckAll}
                   checked={listChecked?.length === order?.orderItems?.length}
                 ></Checkbox>
-                <span> Tất cả ({order?.orderItems?.length} sản phẩm)</span>
+                <span style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  Tất cả ({order?.orderItems?.length} sản phẩm)
+                </span>
               </span>
               <div
                 style={{
@@ -89,11 +90,21 @@ const OrderPage = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <span>Đơn giá</span>
-                <span>Số lượng</span>
-                <span>Thành tiền</span>
+                <span style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  Đơn giá
+                </span>
+                <span style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  Số lượng
+                </span>
+                <span style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  Thành tiền
+                </span>
                 <DeleteOutlined
-                  style={{ cursor: "pointer" }}
+                  style={{
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                  }}
                   onClick={handleRemoveAllOrder}
                 />
               </div>
@@ -144,7 +155,13 @@ const OrderPage = () => {
                       }}
                     >
                       <span>
-                        <span style={{ fontSize: "13px", color: "#242424" }}>
+                        <span
+                          style={{
+                            fontSize: "16px",
+                            color: "#242424",
+                            fontWeight: "bold",
+                          }}
+                        >
                           {order?.price?.toLocaleString()} VND
                         </span>
                       </span>
@@ -186,11 +203,11 @@ const OrderPage = () => {
                       <span
                         style={{
                           color: "rgb(255, 66, 78)",
-                          fontSize: "13px",
-                          fontWeight: 500,
+                          fontSize: "16px",
+                          fontWeight: "bold",
                         }}
                       >
-                        {order?.price * order?.amount}
+                        {(order?.price * order?.amount)?.toLocaleString()} VND
                       </span>
                       <DeleteOutlined
                         style={{ cursor: "pointer" }}
@@ -212,7 +229,9 @@ const OrderPage = () => {
                     alignItems: "center",
                   }}
                 >
-                  <span>Tạm tính</span>
+                  <span style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Tạm tính
+                  </span>
                   <span
                     style={{
                       color: "#000",
@@ -230,7 +249,9 @@ const OrderPage = () => {
                     alignItems: "center",
                   }}
                 >
-                  <span>Giảm giá</span>
+                  <span style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Giảm giá
+                  </span>
                   <span
                     style={{
                       color: "#000",
@@ -248,7 +269,9 @@ const OrderPage = () => {
                     alignItems: "center",
                   }}
                 >
-                  <span>Thuế</span>
+                  <span style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Thuế
+                  </span>
                   <span
                     style={{
                       color: "#000",
@@ -266,7 +289,9 @@ const OrderPage = () => {
                     alignItems: "center",
                   }}
                 >
-                  <span>Phí vận chuyển</span>
+                  <span style={{ fontWeight: "bold", fontSize: "16px" }}>
+                    Phí vận chuyển
+                  </span>
                   <span
                     style={{
                       color: "#000",
@@ -279,7 +304,9 @@ const OrderPage = () => {
                 </div>
               </WrapperInfo>
               <WrapperTotal>
-                <span>Tổng tiền</span>
+                <span style={{ fontWeight: "bold", fontSize: "16px" }}>
+                  Tổng tiền
+                </span>
                 <span style={{ display: "flex", flexDirection: "column" }}>
                   <span
                     style={{
@@ -290,7 +317,7 @@ const OrderPage = () => {
                   >
                     3000000VND
                   </span>
-                  <span style={{ fontSize: "12px", color: "#ccc" }}>
+                  <span style={{ fontSize: "14px", color: "#ccc" }}>
                     (Đã bao gồm VAT)
                   </span>
                 </span>

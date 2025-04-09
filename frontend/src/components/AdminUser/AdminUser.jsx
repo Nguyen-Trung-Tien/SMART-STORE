@@ -19,14 +19,13 @@ import { useSelector } from "react-redux";
 import { getBase64 } from "../../utils";
 
 const AdminUser = () => {
-  const [form] = Form.useForm();
   const [rowSelected, setRowSelected] = useState("");
   const [isPendingUpdate, setIsPendingUpdate] = useState(false);
   const user = useSelector((state) => state?.user);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
   const searchInput = useRef(null);
-
+  const [form] = Form.useForm();
   const [stateUserDetails, setStateUserDetails] = useState({
     name: "",
     email: "",
@@ -52,15 +51,11 @@ const AdminUser = () => {
   };
 
   useEffect(() => {
-    form.setFieldsValue(stateUserDetails);
-  }, [form, stateUserDetails]);
-
-  useEffect(() => {
     if (rowSelected && !isOpenDrawer) {
       setIsPendingUpdate(true);
       fetchGetDetailsUser(rowSelected);
     }
-  }, [rowSelected]);
+  }, [rowSelected, isOpenDrawer]);
 
   const handleDetailUser = () => {
     setIsOpenDrawer(true);
@@ -146,7 +141,7 @@ const AdminUser = () => {
       record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
     filterDropdownProps: {
       onOpenChange: (visible) => {
-        if (visible) {
+        if (visible && searchInput.current) {
           setTimeout(() => searchInput.current?.select(), 100);
         }
       },
@@ -229,7 +224,6 @@ const AdminUser = () => {
 
   const getAllUser = async () => {
     const res = await UserService.getAllUser();
-    console.log(res);
     return res;
   };
 
@@ -403,7 +397,7 @@ const AdminUser = () => {
         <Loading isLoading={isPendingUpdate || isPendingUpdated}>
           <Form
             form={form}
-            name="basic"
+            name="userDetailsForm"
             labelCol={{ span: 2 }}
             wrapperCol={{ span: 22 }}
             onFinish={onUpdateUser}

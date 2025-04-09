@@ -21,7 +21,6 @@ import ModalComponent from "../ModalComponent/ModalComponent";
 
 const AdminProduct = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [form] = Form.useForm();
   const [rowSelected, setRowSelected] = useState("");
   const [isPendingUpdate, setIsPendingUpdate] = useState(false);
   const user = useSelector((state) => state?.user);
@@ -38,7 +37,7 @@ const AdminProduct = () => {
     type: "",
     countInStock: "",
   });
-
+  const [form] = Form.useForm();
   const [stateProductDetails, setStateProductDetails] = useState({
     name: "",
     price: "",
@@ -440,15 +439,10 @@ const AdminProduct = () => {
       if (!file.url && !file.preview) {
         file.preview = await getBase64(file.originFileObj);
       }
-      setStateProduct({
-        ...stateProduct,
+      setStateProduct((prev) => ({
+        ...prev,
         image: file.preview,
-      });
-    } else {
-      setStateProduct({
-        ...stateProduct,
-        image: "",
-      });
+      }));
     }
   };
 
