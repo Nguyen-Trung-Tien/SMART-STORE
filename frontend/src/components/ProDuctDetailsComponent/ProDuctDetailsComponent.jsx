@@ -135,7 +135,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
           </div>
           <WrapperPriceProduct>
             <WrapperPriceTextProduct>
-              {productDetails?.price}
+              {productDetails?.price?.toLocaleString()} VND
             </WrapperPriceTextProduct>
           </WrapperPriceProduct>
           <WrapperAddressProduct>

@@ -33,7 +33,7 @@ export const WrapperPriceDiscount = styled.span``;
 export const WrapperCountOrder = styled.div`
   display: flex;
   align-items: center;
-  width: 48px;
+  width: 84px;
   border: 1px solid #ccc;
   border-radius: 4px;
 `;

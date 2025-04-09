@@ -48,14 +48,27 @@ export const orderSlice = createSlice({
     },
     removeOrderProduct: (state, action) => {
       const { idProduct } = action.payload;
-      const itemOrder = state?.orderItems?.find(
+      const itemOrder = state?.orderItems?.filter(
         (item) => item?.product !== idProduct
       );
-      itemOrder.orderItems = itemOrder;
+      state.orderItems = itemOrder;
+    },
+    removeAllOrderProduct: (state, action) => {
+      const { listChecked } = action.payload;
+      const itemOrders = state?.orderItems?.filter(
+        (item) => !listChecked.includes(item?.product)
+      );
+      state.orderItems = itemOrders;
     },
   },
 });
 
-export const { addOrderProduct } = orderSlice.actions;
+export const {
+  addOrderProduct,
+  increaseAmount,
+  decreaseAmount,
+  removeOrderProduct,
+  removeAllOrderProduct,
+} = orderSlice.actions;
 
 export default orderSlice.reducer;
