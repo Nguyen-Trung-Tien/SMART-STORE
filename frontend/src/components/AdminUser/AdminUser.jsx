@@ -87,13 +87,10 @@ const AdminUser = () => {
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    // setSearchText(selectedKeys[0]);
-    // setSearchedColumn(dataIndex);
   };
 
   const handleReset = (clearFilters) => {
     clearFilters();
-    // setSearchText("");
   };
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -146,17 +143,6 @@ const AdminUser = () => {
         }
       },
     },
-    // render: (text) =>
-    //   searchedColumn === dataIndex ? (
-    //     <Highlighter
-    //       highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
-    //       searchWords={[searchText]}
-    //       autoEscape
-    //       textToHighlight={text ? text.toString() : ""}
-    //     />
-    //   ) : (
-    //     text
-    //   ),
   });
 
   const columns = [
@@ -272,7 +258,7 @@ const AdminUser = () => {
     } else if (isErrorUpdated) {
       message.error("Không thể cập nhật sản phẩm!");
     }
-  }, [isSuccessUpdated]);
+  }, [isSuccessUpdated, isErrorUpdated]);
 
   useEffect(() => {
     if (isSuccessDeleted && dataDeleted?.status === "OK") {
@@ -281,7 +267,7 @@ const AdminUser = () => {
     } else if (isErrorDeleted) {
       message.error("Không thể xóa tài khoản!");
     }
-  }, [isSuccessDeleted]);
+  }, [isSuccessDeleted, isErrorDeleted]);
 
   useEffect(() => {
     if (isSuccessDeletedMany && dataDeletedMany?.status === "OK") {
@@ -290,7 +276,7 @@ const AdminUser = () => {
     } else if (isErrorDeletedMany) {
       message.error("Không thể xóa tài khoản!");
     }
-  }, [isSuccessDeleted]);
+  }, [isSuccessDeleted, isSuccessDeletedMany]);
 
   const handleCloseDrawer = () => {
     setIsOpenDrawer(false);

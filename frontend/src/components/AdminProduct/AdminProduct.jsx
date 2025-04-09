@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { WrapperHeader, WrapperUploadFile } from "./style";
 import { Button, Form, Select, Space } from "antd";
 import {
@@ -27,7 +27,6 @@ const AdminProduct = () => {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
   const searchInput = useRef(null);
-  const [typeSelect, setTypeSelect] = useState("");
   const [stateProduct, setStateProduct] = useState({
     name: "",
     price: "",
@@ -36,8 +35,9 @@ const AdminProduct = () => {
     image: "",
     type: "",
     countInStock: "",
+    discount: "",
+    newType: "",
   });
-  const [form] = Form.useForm();
   const [stateProductDetails, setStateProductDetails] = useState({
     name: "",
     price: "",
@@ -46,8 +46,10 @@ const AdminProduct = () => {
     image: "",
     type: "",
     countInStock: "",
-    newType: "",
+    discount: "",
   });
+
+  const [form] = Form.useForm();
 
   const fetchGetDetailsProduct = async (rowSelected) => {
     const res = await ProductService.getDetailsProduct(rowSelected);
@@ -60,6 +62,7 @@ const AdminProduct = () => {
         image: res?.data?.image,
         type: res?.data?.type,
         countInStock: res?.data?.countInStock,
+        discount: res?.data?.discount,
       });
     }
     setIsPendingUpdate(false);
@@ -79,7 +82,7 @@ const AdminProduct = () => {
       setIsPendingUpdate(true);
       fetchGetDetailsProduct(rowSelected);
     }
-  }, [rowSelected]);
+  }, [rowSelected, isOpenDrawer]);
 
   const handleDetailProduct = () => {
     setIsOpenDrawer(true);
@@ -111,13 +114,10 @@ const AdminProduct = () => {
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    // setSearchText(selectedKeys[0]);
-    // setSearchedColumn(dataIndex);
   };
 
   const handleReset = (clearFilters) => {
     clearFilters();
-    // setSearchText("");
   };
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -170,17 +170,6 @@ const AdminProduct = () => {
         }
       },
     },
-    // render: (text) =>
-    //   searchedColumn === dataIndex ? (
-    //     <Highlighter
-    //       highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
-    //       searchWords={[searchText]}
-    //       autoEscape
-    //       textToHighlight={text ? text.toString() : ""}
-    //     />
-    //   ) : (
-    //     text
-    //   ),
   });
 
   const columns = [
@@ -248,8 +237,16 @@ const AdminProduct = () => {
   ];
 
   const mutation = useMutationHooks((data) => {
-    const { name, price, description, rating, image, type, countInStock } =
-      data;
+    const {
+      name,
+      price,
+      description,
+      rating,
+      image,
+      type,
+      countInStock,
+      discount,
+    } = data;
     const res = ProductService.createProduct({
       name,
       price,
@@ -258,6 +255,7 @@ const AdminProduct = () => {
       image,
       type,
       countInStock,
+      discount,
     });
     return res;
   });
@@ -337,15 +335,6 @@ const AdminProduct = () => {
     });
 
   useEffect(() => {
-    if (isSuccess && data?.status === "OK") {
-      message.success("Tạo sản phẩm thành công!");
-      handleCancel();
-    } else if (isError) {
-      message.error("Không thể tạo sản phẩm!");
-    }
-  }, [isSuccess]);
-
-  useEffect(() => {
     if (isSuccessDeletedMany && dataDeletedMany?.status === "OK") {
       message.success("Xóa sản phẩm thành công!");
     } else if (isErrorDeletedMany) {
@@ -369,7 +358,7 @@ const AdminProduct = () => {
     } else if (isErrorDeleted) {
       message.error("Không thể xóa sản phẩm!");
     }
-  }, [isSuccessDeleted, isErrorDeleted]);
+  }, [isSuccessDeleted]);
 
   const handleCloseDrawer = () => {
     setIsOpenDrawer(false);
@@ -384,6 +373,7 @@ const AdminProduct = () => {
     });
     form.resetFields();
   };
+
   const handleDeleteProduct = () => {
     mutationDelete.mutate(
       { id: rowSelected, token: user?.access_token },
@@ -395,7 +385,7 @@ const AdminProduct = () => {
     );
   };
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setIsModalOpen(false);
     setStateProduct({
       name: "",
@@ -407,7 +397,16 @@ const AdminProduct = () => {
       countInStock: "",
     });
     form.resetFields();
-  };
+  }, [form]);
+
+  useEffect(() => {
+    if (isSuccess && data?.status === "OK") {
+      message.success("Tạo sản phẩm thành công!");
+      handleCancel();
+    } else if (isError) {
+      message.error("Không thể tạo sản phẩm!");
+    }
+  }, [isSuccess, isError, data?.status, handleCancel]);
 
   const handleCancelDelete = () => {
     setIsModalOpenDelete(false);
@@ -425,6 +424,7 @@ const AdminProduct = () => {
           ? stateProduct.newType
           : stateProduct.type,
       countInStock: stateProduct.countInStock,
+      discount: stateProduct.discount,
     };
     mutation.mutate(params, {
       onSettled: () => {
@@ -565,8 +565,6 @@ const AdminProduct = () => {
             >
               <Select
                 name="type"
-                // defaultValue="lucy"
-                // style={{ width: 120 }}
                 value={stateProduct.type}
                 onChange={handleChangeSelect}
                 options={renderOptions(typeProduct?.data?.data)}
@@ -631,6 +629,22 @@ const AdminProduct = () => {
                 value={stateProduct.description}
                 onChange={handleOnChange}
                 name="description"
+              />
+            </Form.Item>
+            <Form.Item
+              label="Discount"
+              name="discount"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your discount of product!",
+                },
+              ]}
+            >
+              <InputComponent
+                value={stateProduct.discount}
+                onChange={handleOnChange}
+                name="discount"
               />
             </Form.Item>
             <Form.Item
@@ -752,6 +766,19 @@ const AdminProduct = () => {
                 value={stateProductDetails.description}
                 onChange={handleOnChangeDetails}
                 name="description"
+              />
+            </Form.Item>
+            <Form.Item
+              label="Discount"
+              name="discount"
+              rules={[
+                { required: true, message: "Please input your discount!" },
+              ]}
+            >
+              <InputComponent
+                value={stateProductDetails.discount}
+                onChange={handleOnChangeDetails}
+                name="discount"
               />
             </Form.Item>
             <Form.Item

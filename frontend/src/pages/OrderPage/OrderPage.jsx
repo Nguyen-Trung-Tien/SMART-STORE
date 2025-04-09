@@ -1,6 +1,6 @@
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { Checkbox } from "antd";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   WrapperCountOrder,
   WrapperInfo,
@@ -20,6 +20,7 @@ import {
   removeAllOrderProduct,
   removeOrderProduct,
 } from "../../redux/slices/orderSlice";
+import { convertPrice } from "../../utils";
 
 const OrderPage = () => {
   const order = useSelector((state) => state.order);
@@ -66,6 +67,37 @@ const OrderPage = () => {
       dispatch(removeAllOrderProduct({ listChecked }));
     }
   };
+
+  const priceMemo = useMemo(() => {
+    const result = order?.orderItems?.reduce((total, cur) => {
+      return total + cur.price * cur.amount;
+    }, 0);
+    return result;
+  }, [order]);
+
+  const priceDiscountMemo = useMemo(() => {
+    const result = order?.orderItems?.reduce((total, cur) => {
+      return total + cur.discount * cur.amount;
+    }, 0);
+    if (Number(result)) {
+      return result;
+    }
+    return 0;
+  }, [order]);
+
+  const deliveryPriceMemo = useMemo(() => {
+    if (priceMemo > 1000000) {
+      return 10000;
+    } else {
+      return 15000;
+    }
+  }, [priceMemo]);
+
+  const totalPriceMemo = useMemo(() => {
+    return (
+      Number(priceMemo) - Number(priceDiscountMemo) + Number(deliveryPriceMemo)
+    );
+  }, [priceMemo, priceDiscountMemo, deliveryPriceMemo]);
 
   return (
     <div style={{ background: "#f5f5fa", with: "100%", height: "100vh" }}>
@@ -143,7 +175,7 @@ const OrderPage = () => {
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {order?.name}{" "}
+                        {order?.name}
                       </div>
                     </div>
                     <div
@@ -162,7 +194,7 @@ const OrderPage = () => {
                             fontWeight: "bold",
                           }}
                         >
-                          {order?.price?.toLocaleString()} VND
+                          {convertPrice(order?.price)}
                         </span>
                       </span>
                       <WrapperCountOrder>
@@ -207,7 +239,7 @@ const OrderPage = () => {
                           fontWeight: "bold",
                         }}
                       >
-                        {(order?.price * order?.amount)?.toLocaleString()} VND
+                        {convertPrice(order?.price * order?.amount)}
                       </span>
                       <DeleteOutlined
                         style={{ cursor: "pointer" }}
@@ -229,9 +261,7 @@ const OrderPage = () => {
                     alignItems: "center",
                   }}
                 >
-                  <span style={{ fontWeight: "bold", fontSize: "16px" }}>
-                    Tạm tính
-                  </span>
+                  <span>Tạm tính:</span>
                   <span
                     style={{
                       color: "#000",
@@ -239,7 +269,7 @@ const OrderPage = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    0
+                    {convertPrice(priceMemo)}
                   </span>
                 </div>
                 <div
@@ -249,9 +279,7 @@ const OrderPage = () => {
                     alignItems: "center",
                   }}
                 >
-                  <span style={{ fontWeight: "bold", fontSize: "16px" }}>
-                    Giảm giá
-                  </span>
+                  <span>Giảm giá:</span>
                   <span
                     style={{
                       color: "#000",
@@ -259,7 +287,7 @@ const OrderPage = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    0
+                    {`${priceDiscountMemo}%`}
                   </span>
                 </div>
                 <div
@@ -269,9 +297,7 @@ const OrderPage = () => {
                     alignItems: "center",
                   }}
                 >
-                  <span style={{ fontWeight: "bold", fontSize: "16px" }}>
-                    Thuế
-                  </span>
+                  <span>Phí vận chuyển:</span>
                   <span
                     style={{
                       color: "#000",
@@ -279,27 +305,7 @@ const OrderPage = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    0
-                  </span>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <span style={{ fontWeight: "bold", fontSize: "16px" }}>
-                    Phí vận chuyển
-                  </span>
-                  <span
-                    style={{
-                      color: "#000",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    0
+                    {convertPrice(deliveryPriceMemo)}
                   </span>
                 </div>
               </WrapperInfo>
@@ -315,7 +321,7 @@ const OrderPage = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    3000000VND
+                    {convertPrice(totalPriceMemo)}
                   </span>
                   <span style={{ fontSize: "14px", color: "#ccc" }}>
                     (Đã bao gồm VAT)
