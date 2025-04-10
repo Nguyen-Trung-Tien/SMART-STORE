@@ -1,5 +1,5 @@
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form } from "antd";
+import { Checkbox, Form } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   WrapperCountOrder,
@@ -29,12 +29,14 @@ import { useMutationHooks } from "../../hooks/useMutationHook";
 import Loading from "../../components/LoadingComponent/Loading";
 import * as message from "../../components/Message/Message";
 import { updateUser } from "../../redux/slices/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const OrderPage = () => {
   const order = useSelector((state) => state.order);
   const user = useSelector((state) => state.user);
   const [isOpenModalUpdateInfo, setIsOpenModalUpdateInfo] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [listChecked, setListChecked] = useState([]);
   const [stateUserDetails, setStateUserDetails] = useState({
     name: "",
@@ -50,7 +52,7 @@ const OrderPage = () => {
     return res;
   });
 
-  const { isPending, d } = mutationUpdate;
+  const { isPending, data } = mutationUpdate;
 
   const priceMemo = useMemo(() => {
     const result = order?.orderItemsSelected?.reduce((total, cur) => {
@@ -145,6 +147,8 @@ const OrderPage = () => {
       message.error("Vui lòng chọn sản phẩm!");
     } else if (!user?.phone || !user?.address || !user?.name || !user?.city) {
       setIsOpenModalUpdateInfo(true);
+    } else {
+      navigate("/payment");
     }
   };
 
@@ -176,6 +180,10 @@ const OrderPage = () => {
         }
       );
     }
+  };
+
+  const handleChangeAddress = () => {
+    setIsOpenModalUpdateInfo(true);
   };
 
   const handleOnChangeDetails = (e) => {
@@ -340,6 +348,21 @@ const OrderPage = () => {
           <WrapperRight>
             <div style={{ width: "100%" }}>
               <WrapperInfo>
+                <div>
+                  <span>Địa chỉ: </span>
+                  <span
+                    style={{ fontWeight: "bold" }}
+                  >{`${user?.address} ${user?.city}`}</span>
+                  -
+                  <span
+                    onClick={handleChangeAddress}
+                    style={{ color: "blue", cursor: "pointer" }}
+                  >
+                    Đổi địa chỉ
+                  </span>
+                </div>
+              </WrapperInfo>
+              <WrapperInfo>
                 <div
                   style={{
                     display: "flex",
@@ -397,9 +420,15 @@ const OrderPage = () => {
               </WrapperInfo>
               <WrapperTotal>
                 <span style={{ fontWeight: "bold", fontSize: "16px" }}>
-                  Tổng tiền
+                  Tổng tiền:
                 </span>
-                <span style={{ display: "flex", flexDirection: "column" }}>
+                <span
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                  }}
+                >
                   <span
                     style={{
                       color: "rgb(254,56,52)",

@@ -35,30 +35,9 @@ const AdminUser = () => {
     isAdmin: false,
   });
 
-  const fetchGetDetailsUser = async (rowSelected) => {
-    const res = await UserService.getDetailsUser(rowSelected);
-    if (res?.data) {
-      setStateUserDetails({
-        name: res?.data?.name,
-        email: res?.data?.email,
-        phone: res?.data?.phone,
-        address: res?.data?.address,
-        avatar: res?.data?.avatar,
-        isAdmin: res?.data?.isAdmin,
-      });
-    }
-    setIsPendingUpdate(false);
-  };
-
-  useEffect(() => {
-    if (rowSelected && !isOpenDrawer) {
-      setIsPendingUpdate(true);
-      fetchGetDetailsUser(rowSelected);
-    }
-  }, [rowSelected, isOpenDrawer]);
-
-  const handleDetailUser = () => {
-    setIsOpenDrawer(true);
+  const getAllUser = async () => {
+    const res = await UserService.getAllUser(user?.access_token);
+    return res;
   };
 
   const renderAction = () => {
@@ -83,6 +62,39 @@ const AdminUser = () => {
         />
       </div>
     );
+  };
+
+  const fetchGetDetailsUser = async (rowSelected) => {
+    const res = await UserService.getDetailsUser(rowSelected);
+    if (res?.data) {
+      setStateUserDetails({
+        name: res?.data?.name,
+        email: res?.data?.email,
+        phone: res?.data?.phone,
+        address: res?.data?.address,
+        avatar: res?.data?.avatar,
+        isAdmin: res?.data?.isAdmin,
+      });
+    }
+    setIsPendingUpdate(false);
+  };
+
+  const queryUser = useQuery({
+    queryKey: ["user"],
+    queryFn: getAllUser,
+  });
+
+  const { isPending: isPendingUsers, data: users } = queryUser;
+
+  useEffect(() => {
+    if (rowSelected && !isOpenDrawer) {
+      setIsPendingUpdate(true);
+      fetchGetDetailsUser(rowSelected);
+    }
+  }, [rowSelected, isOpenDrawer]);
+
+  const handleDetailUser = () => {
+    setIsOpenDrawer(true);
   };
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -208,11 +220,6 @@ const AdminUser = () => {
     return res;
   });
 
-  const getAllUser = async () => {
-    const res = await UserService.getAllUser();
-    return res;
-  };
-
   const {
     data: dataUpdated,
     isPending: isPendingUpdated,
@@ -234,20 +241,13 @@ const AdminUser = () => {
     isError: isErrorDeletedMany,
   } = mutationDeleteMany;
 
-  const queryUser = useQuery({
-    queryKey: ["user"],
-    queryFn: getAllUser,
-  });
-
-  const { isPending: isPendingUsers, data: users } = queryUser;
-
   const dataTable =
     users?.data?.length &&
     users?.data?.map((user) => {
       return {
         ...user,
         key: user._id,
-        isAdmin: user.isAdmin ? "TRUE " : "FALSE",
+        isAdmin: user.isAdmin ? "True" : "False",
       };
     });
 
@@ -258,7 +258,7 @@ const AdminUser = () => {
     } else if (isErrorUpdated) {
       message.error("Không thể cập nhật sản phẩm!");
     }
-  }, [isSuccessUpdated, isErrorUpdated]);
+  }, [isSuccessUpdated]);
 
   useEffect(() => {
     if (isSuccessDeleted && dataDeleted?.status === "OK") {
@@ -267,7 +267,7 @@ const AdminUser = () => {
     } else if (isErrorDeleted) {
       message.error("Không thể xóa tài khoản!");
     }
-  }, [isSuccessDeleted, isErrorDeleted]);
+  }, [isSuccessDeleted]);
 
   useEffect(() => {
     if (isSuccessDeletedMany && dataDeletedMany?.status === "OK") {
@@ -276,7 +276,7 @@ const AdminUser = () => {
     } else if (isErrorDeletedMany) {
       message.error("Không thể xóa tài khoản!");
     }
-  }, [isSuccessDeleted, isSuccessDeletedMany]);
+  }, [isSuccessDeleted]);
 
   const handleCloseDrawer = () => {
     setIsOpenDrawer(false);
@@ -290,6 +290,7 @@ const AdminUser = () => {
     });
     form.resetFields();
   };
+
   const handleDeleteUser = () => {
     mutationDelete.mutate(
       { id: rowSelected, token: user?.access_token },
@@ -335,7 +336,7 @@ const AdminUser = () => {
     } else {
       setStateUserDetails({
         ...stateUserDetails,
-        avatar: " ",
+        avatar: "",
       });
     }
   };
@@ -384,7 +385,7 @@ const AdminUser = () => {
         <Loading isLoading={isPendingUpdate || isPendingUpdated}>
           <Form
             form={form}
-            name="userDetailsForm"
+            name="basic"
             labelCol={{ span: 2 }}
             wrapperCol={{ span: 22 }}
             onFinish={onUpdateUser}
