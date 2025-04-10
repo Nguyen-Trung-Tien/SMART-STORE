@@ -358,22 +358,23 @@ const AdminUser = () => {
   return (
     <div>
       <WrapperHeader>Quản lý người dùng</WrapperHeader>
-
-      <div style={{ marginTop: "20px" }}>
-        <TableComponent
-          handleDeleteMany={handleDeleteManyUser}
-          columns={columns}
-          isPending={isPendingUsers}
-          data={dataTable}
-          onRow={(record, rowIndex) => {
-            return {
-              onClick: (event) => {
-                setRowSelected(record._id);
-              },
-            };
-          }}
-        />
-      </div>
+      <Loading isLoading={isPendingUsers}>
+        <div style={{ marginTop: "20px" }}>
+          <TableComponent
+            handleDeleteMany={handleDeleteManyUser}
+            columns={columns}
+            isPending={isPendingUsers}
+            data={dataTable}
+            onRow={(record, rowIndex) => {
+              return {
+                onClick: (event) => {
+                  setRowSelected(record._id);
+                },
+              };
+            }}
+          />
+        </div>
+      </Loading>
       <DrawerComponent
         title="Chi tiết người dùng"
         isOpen={isOpenDrawer}
@@ -437,7 +438,6 @@ const AdminUser = () => {
                 name="address"
               />
             </Form.Item>
-
             <Form.Item
               label="Avatar"
               name="avatar"
@@ -477,7 +477,6 @@ const AdminUser = () => {
         </Loading>
       </DrawerComponent>
       <ModalComponent
-        forceRender
         title="Xóa tài khoản người dùng"
         open={isModalOpenDelete}
         onCancel={handleCancelDelete}
