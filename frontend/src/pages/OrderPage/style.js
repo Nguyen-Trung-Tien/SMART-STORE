@@ -28,7 +28,12 @@ export const WrapperItemOrder = styled.div`
   margin-top: 12px;
 `;
 
-export const WrapperPriceDiscount = styled.span``;
+export const WrapperPriceDiscount = styled.span`
+  color: #999;
+  font-size: 12px;
+  text-decoration: line-through;
+  margin-left: 4px;
+`;
 
 export const WrapperCountOrder = styled.div`
   display: flex;
@@ -65,6 +70,12 @@ export const WrapperTotal = styled.div`
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 6px;
   width: 87%;
+`;
+
+export const Label = styled.span`
+  font-size: 14px;
+  color: #000;
+  font-weight: bold;
 `;
 
 export const WrapperInputNumber = styled(InputNumber)`

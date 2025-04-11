@@ -1,6 +1,7 @@
 import { Form, Radio } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  Label,
   WrapperInfo,
   WrapperLeft,
   WrapperRadio,
@@ -9,7 +10,6 @@ import {
 } from "./style";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import { useDispatch, useSelector } from "react-redux";
-import { selectedOrder } from "../../redux/slices/orderSlice";
 import { convertPrice } from "../../utils";
 import * as UserService from "../../services/UserServices";
 import * as OrderService from "../../services/OrderService";
@@ -27,7 +27,6 @@ const PaymentPage = () => {
   const dispatch = useDispatch();
   const [delivery, setDelivery] = useState("fast");
   const [payment, setPayment] = useState("laster_money");
-  const [listChecked, setListChecked] = useState([]);
   const [stateUserDetails, setStateUserDetails] = useState({
     name: "",
     phone: "",
@@ -85,10 +84,6 @@ const PaymentPage = () => {
   }, [priceMemo, priceDiscountMemo, deliveryPriceMemo]);
 
   useEffect(() => {
-    dispatch(selectedOrder({ listChecked }));
-  }, [listChecked]);
-
-  useEffect(() => {
     form.setFieldsValue(stateUserDetails);
   }, [form, stateUserDetails]);
 
@@ -116,12 +111,13 @@ const PaymentPage = () => {
       user?.access_token &&
       order?.orderItemsSelected &&
       user?.name &&
+      priceMemo &&
       user?.address &&
       user?.phone &&
-      user?.city
+      user?.city &&
+      user?.id
     ) {
     }
-
     mutationAddOrder.mutate(
       {
         token: user?.access_token,
@@ -181,12 +177,12 @@ const PaymentPage = () => {
     });
   };
 
-  const handleDelivery = (e) => {
-    setListChecked(e.target.value);
-  };
-
   const handlePayment = (e) => {
     setPayment(e.target.value);
+  };
+
+  const handleDelivery = (e) => {
+    setDelivery(e.target.value);
   };
 
   const handleChangeAddress = () => {
@@ -202,7 +198,7 @@ const PaymentPage = () => {
             <WrapperLeft>
               <WrapperInfo>
                 <div>
-                  <label>Chọn phương thức giao hàng</label>
+                  <Label>Chọn phương thức giao hàng</Label>
                   <WrapperRadio onChange={handleDelivery} value={delivery}>
                     <Radio value="fast">
                       <span style={{ color: "#ea8500", fontWeight: "bold" }}>
@@ -219,7 +215,7 @@ const PaymentPage = () => {
               </WrapperInfo>
               <WrapperInfo>
                 <div>
-                  <label>Chọn phương thức thanh toán</label>
+                  <Label>Chọn phương thức thanh toán</Label>
                   <WrapperRadio onChange={handlePayment} value={delivery}>
                     <Radio value="laster_money">
                       <span style={{ color: "#ea8500", fontWeight: "bold" }}>
