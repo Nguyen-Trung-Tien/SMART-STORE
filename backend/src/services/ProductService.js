@@ -23,8 +23,8 @@ const createProduct = (newProduct) => {
         rating,
         image,
         type,
-        countInStock,
-        discount,
+        countInStock: Number(countInStock),
+        discount: Number(discount),
       });
       if (newProduct) {
         resolve({
@@ -171,7 +171,6 @@ const getAllProduct = (limit, page, sort, filter) => {
     }
   });
 };
-
 const getAllType = () => {
   return new Promise(async (resolve, reject) => {
     try {

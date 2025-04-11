@@ -58,19 +58,22 @@ const OrderPage = () => {
 
   const priceMemo = useMemo(() => {
     const result = order?.orderItemsSelected?.reduce((total, cur) => {
-      return total + cur.price * cur.amount;
+      if (cur && cur.price && cur.amount) {
+        return total + cur.price * cur.amount;
+      }
+      return total;
     }, 0);
     return result || 0;
   }, [order]);
 
   const priceDiscountMemo = useMemo(() => {
     const result = order?.orderItemsSelected?.reduce((total, cur) => {
-      return total + cur.discount * cur.amount;
+      if (cur && cur.discount && cur.amount) {
+        return total + cur.discount * cur.amount;
+      }
+      return total;
     }, 0);
-    if (Number(result)) {
-      return result;
-    }
-    return 0;
+    return Number(result) || 0;
   }, [order]);
 
   const deliveryPriceMemo = useMemo(() => {

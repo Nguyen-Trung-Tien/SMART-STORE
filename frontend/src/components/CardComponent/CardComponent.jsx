@@ -38,6 +38,7 @@ const CardComponent = (props) => {
       }}
       cover={<img alt="example" src={image} />}
       onClick={() => handleDetailProduct(id)}
+      disabled={countInStock === 0}
     >
       <img
         src={logo}
