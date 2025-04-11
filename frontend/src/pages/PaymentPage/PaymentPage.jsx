@@ -19,6 +19,8 @@ import { useMutationHooks } from "../../hooks/useMutationHook";
 import Loading from "../../components/LoadingComponent/Loading";
 import * as message from "../../components/Message/Message";
 import { updateUser } from "../../redux/slices/userSlice";
+import { useNavigate } from "react-router-dom";
+import { removeAllOrderProduct } from "../../redux/slices/orderSlice";
 
 const PaymentPage = () => {
   const order = useSelector((state) => state.order);
@@ -27,6 +29,7 @@ const PaymentPage = () => {
   const dispatch = useDispatch();
   const [delivery, setDelivery] = useState("fast");
   const [payment, setPayment] = useState("laster_money");
+  const navigate = useNavigate();
   const [stateUserDetails, setStateUserDetails] = useState({
     name: "",
     phone: "",
@@ -100,11 +103,23 @@ const PaymentPage = () => {
 
   useEffect(() => {
     if (isSuccess && dataAdd?.status === "OK") {
-      message.success("Đặt hàng thành công");
+      const arrayOrdered = [];
+      order?.orderItemsSelected?.forEach((element) => {
+        arrayOrdered?.push(element?.product);
+      });
+      dispatch(removeAllOrderProduct({ listChecked: arrayOrdered }));
+      navigate("/orderSuccess", {
+        state: {
+          delivery,
+          payment,
+          order: order?.orderItemsSelected,
+          totalPriceMemo: totalPriceMemo,
+        },
+      });
     } else if (isError) {
       message.error("Đặt hàng không thành công");
     }
-  }, [isSuccess]);
+  }, [isSuccess, isError]);
 
   const handleAddOrder = () => {
     if (
@@ -205,7 +220,7 @@ const PaymentPage = () => {
                         FAST <span>Giao hàng tiết kiệm</span>
                       </span>
                     </Radio>
-                    <Radio value={payment}>
+                    <Radio>
                       <span style={{ color: "#ea8500", fontWeight: "bold" }}>
                         GOJEK <span>Giao hàng tiết kiệm</span>
                       </span>
@@ -216,7 +231,7 @@ const PaymentPage = () => {
               <WrapperInfo>
                 <div>
                   <Label>Chọn phương thức thanh toán</Label>
-                  <WrapperRadio onChange={handlePayment} value={delivery}>
+                  <WrapperRadio onChange={handlePayment} value={payment}>
                     <Radio value="laster_money">
                       <span style={{ color: "#ea8500", fontWeight: "bold" }}>
                         Thanh toán khi giao hàng

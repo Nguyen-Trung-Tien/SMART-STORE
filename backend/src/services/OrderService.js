@@ -11,6 +11,7 @@ const createOrder = (newOrder) => {
       address,
       city,
       phone,
+      user,
     } = newOrder;
     try {
       const createOrder = await Order.create({
@@ -25,11 +26,12 @@ const createOrder = (newOrder) => {
       if (createOrder) {
         resolve({
           status: "OK",
-          message: "Success",
-          data: createUser,
+          message: "SUCCESS",
+          data: createOrder,
         });
       }
     } catch (e) {
+      console.log(e);
       reject(e);
     }
   });

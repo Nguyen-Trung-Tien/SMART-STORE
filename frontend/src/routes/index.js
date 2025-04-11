@@ -2,6 +2,7 @@ import AdminPage from "../pages/AdminPage/AdminPage";
 import HomePage from "../pages/HomePage/HomePage";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 import OrderPage from "../pages/OrderPage/OrderPage";
+import OrderSuccessPage from "../pages/OrderSuccess/OrderSuccessPage";
 import PaymentPage from "../pages/PaymentPage/PaymentPage";
 import ProductDetailsPage from "../pages/ProductDetailsPage/ProductDetailsPage";
 import ProductsPage from "../pages/ProductsPage/ProductsPage";
@@ -24,6 +25,11 @@ export const routes = [
   {
     path: "/payment",
     page: PaymentPage,
+    isShowHeader: true,
+  },
+  {
+    path: "/orderSuccess",
+    page: OrderSuccessPage,
     isShowHeader: true,
   },
   {

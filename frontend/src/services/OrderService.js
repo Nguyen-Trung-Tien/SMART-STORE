@@ -10,5 +10,7 @@ export const createOrder = async (data, access_token) => {
       },
     }
   );
+  console.log(`${process.env.REACT_APP_API_KEY}/order`);
+
   return res.data;
 };

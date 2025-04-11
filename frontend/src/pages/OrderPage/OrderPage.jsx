@@ -10,6 +10,7 @@ import {
   WrapperListOrder,
   WrapperRight,
   WrapperStyleHeader,
+  WrapperStyleHeaderDelivery,
   WrapperTotal,
 } from "./style";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
@@ -30,6 +31,7 @@ import Loading from "../../components/LoadingComponent/Loading";
 import * as message from "../../components/Message/Message";
 import { updateUser } from "../../redux/slices/userSlice";
 import { useNavigate } from "react-router-dom";
+import StepComponent from "../../components/StepComponent/StepComponent";
 
 const OrderPage = () => {
   const order = useSelector((state) => state.order);
@@ -58,7 +60,7 @@ const OrderPage = () => {
     const result = order?.orderItemsSelected?.reduce((total, cur) => {
       return total + cur.price * cur.amount;
     }, 0);
-    return result;
+    return result || 0;
   }, [order]);
 
   const priceDiscountMemo = useMemo(() => {
@@ -72,9 +74,14 @@ const OrderPage = () => {
   }, [order]);
 
   const deliveryPriceMemo = useMemo(() => {
-    if (priceMemo > 1000000) return 10000;
-    return priceMemo === 0 ? 0 : 15000;
-  }, [priceMemo]);
+    if (!order?.orderItemsSelected?.length) {
+      return 0;
+    }
+    if (priceMemo >= 20000 && priceMemo < 50000) {
+      return 10000;
+    }
+    return 20000;
+  }, [priceMemo, order]);
 
   const totalPriceMemo = useMemo(() => {
     return (
@@ -193,12 +200,41 @@ const OrderPage = () => {
     });
   };
 
+  const itemsDelivery = [
+    {
+      title: "20.000 VND",
+      description: "Dưới 1.000.000 VND",
+    },
+    {
+      title: "10.000 VND",
+      description: "Từ 1.000.000 VND đến 2.000.000 VND",
+    },
+    {
+      title: "0 VND",
+      description: "trên 2.000.000 VND",
+    },
+  ];
+
   return (
     <div style={{ background: "#f5f5fa", width: "100%", height: "100vh" }}>
       <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
         <h3 style={{ fontSize: "24px", marginTop: "10px" }}>Giỏ hàng</h3>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <WrapperLeft>
+            <WrapperStyleHeaderDelivery>
+              <StepComponent
+                items={itemsDelivery}
+                current={
+                  deliveryPriceMemo === 10000
+                    ? 2
+                    : deliveryPriceMemo === 20000
+                    ? 1
+                    : order?.orderItems?.length === 0
+                    ? 1
+                    : 3
+                }
+              />
+            </WrapperStyleHeaderDelivery>
             <WrapperStyleHeader>
               <span style={{ display: "inline-block", width: "390px" }}>
                 <Checkbox
@@ -396,7 +432,7 @@ const OrderPage = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    {`${priceDiscountMemo}%`}
+                    <span> {`${priceDiscountMemo}%`}</span>
                   </span>
                 </div>
                 <div

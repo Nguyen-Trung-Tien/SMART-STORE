@@ -5,7 +5,6 @@ const createOrder = async (req, res) => {
       paymentMethod,
       itemsPrice,
       shippingPrice,
-      taxPrice,
       totalPrice,
       fullName,
       address,
@@ -16,7 +15,6 @@ const createOrder = async (req, res) => {
       !paymentMethod ||
       !itemsPrice ||
       !shippingPrice ||
-      !taxPrice ||
       !totalPrice ||
       !fullName ||
       !address ||
