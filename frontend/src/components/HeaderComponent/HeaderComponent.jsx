@@ -47,7 +47,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     setUserName(user?.name || user?.email);
     setUserAvatar(user?.avatar);
     setPending(false);
-  }, [user?.name, user?.avatar]);
+  }, [user?.name, user?.avatar, user?.email]);
 
   const content = (
     <div>
@@ -62,7 +62,6 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
           Quản lý hệ thống
         </WrapperContentPopup>
       )}
-
       <WrapperContentPopup onClick={() => handleClickNavigate()}>
         Đăng xuất
       </WrapperContentPopup>
@@ -75,7 +74,9 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     } else if (type === "admin") {
       navigate("/system/admin");
     } else if (type === "my-order") {
-      navigate("/my-order");
+      navigate("/my-order", {
+        state: { id: user?.id, token: user?.access_token },
+      });
     } else {
       handleLogout();
     }

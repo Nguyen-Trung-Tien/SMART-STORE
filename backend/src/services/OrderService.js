@@ -53,7 +53,7 @@ const createOrder = (newOrder) => {
       if (newData.length) {
         resolve({
           status: "ERR",
-          message: `San pham voi id  ${newData.join(",")} da khong du hang`,
+          message: `Hang voi id  ${newData.join(",")} da het hang`,
           data: newData,
         });
       }
@@ -61,17 +61,33 @@ const createOrder = (newOrder) => {
         status: "OK",
         message: "SUCCESS",
       });
-      console.log("results", results);
     } catch (e) {
       reject(e);
     }
   });
 };
 
+const getAllOrderDetails = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const order = await Order.find({ user: id });
+      if (order === null) {
+        resolve({ status: "OK", message: "The order is not defined" });
+      }
+      resolve({
+        status: "OK",
+        message: "SUCCESS",
+        data: order,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 const getDetailsOrder = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const order = await Order.findOne({ user: id });
+      const order = await Order.findById({ _id: id });
       if (order === null) {
         resolve({ status: "OK", message: "The order is not defined" });
       }
@@ -86,7 +102,26 @@ const getDetailsOrder = (id) => {
   });
 };
 
+const cancelOrderDetails = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const order = await Order.findByIdAndDelete({ _id: id });
+      if (order === null) {
+        resolve({ status: "ERR", message: "The order is not defined" });
+      }
+      resolve({
+        status: "OK",
+        message: "SUCCESS",
+        data: order,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   createOrder,
+  getAllOrderDetails,
   getDetailsOrder,
+  cancelOrderDetails,
 };
