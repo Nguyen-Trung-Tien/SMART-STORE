@@ -131,7 +131,6 @@ const DetailsOrderPage = () => {
                         width: "70px",
                         height: "70px",
                         objectFit: "cover",
-                        border: "1px solid #ccc",
                         padding: "2px",
                       }}
                     />
@@ -145,12 +144,12 @@ const DetailsOrderPage = () => {
                         marginLeft: "10px",
                       }}
                     >
-                      Điện thoại
+                      {order?.name}
                     </div>
                   </WrapperNameProduct>
                   <WrapperItem>{convertPrice(order?.price)}</WrapperItem>
                   <WrapperItem>{order?.amount}</WrapperItem>
-                  <WrapperItem>{order?.discount || 0}</WrapperItem>
+                  <WrapperItem>{order?.discount}</WrapperItem>
                 </WrapperProduct>
               );
             })}
@@ -164,7 +163,7 @@ const DetailsOrderPage = () => {
               <WrapperItem>{convertPrice(data?.shippingPrice)}</WrapperItem>
             </WrapperAllPrice>
             <WrapperAllPrice style={{ textAlign: "right", width: "100%" }}>
-              <WrapperItemLabel>Tạm tính:</WrapperItemLabel>
+              <WrapperItemLabel>Tổng tiền:</WrapperItemLabel>
               <WrapperItem>{convertPrice(totalPrice)}</WrapperItem>
             </WrapperAllPrice>
           </WrapperStyContent>

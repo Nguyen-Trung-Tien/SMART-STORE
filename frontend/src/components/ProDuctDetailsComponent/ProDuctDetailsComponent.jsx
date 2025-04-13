@@ -57,11 +57,31 @@ const ProductDetailsComponent = ({ idProduct }) => {
   const renderStars = (num) => {
     if (!num || num <= 0) return null;
     const stars = [];
-    for (let i = 0; i < num; i++) {
+    const fullStars = Math.floor(num);
+    const hasHalfStar = num % 1 !== 0;
+
+    for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <StarFilled key={i} style={{ color: "#fadb14", fontSize: "14px" }} />
+        <StarFilled
+          key={`full-${i}`}
+          style={{ color: "#fadb14", fontSize: "14px" }}
+        />
       );
     }
+
+    if (hasHalfStar) {
+      stars.push(
+        <StarFilled
+          key="half"
+          style={{
+            color: "#fadb14",
+            fontSize: "14px",
+            clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)", // Render half star
+          }}
+        />
+      );
+    }
+
     return stars;
   };
 
@@ -131,7 +151,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
           <div>
             {renderStars(productDetails?.rating)}
             <WrapperStyleTextSell>
-              | Đã bán {productDetails?.countInStock}
+              | Đã bán: {productDetails?.selling || 0}
             </WrapperStyleTextSell>
           </div>
           <WrapperPriceProduct>

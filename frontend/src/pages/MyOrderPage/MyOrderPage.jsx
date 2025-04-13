@@ -84,8 +84,8 @@ const MyOrderPage = () => {
   };
 
   const mutation = useMutationHooks((data) => {
-    const { id, token } = data;
-    const res = OrderService.cancelOrder(id, token);
+    const { id, token, orderItems } = data;
+    const res = OrderService.cancelOrder(id, token, orderItems);
     return res;
   });
 
@@ -104,9 +104,9 @@ const MyOrderPage = () => {
     }
   }, [isSuccessCancel, isErrorCancel, dataCancel]);
 
-  const handleCancelOrder = async (id) => {
+  const handleCancelOrder = (order) => {
     mutation.mutate(
-      { id, token: state?.token },
+      { id: order?._id, token: state?.token, orderItems: order?.orderItems },
       {
         onSuccess: () => {
           queryOrder.refetch();
@@ -182,7 +182,7 @@ const MyOrderPage = () => {
                     </div>
                     <div style={{ display: "flex", gap: "10px" }}>
                       <ButtonComponent
-                        onClick={() => handleCancelOrder(order?._id)}
+                        onClick={() => handleCancelOrder(order)}
                         size={40}
                         styleButton={{
                           height: "36px",

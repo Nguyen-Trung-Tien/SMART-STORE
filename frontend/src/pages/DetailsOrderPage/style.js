@@ -4,6 +4,7 @@ export const WrapperHeaderUser = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 10px;
 `;
 
 export const WrapperInfoUser = styled.div`
@@ -12,8 +13,6 @@ export const WrapperInfoUser = styled.div`
   width: 100%;
   border: 1px solid #f5f5f5;
   background: #fff;
-  border-top-right-radius: 6px;
-  border-top-left-radius: 6px;
   padding: 16px 20px;
 `;
 
@@ -50,13 +49,10 @@ export const WrapperItemLabel = styled.div`
   display: flex;
   width: 100%;
   gap: 10px;
-  margin-top: 10px;
-  & :last-child {
-    color: red;
-  }
   font-weight: bold;
   font-size: 14px;
   line-height: 20px;
+  margin-bottom: 10px;
 `;
 
 export const WrapperProduct = styled.div`
@@ -65,12 +61,18 @@ export const WrapperProduct = styled.div`
   width: 100%;
   gap: 10px;
   margin-top: 10px;
+  border: 1px solid #f5f5f5;
+  background: #fff;
+  padding: 16px 20px;
 `;
 
 export const WrapperNameProduct = styled.div`
   display: flex;
   align-items: flex-start;
+
   margin-top: 10px;
+  gap: 10px;
+  width: 100%;
 `;
 
 export const WrapperItem = styled.div`
