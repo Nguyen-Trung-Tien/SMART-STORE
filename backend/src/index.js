@@ -26,7 +26,6 @@ mongoose
   .catch(() => {
     console.log("Không thể kết nối với Mongoose! Vui lòng kiểm tra kết nối!");
   });
-
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

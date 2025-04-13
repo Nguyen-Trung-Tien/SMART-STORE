@@ -13,6 +13,8 @@ const createOrder = (newOrder) => {
       city,
       phone,
       user,
+      paidAt,
+      isPaid,
     } = newOrder;
     try {
       const promises = orderItems.map(async (order) => {
@@ -33,6 +35,8 @@ const createOrder = (newOrder) => {
             shippingPrice,
             totalPrice,
             user: user,
+            paidAt,
+            isPaid,
           });
           if (createOrder) {
             return {

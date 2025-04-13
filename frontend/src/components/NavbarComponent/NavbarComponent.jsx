@@ -70,7 +70,7 @@ const NavbarComponent = () => {
   };
   return (
     <div>
-      <WrapperLabelText>Label</WrapperLabelText>
+      <WrapperLabelText>Danh sách sản phẩm</WrapperLabelText>
       <WrapperContent>
         {renderContent("text", ["TV", "Tu lanh", "May say"])}
       </WrapperContent>

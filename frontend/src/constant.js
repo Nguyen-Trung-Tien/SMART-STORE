@@ -5,5 +5,7 @@ export const orderConstant = {
   },
   payment: {
     laster_money: "Thanh toán khi nhận hàng",
+    PayPal: "Thanh toán qua PayPal",
+    VnPay: "Thanh toán qua VnPay",
   },
 };

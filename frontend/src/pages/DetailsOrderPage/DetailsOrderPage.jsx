@@ -102,7 +102,7 @@ const DetailsOrderPage = () => {
                   {orderConstant[paymentMethod]}
                 </div>
                 <div className="status-payment">
-                  {isPaid ? "Thanh toán" : "Chưa thanh toán"}
+                  {isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
                 </div>
               </WrapperContentInfo>
             </WrapperInfoUser>

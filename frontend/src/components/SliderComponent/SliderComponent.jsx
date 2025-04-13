@@ -6,7 +6,7 @@ const SliderComponent = ({ arrImages }) => {
   const settings = {
     dots: true,
     infinite: true,
-    speed: 500,
+    speed: 2000,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
@@ -22,7 +22,7 @@ const SliderComponent = ({ arrImages }) => {
             alt="image"
             preview={false}
             width={"100%"}
-            height={"274px"}
+            height={"240px"}
           />
         );
       })}
