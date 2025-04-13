@@ -103,10 +103,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
         }}
       >
         <Col span={5}>
-          <WrapperTextHeader
-            onClick={() => navigate("/")}
-            style={{ cursor: "pointer" }}
-          >
+          <WrapperTextHeader to="/" style={{ cursor: "pointer" }}>
             SMART-STORE
           </WrapperTextHeader>
         </Col>

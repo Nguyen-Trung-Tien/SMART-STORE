@@ -67,10 +67,11 @@ const PaymentPage = () => {
 
   const priceDiscountMemo = useMemo(() => {
     const result = order?.orderItemsSelected?.reduce((total, cur) => {
-      return total + cur.discount * cur.amount;
+      const totalDiscount = cur.discount ? cur.discount : 0;
+      return total + (priceMemo * (totalDiscount * cur.amount)) / 100;
     }, 0);
     if (Number(result)) {
-      return result;
+      return result || 0;
     }
     return 0;
   }, [order]);
@@ -222,7 +223,7 @@ const PaymentPage = () => {
                     </Radio>
                     <Radio>
                       <span style={{ color: "#ea8500", fontWeight: "bold" }}>
-                        GOJEK <span>Giao hàng tiết kiệm</span>
+                        GO_JEK <span>Giao hàng tiết kiệm</span>
                       </span>
                     </Radio>
                   </WrapperRadio>
@@ -292,7 +293,7 @@ const PaymentPage = () => {
                         fontWeight: "bold",
                       }}
                     >
-                      {`${priceDiscountMemo}%`}
+                      {convertPrice(priceDiscountMemo)}
                     </span>
                   </div>
                   <div

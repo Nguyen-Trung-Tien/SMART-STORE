@@ -40,26 +40,23 @@ export const WrapperStyContent = styled.div`
   align-items: flex-start;
   width: 100%;
   flex-direction: column;
-  gap: 10px;
   margin-top: 20px;
   border: 1px solid #f5f5f5;
 `;
 
 export const WrapperItemLabel = styled.div`
-  display: flex;
-  width: 100%;
-  gap: 10px;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 20px;
   margin-bottom: 10px;
+  margin-left: 15px;
+  width: 100%;
 `;
 
 export const WrapperProduct = styled.div`
   display: flex;
   align-items: flex-start;
   width: 100%;
-  gap: 10px;
   margin-top: 10px;
   border: 1px solid #f5f5f5;
   background: #fff;
@@ -69,23 +66,22 @@ export const WrapperProduct = styled.div`
 export const WrapperNameProduct = styled.div`
   display: flex;
   align-items: flex-start;
-
   margin-top: 10px;
-  gap: 10px;
   width: 100%;
 `;
 
 export const WrapperItem = styled.div`
-  width: 200px;
   font-weight: bold;
-  & :last-child {
-    color: red;
-  }
   font-size: 14px;
+  line-height: 20px;
+  align-items: flex-start;
+  width: 100%;
 `;
 
 export const WrapperAllPrice = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  width: 100%;
+  margin-top: 10px;
 `;
