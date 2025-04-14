@@ -26,6 +26,7 @@ const AdminProduct = () => {
   const user = useSelector((state) => state?.user);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+  const [isModalOpenDeleteMany, setIsModalOpenDeleteMany] = useState(false);
   const searchInput = useRef(null);
   const initial = () => ({
     name: "",
@@ -336,7 +337,7 @@ const AdminProduct = () => {
     } else if (isErrorDeletedMany) {
       message.error("Không thể xóa sản phẩm!");
     }
-  }, [isSuccessDeletedMany]);
+  }, [isSuccessDeletedMany, isErrorDeletedMany, dataDeletedMany]);
 
   useEffect(() => {
     if (isSuccessUpdated && dataUpdated?.status === "OK") {
@@ -345,7 +346,7 @@ const AdminProduct = () => {
     } else if (isErrorUpdated) {
       message.error("Không thể cập nhật sản phẩm!");
     }
-  }, [isSuccessUpdated]);
+  }, [isSuccessUpdated, isErrorUpdated, dataUpdated]);
 
   useEffect(() => {
     if (isSuccessDeleted && dataDeleted?.status === "OK") {
@@ -354,7 +355,7 @@ const AdminProduct = () => {
     } else if (isErrorDeleted) {
       message.error("Không thể xóa sản phẩm!");
     }
-  }, [isSuccessDeleted]);
+  }, [isSuccessDeleted, isErrorDeleted, dataDeleted]);
 
   const handleCloseDrawer = () => {
     setIsOpenDrawer(false);
@@ -495,6 +496,10 @@ const AdminProduct = () => {
       type: value,
     });
   };
+
+  const handleCancelDeleteMany = () => {
+    setIsModalOpenDeleteMany(false);
+  };
   return (
     <div>
       <WrapperHeader>Quản lý sản phẩm</WrapperHeader>
@@ -521,13 +526,13 @@ const AdminProduct = () => {
             return {
               onClick: (event) => {
                 setRowSelected(record._id);
+                fetchGetDetailsProduct(record._id);
               },
             };
           }}
         />
       </div>
       <ModalComponent
-        forceRender
         title="Tạo sản phẩm"
         open={isModalOpen}
         onCancel={handleCancel}
@@ -535,6 +540,7 @@ const AdminProduct = () => {
       >
         <Loading isLoading={isPending}>
           <Form
+            forceRender
             form={form}
             name="basic"
             labelCol={{ span: 8 }}
@@ -823,6 +829,16 @@ const AdminProduct = () => {
       >
         <Loading isLoading={isPendingDeleted}>
           <div>Bạn có chắc xóa sản phẩm này?</div>
+        </Loading>
+      </ModalComponent>
+      <ModalComponent
+        title="Xóa tất sản phẩm"
+        open={isModalOpenDeleteMany}
+        onCancel={handleCancelDeleteMany}
+        onOk={handleDeleteProduct}
+      >
+        <Loading isLoading={isPendingDeletedMany}>
+          <div>Bạn có chắc xóa tất sản phẩm này?</div>
         </Loading>
       </ModalComponent>
     </div>
