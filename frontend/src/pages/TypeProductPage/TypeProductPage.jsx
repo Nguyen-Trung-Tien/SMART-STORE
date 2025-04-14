@@ -4,7 +4,7 @@ import CardComponent from "../../components/CardComponent/CardComponent";
 import { Col, Pagination, Row } from "antd";
 import { WrapperNavbar, WrapperProducts } from "./style";
 import * as ProductService from "../../services/ProductServices";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Loading from "../../components/LoadingComponent/Loading";
 import { useSelector } from "react-redux";
 import { useDebounce } from "../../hooks/useDebounce";
@@ -14,6 +14,7 @@ const TypeProductPage = () => {
   const { state } = useLocation();
   const [products, setProducts] = useState([]);
   const [pending, setPending] = useState(false);
+  const navigate = useNavigate();
   const [paginate, setPaginate] = useState({
     page: 0,
     limit: 10,
@@ -21,16 +22,27 @@ const TypeProductPage = () => {
   });
 
   const fetchProductType = async (type, page, limit) => {
-    // setPending(true);
+    setPending(true);
     const res = await ProductService.getProductType(type, page, limit);
     if (res?.status === "OK") {
       setPending(false);
       setProducts(res?.data);
-      setPaginate({ ...paginate, total: res?.totalPage });
+      if (paginate.total !== res?.totalPage) {
+        setPaginate({ ...paginate, total: res?.totalPage });
+      }
     } else {
       setPending(false);
     }
   };
+
+  useEffect(() => {
+    if (state) {
+      fetchProductType(state, paginate.page, paginate.limit);
+    } else {
+      alert("Không tìm thấy sản phẩm");
+      navigate("/");
+    }
+  }, [state, paginate.page, paginate.limit]);
 
   useEffect(() => {
     let newProduct = [];
@@ -38,13 +50,7 @@ const TypeProductPage = () => {
       newProduct = products?.filter((pro) => pro?.name === searchDebounce);
       setProducts(newProduct);
     }
-  }, [searchDebounce]);
-
-  useEffect(() => {
-    if (state) {
-      fetchProductType(state, paginate.page, paginate.limit);
-    }
-  }, [state, paginate]);
+  }, [searchDebounce, products]);
 
   const onChange = (current, pageSize) => {
     setPaginate({
