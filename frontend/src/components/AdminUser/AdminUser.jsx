@@ -482,15 +482,14 @@ const AdminUser = () => {
                     }}
                   />
                 )}
-                <Loading isLoading={isPendingUpdated}>
-                  <div>Updating user...</div>
-                </Loading>
               </WrapperUploadFile>
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
-              <Button type="primary" htmlType="submit">
-                Apply
-              </Button>
+              <Loading isLoading={isPendingUpdated}>
+                <Button type="primary" htmlType="submit">
+                  Apply
+                </Button>
+              </Loading>
             </Form.Item>
           </Form>
         </Loading>

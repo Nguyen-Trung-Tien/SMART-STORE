@@ -1,5 +1,5 @@
 import { Col, Image, Row } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ImageSmall from "../../assets/ImageSmall/testSmall.webp";
 import {
   WrapperAddressProduct,
@@ -21,13 +21,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addOrderProduct } from "../../redux/slices/orderSlice";
 import { convertPrice } from "../../utils";
+import * as message from "../../components/Message/Message";
 
 const ProductDetailsComponent = ({ idProduct }) => {
   const [numProduct, setNumProduct] = useState(1);
+  const order = useSelector((state) => state.order);
+  const user = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const [errorLimitOrder, setErrorLimitOrder] = useState(false);
   const location = useLocation();
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
   const onChange = (value) => {
     setNumProduct(Number(value));
   };
@@ -53,6 +56,25 @@ const ProductDetailsComponent = ({ idProduct }) => {
     queryFn: fetchGetDetailsProduct,
     enabled: !!idProduct,
   });
+
+  useEffect(() => {
+    const orderRedux = order?.orderItems?.find(
+      (item) => item.product === productDetails?._id
+    );
+    if (orderRedux?.amount + numProduct <= orderRedux?.countInStock) {
+      setErrorLimitOrder(false);
+    } else {
+      setErrorLimitOrder(true);
+    }
+  }, [numProduct]);
+
+  useEffect(() => {
+    if (order.isSuccessOrder) {
+      message.success("Thêm vào giỏ hàng thành công");
+    } else {
+      message.error("Sản phẩm đã hết hàng");
+    }
+  }, [order.isSuccessOrder]);
 
   const renderStars = (num) => {
     if (!num || num <= 0) return null;
@@ -89,19 +111,26 @@ const ProductDetailsComponent = ({ idProduct }) => {
     if (!user?.id) {
       navigate("/sign-in", { state: location?.pathname });
     } else {
-      dispatch(
-        addOrderProduct({
-          orderItem: {
-            name: productDetails?.name,
-            amount: numProduct,
-            image: productDetails?.image,
-            price: productDetails?.price,
-            product: productDetails?._id,
-            discount: productDetails?.discount,
-            countInStock: productDetails?.countInStock,
-          },
-        })
+      const orderRedux = order?.orderItems?.find(
+        (item) => item?.product === productDetails?._id
       );
+      if (orderRedux?.amount + numProduct <= orderRedux?.countInStock) {
+        dispatch(
+          addOrderProduct({
+            orderItem: {
+              name: productDetails?.name,
+              amount: numProduct,
+              image: productDetails?.image,
+              price: productDetails?.price,
+              product: productDetails?._id,
+              discount: productDetails?.discount,
+              countInStock: productDetails?.countInStock,
+            },
+          })
+        );
+      } else {
+        setErrorLimitOrder(true);
+      }
     }
   };
   return (
@@ -213,23 +242,28 @@ const ProductDetailsComponent = ({ idProduct }) => {
             </WrapperQuantityProduct>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <ButtonComponent
-              size={40}
-              styleButton={{
-                background: "rgb(255, 66, 78)",
-                height: "40px",
-                width: "220px",
-                borderRadius: "4px",
-                border: "none",
-              }}
-              onClick={handleAddOrderProduct}
-              textButton={"Chọn mua"}
-              styleTextButton={{
-                color: "#fff",
-                fontSize: "15px",
-                fontWeight: "700",
-              }}
-            />
+            <div>
+              <ButtonComponent
+                size={40}
+                styleButton={{
+                  background: "rgb(255, 66, 78)",
+                  height: "40px",
+                  width: "220px",
+                  borderRadius: "4px",
+                  border: "none",
+                }}
+                onClick={handleAddOrderProduct}
+                textButton={"Chọn mua"}
+                styleTextButton={{
+                  color: "#fff",
+                  fontSize: "15px",
+                  fontWeight: "700",
+                }}
+              />
+              {errorLimitOrder && (
+                <div style={{ color: "red" }}>Sản phẩm đã hết hàng</div>
+              )}
+            </div>
             <ButtonComponent
               size={40}
               styleButton={{

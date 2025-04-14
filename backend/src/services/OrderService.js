@@ -1,5 +1,7 @@
 const Order = require("../models/OrderProduct");
 const Product = require("../models/ProductModel");
+const EmailService = require("../services/EmailService");
+
 const createOrder = (newOrder) => {
   return new Promise(async (resolve, reject) => {
     const {
@@ -15,6 +17,7 @@ const createOrder = (newOrder) => {
       user,
       paidAt,
       isPaid,
+      email,
     } = newOrder;
     try {
       const promises = orderItems.map(async (order) => {
@@ -39,6 +42,7 @@ const createOrder = (newOrder) => {
             isPaid,
           });
           if (createOrder) {
+            await EmailService.sendEmailCreateOrder(email, orderItems);
             return {
               status: "OK",
               message: "SUCCESS",
@@ -61,11 +65,13 @@ const createOrder = (newOrder) => {
           data: newData,
         });
       }
+
       resolve({
         status: "OK",
         message: "SUCCESS",
       });
     } catch (e) {
+      console.log(e);
       reject(e);
     }
   });

@@ -77,7 +77,7 @@ const PaymentPage = () => {
       return result || 0;
     }
     return 0;
-  }, [order]);
+  }, [order, priceMemo]);
 
   const deliveryPriceMemo = useMemo(() => {
     if (priceMemo > 1000000) return 10000;
@@ -103,7 +103,7 @@ const PaymentPage = () => {
         city: user?.city,
       });
     }
-  }, [isOpenModalUpdateInfo]);
+  }, [isOpenModalUpdateInfo, user]);
 
   useEffect(() => {
     if (isSuccess && dataAdd?.status === "OK") {
@@ -150,6 +150,7 @@ const PaymentPage = () => {
         shippingPrice: deliveryPriceMemo,
         totalPrice: totalPriceMemo,
         user: user?.id,
+        email: user?.email,
       },
       {
         onSuccess: () => {
