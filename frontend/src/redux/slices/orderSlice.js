@@ -32,11 +32,9 @@ export const orderSlice = createSlice({
           itemOrder.amount += orderItem?.amount;
           state.isSuccessOrder = true;
           state.isErrorOrder = false;
-        } else {
-          state.isErrorOrder = true;
         }
       } else {
-        state.orderItems?.push(orderItem);
+        state.orderItems.push(orderItem);
       }
     },
     resetOrder: (state) => {

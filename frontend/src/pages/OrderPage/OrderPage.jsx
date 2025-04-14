@@ -368,7 +368,8 @@ const OrderPage = () => {
                             handleChangeCount(
                               "increase",
                               order?.product,
-                              order?.amount === order?.countInStock
+                              order?.amount === order?.countInStock,
+                              order?.amount === 1
                             )
                           }
                         >
