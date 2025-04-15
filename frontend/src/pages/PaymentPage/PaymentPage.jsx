@@ -223,6 +223,7 @@ const PaymentPage = () => {
       user: user?.id,
       isPaid: true,
       paidAt: details.update_time,
+      email: user?.email,
     });
     message.success("Đặt hàng thành công");
   };
@@ -384,7 +385,7 @@ const PaymentPage = () => {
               {payment === "PayPal" && sdkReady ? (
                 <div style={{ width: "320px" }}>
                   <PayPalButton
-                    amount={totalPriceMemo / 50000}
+                    amount={Math.round(totalPriceMemo / 50000)}
                     onSuccess={onSuccessPayPal}
                     onError={() => {
                       alert("Error in payment!");

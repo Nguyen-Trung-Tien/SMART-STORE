@@ -43,8 +43,6 @@ const sendEmailCreateOrder = async (email, orderItems) => {
         ${listItem}`,
       attachments: attachImage, // html body
     });
-
-    console.log("Email sent: %s", info.messageId);
   } catch (error) {
     console.error("Error sending email:", error);
     throw new Error("Failed to send email");

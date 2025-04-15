@@ -1,5 +1,5 @@
 import { Col, Image, Row } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ImageSmall from "../../assets/ImageSmall/testSmall.webp";
 import {
   WrapperAddressProduct,
@@ -61,7 +61,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
       (!orderRedux && productDetails?.countInStock > 0)
     ) {
       setErrorLimitOrder(false);
-    } else {
+    } else if (productDetails?.countInStock === 0) {
       setErrorLimitOrder(true);
     }
   }, [numProduct]);
@@ -152,6 +152,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
       }
     }
   };
+
   return (
     <Loading isLoading={isPending}>
       <Row
@@ -215,7 +216,11 @@ const ProductDetailsComponent = ({ idProduct }) => {
             <span className="change-address"> Đổi địa chỉ</span>
           </WrapperAddressProduct>
           <LikeButtonComponent
-            dataHref={"https://developers.facebook.com/docs/plugins/"}
+            dataHref={
+              process.env.REACT_APP_IS_LOCAL
+                ? "https://developers.facebook.com/docs/plugins/"
+                : window.location.href
+            }
           ></LikeButtonComponent>
           <div
             style={{
@@ -318,7 +323,9 @@ const ProductDetailsComponent = ({ idProduct }) => {
         </Col>
         {/* <CommentComponent
           dataHref={
-            "https://developers.facebook.com/docs/plugins/comments#configurator"
+            process.env.REACT_APP_IS_LOCAL
+              ? " https://developers.facebook.com/docs/plugins/comments#configurator"
+              : window.location.href
           }
           width="1270px"
         /> */}

@@ -5,22 +5,17 @@ import {
   WrapperContainer,
   WrapperValue,
   WrapperItemOrder,
-  WrapperCountOrder,
-  WrapperInputNumber,
   WrapperItemsOrderInfo,
 } from "./style";
 
-import { useSelector } from "react-redux";
 import Loading from "../../components/LoadingComponent/Loading";
 import { useLocation } from "react-router-dom";
 import { orderConstant } from "../../constant";
 import { convertPrice } from "../../utils";
 
 const OrderSuccessPage = () => {
-  const order = useSelector((state) => state.order);
   const location = useLocation();
   const { state } = location;
-  console.log("location", location);
   return (
     <div style={{ background: "#f5f5fa", width: "100%", height: "100vh" }}>
       <Loading isLoading={false}>

@@ -6,4 +6,3 @@ export const getConfig = async () => {
   );
   return res.data;
 };
-console.log(`${process.env.REACT_APP_API_KEY}/payment/config`);
