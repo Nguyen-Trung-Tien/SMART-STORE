@@ -15,6 +15,7 @@ const sendEmailCreateOrder = async (email, orderItems) => {
     });
 
     let listItem = "";
+    const attachImage = [];
     orderItems?.forEach((order) => {
       listItem += `
       <div>
@@ -24,6 +25,10 @@ const sendEmailCreateOrder = async (email, orderItems) => {
         </div>
         <p>với số lượng: <b>${order?.amount}</b> và giá: <b>${order?.price}</b></p>
       </div>`;
+      attachImage.push({
+        filename: order?.name,
+        path: order?.image,
+      });
     });
 
     const info = await transporter.sendMail({
@@ -35,7 +40,8 @@ const sendEmailCreateOrder = async (email, orderItems) => {
         <div>
           <b>Bạn đã đặt hàng thành công của shop Smart-Store</b>
         </div>
-        ${listItem}`, // html body
+        ${listItem}`,
+      attachments: attachImage, // html body
     });
 
     console.log("Email sent: %s", info.messageId);

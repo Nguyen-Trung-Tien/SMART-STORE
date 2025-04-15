@@ -9,7 +9,6 @@ const ProductDetailsPage = () => {
     <div
       style={{
         backgroundColor: "#efefef",
-        height: "100vh",
         width: "100%",
       }}
     >

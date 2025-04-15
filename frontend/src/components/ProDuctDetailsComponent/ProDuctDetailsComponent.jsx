@@ -20,8 +20,10 @@ import Loading from "../LoadingComponent/Loading";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addOrderProduct, resetOrder } from "../../redux/slices/orderSlice";
-import { convertPrice } from "../../utils";
+import { convertPrice, intitFakeBookSDK } from "../../utils";
 import * as message from "../../components/Message/Message";
+import LikeButtonComponent from "../LikeButtonComponent/LikeButtonComponent";
+import CommentComponent from "../CommentComponent/CommentComponent";
 
 const ProductDetailsComponent = ({ idProduct }) => {
   const [numProduct, setNumProduct] = useState(1);
@@ -55,7 +57,8 @@ const ProductDetailsComponent = ({ idProduct }) => {
     );
     if (
       orderRedux?.amount + numProduct <= orderRedux?.countInStock ||
-      !orderRedux
+      !orderRedux ||
+      (!orderRedux && productDetails?.countInStock > 0)
     ) {
       setErrorLimitOrder(false);
     } else {
@@ -83,6 +86,11 @@ const ProductDetailsComponent = ({ idProduct }) => {
       }
     }
   };
+
+  useEffect(() => {
+    intitFakeBookSDK();
+  });
+
   const renderStars = (num) => {
     if (!num || num <= 0) return null;
     const stars = [];
@@ -123,7 +131,8 @@ const ProductDetailsComponent = ({ idProduct }) => {
       );
       if (
         orderRedux?.amount + numProduct <= orderRedux?.countInStock ||
-        !orderRedux
+        !orderRedux ||
+        (!orderRedux && productDetails?.countInStock > 0)
       ) {
         dispatch(
           addOrderProduct({
@@ -205,6 +214,9 @@ const ProductDetailsComponent = ({ idProduct }) => {
             <span className="address"> {user?.address} </span> -
             <span className="change-address"> Đổi địa chỉ</span>
           </WrapperAddressProduct>
+          <LikeButtonComponent
+            dataHref={"https://developers.facebook.com/docs/plugins/"}
+          ></LikeButtonComponent>
           <div
             style={{
               margin: "10px 0",
@@ -304,6 +316,12 @@ const ProductDetailsComponent = ({ idProduct }) => {
             ></ButtonComponent>
           </div>
         </Col>
+        {/* <CommentComponent
+          dataHref={
+            "https://developers.facebook.com/docs/plugins/comments#configurator"
+          }
+          width="1270px"
+        /> */}
       </Row>
     </Loading>
   );
