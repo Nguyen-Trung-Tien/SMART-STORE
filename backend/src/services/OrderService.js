@@ -30,24 +30,10 @@ const createOrder = (newOrder) => {
           { new: true }
         );
         if (productData) {
-          const createOrder = await Order.create({
-            orderItems,
-            shippingAddress: { fullName, address, city, phone },
-            paymentMethod,
-            itemsPrice,
-            shippingPrice,
-            totalPrice,
-            user: user,
-            paidAt,
-            isPaid,
-          });
-          if (createOrder) {
-            await EmailService.sendEmailCreateOrder(email, orderItems);
-            return {
-              status: "OK",
-              message: "SUCCESS",
-            };
-          }
+          return {
+            status: "OK",
+            message: "SUCCESS",
+          };
         } else {
           return {
             status: "OK",
@@ -59,19 +45,35 @@ const createOrder = (newOrder) => {
       const results = await Promise.all(promises);
       const newData = results && results.filter((item) => item.id);
       if (newData.length) {
+        const arrId = [];
+        newData.forEach((item) => {
+          arrId.push(item.id);
+        });
         resolve({
           status: "ERR",
-          message: `Hang voi id  ${newData.join(",")} da het hang`,
-          data: newData,
+          message: `Hang voi id  ${arrId.join(",")} da het hang`,
         });
+      } else {
+        const createOrder = await Order.create({
+          orderItems,
+          shippingAddress: { fullName, address, city, phone },
+          paymentMethod,
+          itemsPrice,
+          shippingPrice,
+          totalPrice,
+          user: user,
+          paidAt,
+          isPaid,
+        });
+        if (createOrder) {
+          await EmailService.sendEmailCreateOrder(email, orderItems);
+          resolve({
+            status: "OK",
+            message: "SUCCESS",
+          });
+        }
       }
-
-      resolve({
-        status: "OK",
-        message: "SUCCESS",
-      });
     } catch (e) {
-      console.log(e);
       reject(e);
     }
   });
