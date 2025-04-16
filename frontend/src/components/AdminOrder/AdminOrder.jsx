@@ -107,12 +107,6 @@ const AdminOrder = () => {
       ...getColumnSearchProps("paymentMethod"),
       sorter: (a, b) => a.paymentMethod.length - b.paymentMethod.length,
     },
-    {
-      title: "Total Price",
-      dataIndex: "totalPrice",
-      ...getColumnSearchProps("totalPrice"),
-      sorter: (a, b) => a.totalPrice.length - b.totalPrice.length,
-    },
   ];
 
   const getAllOrder = async () => {

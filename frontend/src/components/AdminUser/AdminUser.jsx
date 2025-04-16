@@ -491,7 +491,6 @@ const AdminUser = () => {
         </Loading>
       </DrawerComponent>
       <ModalComponent
-        forcerender
         title="Xóa người dùng"
         open={isModalOpenDelete}
         onCancel={handleCancelDelete}

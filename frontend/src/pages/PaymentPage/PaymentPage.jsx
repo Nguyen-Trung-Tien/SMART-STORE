@@ -278,7 +278,7 @@ const PaymentPage = () => {
                   <WrapperRadio onChange={handlePayment} value={payment}>
                     <Radio value="laster_money">Thanh toán khi giao hàng</Radio>
                     <Radio value="PayPal">Thanh toán qua PayPal</Radio>
-                    <Radio value="VnPay">Thanh toán qua VnPay</Radio>
+                    {/* <Radio value="VnPay">Thanh toán qua VnPay</Radio> */}
                   </WrapperRadio>
                 </div>
               </WrapperInfo>

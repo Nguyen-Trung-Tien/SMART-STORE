@@ -10,58 +10,58 @@ router.get("/config", (req, res) => {
   });
 });
 
-router.post("/VNpay-payment", (req, res) => {
-  const { amount, orderInfo, returnUrl } = req.body;
-  const vnpUrl = process.env.VNP_URL;
-  const vnpTmnCode = process.env.VNP_TMN_CODE;
-  const vnpHashSecret = process.env.VNP_HASH_SECRET;
+// router.post("/VNpay-payment", (req, res) => {
+//   const { amount, orderInfo, returnUrl } = req.body;
+//   const vnpUrl = process.env.VNP_URL;
+//   const vnpTmnCode = process.env.VNP_TMN_CODE;
+//   const vnpHashSecret = process.env.VNP_HASH_SECRET;
 
-  const date = new Date();
-  const createDate = `${date.getFullYear()}${(date.getMonth() + 1)
-    .toString()
-    .padStart(2, "0")}${date.getDate().toString().padStart(2, "0")}${date
-    .getHours()
-    .toString()
-    .padStart(2, "0")}${date.getMinutes().toString().padStart(2, "0")}${date
-    .getSeconds()
-    .toString()
-    .padStart(2, "0")}`;
+//   const date = new Date();
+//   const createDate = `${date.getFullYear()}${(date.getMonth() + 1)
+//     .toString()
+//     .padStart(2, "0")}${date.getDate().toString().padStart(2, "0")}${date
+//     .getHours()
+//     .toString()
+//     .padStart(2, "0")}${date.getMinutes().toString().padStart(2, "0")}${date
+//     .getSeconds()
+//     .toString()
+//     .padStart(2, "0")}`;
 
-  const orderId = crypto.randomBytes(8).toString("hex");
+//   const orderId = crypto.randomBytes(8).toString("hex");
 
-  let vnpParams = {
-    vnp_Version: "2.1.0",
-    vnp_Command: "pay",
-    vnp_TmnCode: vnpTmnCode,
-    vnp_Amount: amount * 100, // Convert to VND
-    vnp_CurrCode: "VND",
-    vnp_TxnRef: orderId,
-    vnp_OrderInfo: orderInfo,
-    vnp_OrderType: "other",
-    vnp_Locale: "vn",
-    vnp_ReturnUrl: returnUrl,
-    vnp_CreateDate: createDate,
-    vnp_IpAddr: req.ip,
-  };
+//   let vnpParams = {
+//     vnp_Version: "2.1.0",
+//     vnp_Command: "pay",
+//     vnp_TmnCode: vnpTmnCode,
+//     vnp_Amount: amount * 100, // Convert to VND
+//     vnp_CurrCode: "VND",
+//     vnp_TxnRef: orderId,
+//     vnp_OrderInfo: orderInfo,
+//     vnp_OrderType: "other",
+//     vnp_Locale: "vn",
+//     vnp_ReturnUrl: returnUrl,
+//     vnp_CreateDate: createDate,
+//     vnp_IpAddr: req.ip,
+//   };
 
-  // Sort parameters alphabetically
-  vnpParams = Object.keys(vnpParams)
-    .sort()
-    .reduce((acc, key) => {
-      acc[key] = vnpParams[key];
-      return acc;
-    }, {});
+//   // Sort parameters alphabetically
+//   vnpParams = Object.keys(vnpParams)
+//     .sort()
+//     .reduce((acc, key) => {
+//       acc[key] = vnpParams[key];
+//       return acc;
+//     }, {});
 
-  const querystring = require("querystring");
-  const signData = querystring.stringify(vnpParams) + `&${vnpHashSecret}`;
-  const secureHash = crypto
-    .createHmac("sha512", vnpHashSecret)
-    .update(signData)
-    .digest("hex");
+//   const querystring = require("querystring");
+//   const signData = querystring.stringify(vnpParams) + `&${vnpHashSecret}`;
+//   const secureHash = crypto
+//     .createHmac("sha512", vnpHashSecret)
+//     .update(signData)
+//     .digest("hex");
 
-  vnpParams["vnp_SecureHash"] = secureHash;
-  const paymentUrl = `${vnpUrl}?${querystring.stringify(vnpParams)}`;
+//   vnpParams["vnp_SecureHash"] = secureHash;
+//   const paymentUrl = `${vnpUrl}?${querystring.stringify(vnpParams)}`;
 
-  return res.status(200).json({ status: "OK", paymentUrl });
-});
+//   return res.status(200).json({ status: "OK", paymentUrl });
+// });
 module.exports = router;
