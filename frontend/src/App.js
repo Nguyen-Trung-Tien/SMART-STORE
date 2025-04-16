@@ -60,7 +60,7 @@ function App() {
   };
 
   return (
-    <div>
+    <div style={{ height: "100%", width: "100%" }}>
       <Loading isLoading={isPending}>
         <Router>
           <Routes>
