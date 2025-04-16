@@ -18,7 +18,7 @@ import * as message from "../../components/Message/Message";
 import { useSelector } from "react-redux";
 import { getBase64 } from "../../utils";
 
-const AdminUser = () => {
+const OrderUser = () => {
   const [rowSelected, setRowSelected] = useState("");
   const [isPendingUpdate, setIsPendingUpdate] = useState(false);
   const user = useSelector((state) => state?.user);
@@ -366,7 +366,6 @@ const AdminUser = () => {
       }
     );
   };
-
   return (
     <div>
       <WrapperHeader>Quản lý người dùng</WrapperHeader>
@@ -515,4 +514,4 @@ const AdminUser = () => {
   );
 };
 
-export default AdminUser;
+export default OrderUser;

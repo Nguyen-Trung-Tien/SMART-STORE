@@ -540,7 +540,6 @@ const AdminProduct = () => {
       >
         <Loading isLoading={isPending}>
           <Form
-            forceRender
             form={form}
             name="basic"
             labelCol={{ span: 8 }}
@@ -832,6 +831,7 @@ const AdminProduct = () => {
         </Loading>
       </ModalComponent>
       <ModalComponent
+        
         title="Xóa tất sản phẩm"
         open={isModalOpenDeleteMany}
         onCancel={handleCancelDeleteMany}

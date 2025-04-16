@@ -5,6 +5,7 @@ const ModalComponent = ({
   title = "Modal",
   isOpen = false,
   children,
+  forceRender,
   ...rests
 }) => {
   return (
