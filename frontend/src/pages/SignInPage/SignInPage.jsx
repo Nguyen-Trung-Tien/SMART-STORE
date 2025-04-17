@@ -29,13 +29,14 @@ const SignInPage = () => {
   const mutation = useMutationHooks((data) => UserService.loginUser(data));
 
   const { data, isPending, isSuccess, isError } = mutation;
+
   useEffect(() => {
     if (isSuccess) {
       if (location?.state) {
         navigate(location?.state);
       } else {
         navigate("/");
-        message.success("Đăng nhập thành công");
+        message.success("Đăng nhập thành công!");
       }
       localStorage.setItem("access_token", JSON.stringify(data?.access_token));
       if (data?.access_token) {
@@ -46,9 +47,9 @@ const SignInPage = () => {
       }
     }
     if (isError) {
-      message.error("Đăng nhập thất bại");
+      message.error("Lỗi đăng nhập!");
     }
-  }, [isSuccess]);
+  }, [isSuccess, isError]);
 
   const handleGetDetailsUser = async (id, token) => {
     const res = await UserService.getDetailsUser(id, token);
@@ -90,7 +91,7 @@ const SignInPage = () => {
         }}
       >
         <WrapperContainerLeft>
-          <h1>Xin Chào</h1>
+          <h1>SMART-STORE Xin Chào</h1>
           <p>Thông tin đăng nhập của bạn!</p>
           <InputForm
             style={{ marginBottom: "10px" }}

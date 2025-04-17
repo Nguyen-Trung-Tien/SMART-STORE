@@ -39,8 +39,8 @@ const TypeProductPage = () => {
     if (state) {
       fetchProductType(state, paginate.page, paginate.limit);
     } else {
-      alert("Không tìm thấy sản phẩm");
       navigate("/");
+      alert("Không tìm thấy sản phẩm!");
     }
   }, [state, paginate.page, paginate.limit]);
 

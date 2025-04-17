@@ -29,11 +29,11 @@ const SignUpPage = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      message.success("Đăng ký tài khoản thành công");
       handleNavigateSignUp();
+      message.success("Đăng ký tài khoản thành công!");
     }
     if (isError) {
-      message.error("Đăng ký tài khoản thất bại");
+      message.error("Tài khoản đã tồn tại! Vui lòng nhập tài khoản khác!");
     }
   }, [isSuccess, isError]);
   const handleOnChangeEmail = (value) => {

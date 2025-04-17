@@ -50,7 +50,9 @@ const HomePage = () => {
   });
 
   useEffect(() => {
+    setPending(true);
     fetchAllTypeProduct();
+    setPending(false);
   }, []);
 
   return (

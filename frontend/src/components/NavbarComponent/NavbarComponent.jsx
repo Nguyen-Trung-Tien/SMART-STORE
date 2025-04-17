@@ -9,6 +9,7 @@ import { Checkbox, Rate } from "antd";
 
 const NavbarComponent = () => {
   const onChange = () => {};
+
   const renderContent = (type, options) => {
     switch (type.toLowerCase()) {
       case "text":
@@ -68,11 +69,12 @@ const NavbarComponent = () => {
         return {};
     }
   };
+
   return (
     <div>
-      <WrapperLabelText>Danh sách sản phẩm</WrapperLabelText>
+      <WrapperLabelText>Danh mục sản phẩm</WrapperLabelText>
       <WrapperContent>
-        {renderContent("text", ["TV", "Tu lanh", "May say"])}
+        {renderContent("text", ["IPhone", "Samsung", "Xiaomi"])}
       </WrapperContent>
       {/* <WrapperContent>
         {renderContent("checkbox", [
