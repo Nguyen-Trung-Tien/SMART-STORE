@@ -52,6 +52,7 @@ const loginUser = async (req, res) => {
       httpOnly: true,
       secure: false,
       sameSite: "strict",
+      path: "/",
     });
     return res.status(200).json(newResponse);
   } catch (e) {

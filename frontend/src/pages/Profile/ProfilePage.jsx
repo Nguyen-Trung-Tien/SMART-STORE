@@ -146,7 +146,7 @@ const ProfilePage = () => {
             ></ButtonComponent>
           </WrapperInput>
           <WrapperInput>
-            <WrapperLabel htmlFor="phone">Phone</WrapperLabel>
+            <WrapperLabel htmlFor="phone">Phone(+84)</WrapperLabel>
             <InputForm
               style={{ width: "300px" }}
               value={phone}
