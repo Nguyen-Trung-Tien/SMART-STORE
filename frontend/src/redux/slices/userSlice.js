@@ -23,20 +23,22 @@ export const userSlice = createSlice({
         access_token = "",
         phone = "",
         address = "",
+        city = "",
         avatar = "",
         _id = "",
         isAdmin,
-        city = "",
+        refreshToken = "",
       } = action.payload;
       state.name = name;
       state.email = email;
       state.phone = phone;
       state.address = address;
+      state.city = city;
       state.avatar = avatar;
       state.id = _id;
       state.access_token = access_token;
       state.isAdmin = isAdmin;
-      state.city = city;
+      state.refreshToken = refreshToken;
     },
     resetUser: (state) => {
       state.name = "";
@@ -49,6 +51,7 @@ export const userSlice = createSlice({
       state.access_token = "";
       state.isAdmin = false;
       state.city = "";
+      state.refreshToken = "";
     },
   },
 });
