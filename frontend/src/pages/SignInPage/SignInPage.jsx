@@ -7,7 +7,7 @@ import {
 import InputForm from "../../components/InputForm/InputForm";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import { Image } from "antd";
-import imageLogo from "../../assets/ImageSmall/imageTiki.png";
+import imageLogo from "../../assets/ImageSmall/logo-page.png";
 import { EyeFilled, EyeInvisibleFilled } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as UserService from "../../services/UserServices";
@@ -91,8 +91,8 @@ const SignInPage = () => {
         }}
       >
         <WrapperContainerLeft>
-          <h1>SMART-STORE Xin Chào</h1>
-          <p>Thông tin đăng nhập của bạn!</p>
+          <h1>Xin Chào</h1>
+          <p>Đăng nhập tài khoản!</p>
           <InputForm
             style={{ marginBottom: "10px" }}
             placeholder="abc@gmail.com"

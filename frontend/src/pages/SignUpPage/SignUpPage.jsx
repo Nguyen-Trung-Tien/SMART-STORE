@@ -7,7 +7,7 @@ import {
 import { Image } from "antd";
 import InputForm from "../../components/InputForm/InputForm";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
-import imageLogo from "../../assets/ImageSmall/imageTiki.png";
+import imageLogo from "../../assets/ImageSmall/logo-page.png";
 import { EyeFilled, EyeInvisibleFilled } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import * as UserService from "../../services/UserServices";
@@ -76,7 +76,7 @@ const SignUpPage = () => {
       >
         <WrapperContainerLeft>
           <h1>Xin Chào</h1>
-          <p>Đăng ký tài khoản của bạn!</p>
+          <p>Đăng ký tài khoản!</p>
           <InputForm
             style={{ marginBottom: "10px" }}
             placeholder="abc@gmail.com"
