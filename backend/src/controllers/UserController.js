@@ -96,7 +96,6 @@ const deleteUser = async (req, res) => {
     });
   }
 };
-
 const deleteManyUser = async (req, res) => {
   try {
     const ids = req.body.ids;
