@@ -138,6 +138,7 @@ const DetailsOrderPage = () => {
                     <img
                       src={order?.image}
                       alt="img"
+                      key={order?.image}
                       style={{
                         width: "70px",
                         height: "70px",

@@ -41,9 +41,6 @@ const AdminProduct = () => {
   });
   const [stateProduct, setStateProduct] = useState(initial());
   const [stateProductDetails, setStateProductDetails] = useState(initial());
-
-  const [form] = Form.useForm();
-
   const fetchGetDetailsProduct = async (rowSelected) => {
     const res = await ProductService.getDetailsProduct(rowSelected);
     if (res?.data) {
@@ -65,6 +62,8 @@ const AdminProduct = () => {
     const res = await ProductService.getAllTypeProduct();
     return res;
   };
+
+  const [form] = Form.useForm();
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -831,7 +830,6 @@ const AdminProduct = () => {
         </Loading>
       </ModalComponent>
       <ModalComponent
-        
         title="Xóa tất sản phẩm"
         open={isModalOpenDeleteMany}
         onCancel={handleCancelDeleteMany}

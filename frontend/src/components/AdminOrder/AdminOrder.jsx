@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { orderConstant } from "../../constant";
 import ResponsiveChart from "./ResponsiveChart";
 import { convertDataChart } from "../../utils";
+import Loading from "../LoadingComponent/Loading";
 
 const AdminOrder = () => {
   const user = useSelector((state) => state?.user);
@@ -142,13 +143,15 @@ const AdminOrder = () => {
       <div style={{ width: 200, height: 200 }}>
         <ResponsiveChart data={orders?.data} />
       </div>
-      <div style={{ marginTop: "20px" }}>
-        <TableComponent
-          columns={columns}
-          isPending={isPendingOrders}
-          data={dataTable}
-        />
-      </div>
+      <Loading isLoading={isPendingOrders}>
+        <div style={{ marginTop: "20px" }}>
+          <TableComponent
+            columns={columns}
+            isPending={isPendingOrders}
+            data={dataTable}
+          />
+        </div>
+      </Loading>
     </div>
   );
 };

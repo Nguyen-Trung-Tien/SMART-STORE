@@ -78,10 +78,13 @@ const OrderPage = () => {
     if (!order?.orderItemsSelected?.length) {
       return 0;
     }
-    if (priceMemo >= 20000 && priceMemo < 50000) {
-      return 10000;
+    if (priceMemo < 1000000) {
+      return 20000;
     }
-    return 20000;
+    if (priceMemo >= 2000000) {
+      return 0;
+    }
+    return 10000;
   }, [priceMemo, order]);
 
   const totalPriceMemo = useMemo(() => {
@@ -231,9 +234,9 @@ const OrderPage = () => {
                 items={itemsDelivery}
                 current={
                   deliveryPriceMemo === 10000
-                    ? 2
-                    : deliveryPriceMemo === 20000
                     ? 1
+                    : deliveryPriceMemo === 20000
+                    ? 2
                     : order?.orderItems?.length === 0
                     ? 1
                     : 3
