@@ -283,13 +283,14 @@ const AdminUser = () => {
   }, [form]);
 
   useEffect(() => {
-    if (isSuccessUpdated && dataUpdated?.status === "OK") {
-      message.success("Cập nhật người dùng thành công!");
+    if (isSuccessUpdated || isErrorUpdated) {
+      const messageText = isSuccessUpdated
+        ? "Cập nhật người dùng thành công!"
+        : "Không thể cập nhật người dùng!";
+      message.success(messageText);
       handleCloseDrawer();
-    } else if (isErrorUpdated) {
-      message.error("Không thể cập nhật người dùng!");
     }
-  }, [isSuccessUpdated, isErrorUpdated, dataUpdated, handleCloseDrawer]);
+  }, [isSuccessUpdated, isErrorUpdated, handleCloseDrawer]);
 
   useEffect(() => {
     if (isSuccessDeletedMany && dataDeletedMany?.status === "OK") {
@@ -504,7 +505,7 @@ const AdminUser = () => {
         title="Xóa người dùng"
         open={isModalOpenDeleteMany}
         onCancel={handleCancelDeleteMany}
-        onOk={handleDeleteUser}
+        onOk={handleCancelDeleteMany}
       >
         <Loading isLoading={isPendingDeletedMany}>
           <div>Bạn chắc chắn xóa tất cả?</div>

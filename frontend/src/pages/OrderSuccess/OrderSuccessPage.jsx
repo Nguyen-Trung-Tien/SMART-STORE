@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Label,
   WrapperInfo,
@@ -16,6 +15,15 @@ import { convertPrice } from "../../utils";
 const OrderSuccessPage = () => {
   const location = useLocation();
   const { state } = location;
+
+  if (!state) {
+    return (
+      <div style={{ padding: 20 }}>
+        <h2>Không tìm thấy thông tin đơn hàng.</h2>
+      </div>
+    );
+  }
+
   return (
     <div style={{ background: "#f5f5fa", width: "100%", height: "100vh" }}>
       <Loading isLoading={false}>
@@ -30,7 +38,8 @@ const OrderSuccessPage = () => {
                   <Label>Phương thức giao hàng</Label>
                   <WrapperValue>
                     <span style={{ color: "#ea8500", fontWeight: "bold" }}>
-                      <span>{orderConstant.delivery[state?.delivery]}</span>
+                      {orderConstant.delivery[state?.delivery] ||
+                        "Đơn hàng không tồn tại!"}
                     </span>
                   </WrapperValue>
                 </div>
@@ -46,7 +55,7 @@ const OrderSuccessPage = () => {
               <WrapperItemsOrderInfo>
                 {state?.order?.map((orders) => {
                   return (
-                    <WrapperItemOrder key={orders?.product}>
+                    <WrapperItemOrder key={orders?.id}>
                       <div
                         style={{
                           width: "500px",

@@ -148,7 +148,7 @@ const SignUpPage = () => {
                 fontSize: "15px",
                 fontWeight: "700",
               }}
-            ></ButtonComponent>
+            />
           </Loading>
           <p>
             <WrapperTextLight>Quên mật khẩu</WrapperTextLight>

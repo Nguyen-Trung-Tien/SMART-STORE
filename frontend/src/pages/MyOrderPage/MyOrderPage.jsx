@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import React from "../../services/OrderService";
 import * as OrderService from "../../services/OrderService";
 import {
   WrapperContainer,
@@ -116,6 +115,14 @@ const MyOrderPage = () => {
       }
     );
   };
+
+  if (!state?.id || !state?.token) {
+    return (
+      <div style={{ padding: 20 }}>
+        <h2>Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.</h2>
+      </div>
+    );
+  }
 
   return (
     <WrapperContainer>

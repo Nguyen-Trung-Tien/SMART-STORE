@@ -833,7 +833,7 @@ const AdminProduct = () => {
         title="Xóa tất sản phẩm"
         open={isModalOpenDeleteMany}
         onCancel={handleCancelDeleteMany}
-        onOk={handleDeleteProduct}
+        onOk={handleDeleteManyProduct}
       >
         <Loading isLoading={isPendingDeletedMany}>
           <div>Bạn có chắc xóa tất sản phẩm này?</div>
