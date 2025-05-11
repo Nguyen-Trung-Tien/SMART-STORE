@@ -32,7 +32,7 @@ const DetailsOrderPage = () => {
   const queryOrder = useQuery({
     queryKey: ["order-details", id],
     queryFn: fetchDetailsOrder,
-    enabled: !!id,
+    enabled: !!id && !!state?.token,
   });
 
   const { isPending, data } = queryOrder;
@@ -55,14 +55,16 @@ const DetailsOrderPage = () => {
   }
 
   const priceMemo = useMemo(() => {
-    const result = data?.orderItems?.reduce((total, cur) => {
-      if (cur && cur.price && cur.amount) {
-        return total + cur.price * cur.amount;
-      }
-      return total;
+    if (!data?.orderItems) return 0;
+    return data.orderItems.reduce((total, cur) => {
+      return total + (cur.price || 0) * (cur.amount || 0);
     }, 0);
-    return result || 0;
   }, [data]);
+
+  if (isPending) {
+    return <Loading isLoading />;
+  }
+
   return (
     <Loading isLoading={isPending}>
       <div style={{ width: "100%", backgroundColor: "#f5f5fa" }}>
@@ -131,14 +133,13 @@ const DetailsOrderPage = () => {
               <WrapperItemLabel>Số lượng:</WrapperItemLabel>
               <WrapperItemLabel>Giảm giá:</WrapperItemLabel>
             </div>
-            {orderItems?.map((order) => {
+            {orderItems?.map((order, index) => {
               return (
-                <WrapperProduct>
+                <WrapperProduct key={order._id || index}>
                   <WrapperNameProduct>
                     <img
                       src={order?.image}
                       alt="img"
-                      key={order?.image}
                       style={{
                         width: "70px",
                         height: "70px",
@@ -176,7 +177,9 @@ const DetailsOrderPage = () => {
             </WrapperAllPrice>
             <WrapperAllPrice>
               <WrapperItemLabel>Phí giao hàng:</WrapperItemLabel>
-              <WrapperItem>{convertPrice(data?.shippingPrice)}</WrapperItem>
+              <WrapperItem>
+                {convertPrice(data?.shippingPrice) || 0}
+              </WrapperItem>
             </WrapperAllPrice>
             <WrapperAllPrice>
               <WrapperItemLabel>Tổng tiền:</WrapperItemLabel>

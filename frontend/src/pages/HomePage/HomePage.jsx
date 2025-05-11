@@ -23,17 +23,26 @@ const HomePage = () => {
   const [limit, setLimit] = useState(6);
 
   const [typeProducts, setTypeProducts] = useState([]);
-  const fetchProductAll = async (context) => {
-    const limit = context?.queryKey && context?.queryKey[1];
-    const search = context?.queryKey && context?.queryKey[2];
-    const res = await ProductService.getAllProduct(search, limit);
-    return res;
+
+  const fetchProductAll = async ({ queryKey }) => {
+    const [, limit, search] = queryKey;
+    try {
+      const res = await ProductService.getAllProduct(search, limit);
+      return res;
+    } catch (err) {
+      console.error("Fetch product error:", err);
+      return { data: [], total: 0 };
+    }
   };
 
   const fetchAllTypeProduct = async () => {
-    const res = await ProductService.getAllTypeProduct();
-    if (res?.status === "OK") {
-      setTypeProducts(res?.data);
+    try {
+      const res = await ProductService.getAllTypeProduct();
+      if (res?.status === "OK") {
+        setTypeProducts(res?.data);
+      }
+    } catch (err) {
+      console.error("Fetch type error:", err);
     }
   };
 
@@ -48,11 +57,13 @@ const HomePage = () => {
     retryDelay: 1000,
     keepPreviousData: true,
   });
-
   useEffect(() => {
-    setPending(true);
-    fetchAllTypeProduct();
-    setPending(false);
+    const fetchData = async () => {
+      setPending(true);
+      await fetchAllTypeProduct();
+      setPending(false);
+    };
+    fetchData();
   }, []);
 
   return (
