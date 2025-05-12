@@ -129,9 +129,9 @@ const DetailsOrderPage = () => {
               >
                 Sản phẩm
               </div>
-              <WrapperItemLabel>Giá:</WrapperItemLabel>
-              <WrapperItemLabel>Số lượng:</WrapperItemLabel>
-              <WrapperItemLabel>Giảm giá:</WrapperItemLabel>
+              <WrapperItemLabel>Giá sản phẩm</WrapperItemLabel>
+              <WrapperItemLabel>Số lượng</WrapperItemLabel>
+              <WrapperItemLabel>Giảm giá</WrapperItemLabel>
             </div>
             {orderItems?.map((order, index) => {
               return (

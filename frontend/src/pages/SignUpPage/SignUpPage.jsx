@@ -55,6 +55,7 @@ const SignUpPage = () => {
   const handleSignUp = () => {
     mutation.mutate({ email, password, confirmPassword });
   };
+
   return (
     <div
       style={{

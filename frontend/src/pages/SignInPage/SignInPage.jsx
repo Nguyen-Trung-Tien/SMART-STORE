@@ -31,13 +31,8 @@ const SignInPage = () => {
   const { data, isPending, isSuccess, isError } = mutation;
 
   useEffect(() => {
-    if (isSuccess) {
-      if (location?.state) {
-        navigate(location?.state);
-      } else {
-        navigate("/");
-        message.success("Đăng nhập thành công!");
-      }
+    if (isSuccess && data?.status === "OK") {
+      message.success("Đăng nhập thành công!");
       localStorage.setItem("access_token", JSON.stringify(data?.access_token));
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
@@ -45,11 +40,13 @@ const SignInPage = () => {
           handleGetDetailsUser(decoded?.id, data?.access_token);
         }
       }
-    }
-    if (isError) {
+      navigate(location?.state || "/");
+    } else if (isSuccess && data?.status === "ERR") {
+      message.error(data?.message || "Lỗi đăng nhập!");
+    } else if (isError) {
       message.error("Lỗi đăng nhập!");
     }
-  }, [isSuccess, isError]);
+  }, [isSuccess, isError, data]);
 
   const handleGetDetailsUser = async (id, token) => {
     const res = await UserService.getDetailsUser(id, token);
@@ -144,7 +141,7 @@ const SignInPage = () => {
             ></ButtonComponent>
           </Loading>
           <p>
-            <WrapperTextLight>Quên mật khẩu</WrapperTextLight>
+            <WrapperTextLight>Quên mật khẩu?</WrapperTextLight>
           </p>
           <p>
             Bạn chưa có tài khoản?

@@ -14,7 +14,7 @@ import { useMutationHooks } from "../../hooks/useMutationHook";
 import Loading from "../../components/LoadingComponent/Loading";
 import * as message from "../../components/Message/Message";
 import { updateUser } from "../../redux/slices/userSlice";
-import { Button, Upload } from "antd";
+import { Button } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { getBase64 } from "../../utils";
 
@@ -29,8 +29,9 @@ const ProfilePage = () => {
 
   const mutation = useMutationHooks((data) => {
     const { id, access_token, ...rests } = data;
-    UserService.updateUser(id, rests, access_token);
+    return UserService.updateUser(id, rests, access_token);
   });
+
   const { data, isPending, isSuccess, isError } = mutation;
 
   useEffect(() => {
@@ -96,7 +97,7 @@ const ProfilePage = () => {
             <InputForm
               style={{ width: "300px" }}
               value={name}
-              id={name}
+              id="name"
               onChange={handleOnChangeName}
             />
             <ButtonComponent

@@ -40,7 +40,6 @@ const MyOrderPage = () => {
         <WrapperHeaderItems key={order?._id}>
           <img
             src={order?.image}
-            key={order?.image}
             alt="img"
             style={{
               width: "70px",

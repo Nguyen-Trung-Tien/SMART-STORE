@@ -11,6 +11,7 @@ const NotFoundPage = () => {
 
   return (
     <Result
+      status="404"
       icon={<SmileOutlined />}
       title="Trang này không tồn tại! Vui lòng trở về trang chủ!"
       extra={

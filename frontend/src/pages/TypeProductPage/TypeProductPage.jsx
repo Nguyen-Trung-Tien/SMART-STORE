@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import NavbarComponent from "../../components/NavbarComponent/NavbarComponent";
 import CardComponent from "../../components/CardComponent/CardComponent";
 import { Col, Pagination, Row } from "antd";
@@ -21,28 +21,31 @@ const TypeProductPage = () => {
     total: 1,
   });
 
-  const fetchProductType = async (type, page, limit) => {
-    setPending(true);
-    const res = await ProductService.getProductType(type, page, limit);
-    if (res?.status === "OK") {
-      setPending(false);
-      setProducts(res?.data);
-      if (paginate.total !== res?.totalPage) {
-        setPaginate({ ...paginate, total: res?.totalPage });
+  const fetchProductType = useCallback(
+    async (type, page, limit) => {
+      setPending(true);
+      const res = await ProductService.getProductType(type, page, limit);
+      if (res?.status === "OK") {
+        setPending(false);
+        setProducts(res?.data);
+        if (paginate.total !== res?.totalPage) {
+          setPaginate((prev) => ({ ...prev, total: res?.totalPage }));
+        }
+      } else {
+        setPending(false);
       }
-    } else {
-      setPending(false);
-    }
-  };
+    },
+    [paginate.total]
+  );
 
   useEffect(() => {
     if (state) {
       fetchProductType(state, paginate.page, paginate.limit);
     } else {
       navigate("/");
-      alert("Không tìm thấy sản phẩm!");
+      alert("Không tìm thấy sản phẩm!");
     }
-  }, [state, paginate.page, paginate.limit]);
+  }, [state, paginate.page, paginate.limit, fetchProductType, navigate]);
 
   useEffect(() => {
     let newProduct = [];
@@ -90,17 +93,13 @@ const TypeProductPage = () => {
             >
               <WrapperProducts>
                 {products
-                  ?.filter((pro) => {
-                    if (searchDebounce === "") {
-                      return pro;
-                    } else if (
+                  ?.filter(
+                    (pro) =>
+                      searchDebounce === "" ||
                       pro?.name
                         ?.toLowerCase()
-                        ?.includes(searchDebounce.toLowerCase())
-                    ) {
-                      return pro;
-                    }
-                  })
+                        .includes(searchDebounce.toLowerCase())
+                  )
                   ?.map((product) => {
                     return (
                       <CardComponent
