@@ -1,6 +1,6 @@
 import { Col, Image, Row } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
-import ImageSmall from "../../assets/ImageSmall/testSmall.webp";
+// import ImageSmall from "../../assets/ImageSmall/testSmall.webp";
 import {
   WrapperAddressProduct,
   WrapperInputNumber,
@@ -171,7 +171,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
             alt="image Product"
             preview={false}
           />
-          <Row style={{ marginTop: "12px", justifyContent: "space-between" }}>
+          {/* <Row style={{ marginTop: "12px", justifyContent: "space-between" }}>
             <WrapperStyleColImage span={4}>
               <WrapperStyleImageSmall
                 src={ImageSmall}
@@ -193,7 +193,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
                 preview={false}
               />
             </WrapperStyleColImage>
-          </Row>
+          </Row> */}
         </Col>
         <Col span={14} style={{ paddingLeft: "10px" }}>
           <WrapperStyLeNameProduct>
