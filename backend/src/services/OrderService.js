@@ -159,6 +159,38 @@ const cancelOrderDetails = (id, data) => {
   });
 };
 
+const confirmOrderDetails = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const order = await Order.findById(id);
+      if (!order) {
+        return resolve({
+          status: "ERR",
+          message: "The order is not found",
+        });
+      }
+
+      if (order.status === "confirmed") {
+        return resolve({
+          status: "ERR",
+          message: "The order has already been confirmed",
+        });
+      }
+
+      order.status = "confirmed";
+      await order.save();
+
+      resolve({
+        status: "OK",
+        message: "Order confirmed successfully",
+        data: order,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 const getAllOrder = () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -179,4 +211,5 @@ module.exports = {
   getDetailsOrder,
   cancelOrderDetails,
   getAllOrder,
+  confirmOrderDetails,
 };

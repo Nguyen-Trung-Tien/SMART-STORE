@@ -23,5 +23,10 @@ router.delete(
   OrderController.cancelOrderDetails
 );
 router.get("/get-all-order", authMiddleware, OrderController.getAllOrder);
-
+router.put(
+  "/confirm/:id",
+  authMiddleware,
+  authUserMiddleware,
+  OrderController.confirmOrderDetails
+);
 module.exports = router;
