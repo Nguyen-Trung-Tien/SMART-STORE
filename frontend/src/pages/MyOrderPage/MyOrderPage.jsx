@@ -179,7 +179,7 @@ const MyOrderPage = () => {
                               fontSize: "14px",
                             }}
                           >{`${
-                            order?.isDelivered ? "Đã giao" : "Chưa giao"
+                            order?.isDelivered ? "Đã nhận" : "Chưa nhận"
                           } `}</span>
                         </span>
                       </div>
