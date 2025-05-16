@@ -203,7 +203,7 @@ const ProfilePage = () => {
           <WrapperInput>
             <WrapperLabel htmlFor="avatar">Avatar</WrapperLabel>
             <WrapperUploadFile onChange={handleOnChangeAvatar} maxCount={1}>
-              <Button icon={<UploadOutlined />}>Upload png only</Button>
+              <Button icon={<UploadOutlined />}>Upload image</Button>
             </WrapperUploadFile>
             {avatar && (
               <img

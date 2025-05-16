@@ -222,36 +222,41 @@ const MyOrderPage = () => {
                         </span>
                       </div>
                       <div style={{ display: "flex", gap: "10px" }}>
-                        <ButtonComponent
-                          onClick={() => handleConfirmOrder(order)}
-                          size={40}
-                          styleButton={{
-                            height: "36px",
-                            border: "1px solid rgb(11, 166,229)",
-                            color: "rgb(255, 66, 78)",
-                          }}
-                          textButton={"Xác nhận"}
-                          styleTextButton={{
-                            color: "rgb(11, 166,229)",
-                            fontSize: "14px",
-                            fontWeight: "bold",
-                          }}
-                        ></ButtonComponent>
-                        <ButtonComponent
-                          onClick={() => handleCancelOrder(order)}
-                          size={40}
-                          styleButton={{
-                            height: "36px",
-                            border: "1px solid rgb(11, 166,229)",
-                            color: "rgb(255, 66, 78)",
-                          }}
-                          textButton={" Hủy đơn "}
-                          styleTextButton={{
-                            color: "rgb(11, 166,229)",
-                            fontSize: "14px",
-                            fontWeight: "bold",
-                          }}
-                        />
+                        {!order.isDelivered && !order.isCancelled && (
+                          <>
+                            <ButtonComponent
+                              onClick={() => handleConfirmOrder(order)}
+                              size={40}
+                              styleButton={{
+                                height: "36px",
+                                border: "1px solid rgb(11, 166,229)",
+                                color: "rgb(255, 66, 78)",
+                              }}
+                              textButton={"Xác nhận"}
+                              styleTextButton={{
+                                color: "rgb(11, 166,229)",
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                              }}
+                            />
+                            <ButtonComponent
+                              onClick={() => handleCancelOrder(order)}
+                              size={40}
+                              styleButton={{
+                                height: "36px",
+                                border: "1px solid rgb(11, 166,229)",
+                                color: "rgb(255, 66, 78)",
+                              }}
+                              textButton={" Hủy đơn "}
+                              styleTextButton={{
+                                color: "rgb(11, 166,229)",
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                              }}
+                            />
+                          </>
+                        )}
+
                         <ButtonComponent
                           onClick={() => handleDetailsOrder(order?._id)}
                           size={40}

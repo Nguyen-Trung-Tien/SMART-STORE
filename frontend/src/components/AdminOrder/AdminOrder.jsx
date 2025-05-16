@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { WrapperHeader } from "./style";
 import { Button, Space } from "antd";
 import {
+  CheckCircleOutlined,
   CheckOutlined,
   CloseOutlined,
   SearchOutlined,
@@ -15,9 +16,14 @@ import { orderConstant } from "../../constant";
 import ResponsiveChart from "./ResponsiveChart";
 import { convertDataChart } from "../../utils";
 import Loading from "../LoadingComponent/Loading";
+import { useLocation } from "react-router-dom";
+import { useMutationHooks } from "../../hooks/useMutationHook";
+import { message } from "antd";
 
 const AdminOrder = () => {
   const user = useSelector((state) => state?.user);
+  const { state } = useLocation;
+
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
       setSelectedKeys,
@@ -69,16 +75,18 @@ const AdminOrder = () => {
       },
     },
   });
-  const renderAction = () => {
+
+  const renderAction = (record) => {
     return (
       <div>
-        <CheckOutlined
+        <CheckCircleOutlined
           style={{
             color: "blue",
             fontSize: "30px",
             cursor: "pointer",
           }}
-          // onClick={handleDetailProduct}
+          alt="Xác nhận"
+          onClick={() => handleConfirmOrder(record)}
         />
         <CloseOutlined
           style={{
@@ -87,11 +95,13 @@ const AdminOrder = () => {
             cursor: "pointer",
             paddingLeft: "15px",
           }}
-          // onClick={() => setIsModalOpenDelete(true)}
+          alt="Hủy đơn"
+          onClick={() => handleCancelOrder(record)}
         />
       </div>
     );
   };
+
   const columns = [
     {
       title: "User name",
@@ -137,7 +147,7 @@ const AdminOrder = () => {
     {
       title: "Action",
       dataIndex: "action",
-      render: renderAction,
+      render: (_, record) => renderAction(record),
     },
   ];
 
@@ -150,6 +160,70 @@ const AdminOrder = () => {
     queryKey: ["orders"],
     queryFn: getAllOrder,
   });
+
+  const cancelMutation = useMutationHooks((data) => {
+    const { id, token, orderItems } = data;
+    const res = OrderService.cancelOrder(id, token, orderItems);
+    return res;
+  });
+
+  const {
+    data: dataCancel,
+    isPending: isPendingCancel,
+    isSuccess: isSuccessCancel,
+    isError: isErrorCancel,
+  } = cancelMutation;
+
+  const confirmMutation = useMutationHooks((data) => {
+    const { id, token, orderItems } = data;
+    const res = OrderService.confirmOrder(id, token, orderItems);
+    return res;
+  });
+
+  const {
+    data: dataConfirm,
+    isPending: isPendingConfirm,
+    isSuccess: isSuccessConfirm,
+    isError: isErrorConfirm,
+  } = confirmMutation;
+
+  useEffect(() => {
+    if (isSuccessCancel && dataCancel?.status === "OK") {
+      message.success("Hủy đơn thành công!");
+    } else if (isErrorCancel) {
+      message.error("Không thể hủy đơn!");
+    }
+  }, [isSuccessCancel, isErrorCancel, dataCancel]);
+
+  useEffect(() => {
+    if (isSuccessConfirm && dataConfirm?.status === "OK") {
+      message.success("Xác nhận đơn thành công!");
+    } else if (isErrorConfirm) {
+      message.error("Đã xẩy ra lỗi!");
+    }
+  }, [isSuccessConfirm, isErrorConfirm, dataConfirm]);
+
+  const handleCancelOrder = (order) => {
+    cancelMutation.mutate(
+      { id: order?._id, token: state?.token, orderItems: order?.orderItems },
+      {
+        onSuccess: () => {
+          queryOrder.refetch();
+        },
+      }
+    );
+  };
+
+  const handleConfirmOrder = (order) => {
+    confirmMutation.mutate(
+      { id: order?._id, token: state?.token, orderItems: order?.orderItems },
+      {
+        onSuccess: () => {
+          queryOrder.refetch();
+        },
+      }
+    );
+  };
 
   const { isPending: isPendingOrders, data: orders } = queryOrder;
   const dataTable =
@@ -169,21 +243,23 @@ const AdminOrder = () => {
     });
 
   return (
-    <div>
-      <WrapperHeader>Quản lý đơn hàng</WrapperHeader>
-      <div style={{ width: 200, height: 200 }}>
-        <ResponsiveChart data={orders?.data} />
-      </div>
-      <Loading isLoading={isPendingOrders}>
-        <div style={{ marginTop: "20px" }}>
-          <TableComponent
-            columns={columns}
-            isPending={isPendingOrders}
-            data={dataTable}
-          />
+    <Loading isLoading={isPendingCancel || isPendingConfirm}>
+      <div>
+        <WrapperHeader>Quản lý đơn hàng</WrapperHeader>
+        <div style={{ width: 200, height: 200 }}>
+          <ResponsiveChart data={orders?.data} />
         </div>
-      </Loading>
-    </div>
+        <Loading isLoading={isPendingOrders}>
+          <div style={{ marginTop: "20px" }}>
+            <TableComponent
+              columns={columns}
+              isPending={isPendingOrders}
+              data={dataTable}
+            />
+          </div>
+        </Loading>
+      </div>
+    </Loading>
   );
 };
 
