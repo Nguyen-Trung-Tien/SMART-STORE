@@ -3,7 +3,6 @@ import { WrapperHeader } from "./style";
 import { Button, Space } from "antd";
 import {
   CheckCircleOutlined,
-  CheckOutlined,
   CloseOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
@@ -14,7 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { orderConstant } from "../../constant";
 import ResponsiveChart from "./ResponsiveChart";
-import { convertDataChart } from "../../utils";
+import { convertDataChart, convertPrice } from "../../utils";
 import Loading from "../LoadingComponent/Loading";
 import { useLocation } from "react-router-dom";
 import { useMutationHooks } from "../../hooks/useMutationHook";
@@ -110,7 +109,7 @@ const AdminOrder = () => {
       ...getColumnSearchProps("userName"),
     },
     {
-      title: "Phone",
+      title: "Phone (+84)",
       dataIndex: "phone",
       ...getColumnSearchProps("phone"),
     },
@@ -143,6 +142,12 @@ const AdminOrder = () => {
       dataIndex: "paymentMethod",
       ...getColumnSearchProps("paymentMethod"),
       sorter: (a, b) => a.paymentMethod.length - b.paymentMethod.length,
+    },
+    {
+      title: "Total Price",
+      dataIndex: "totalPrice",
+      ...getColumnSearchProps("totalPrice"),
+      sorter: (a, b) => a.totalPrice.length - b.totalPrice.length,
     },
     {
       title: "Action",
@@ -238,7 +243,8 @@ const AdminOrder = () => {
         paymentMethod: orderConstant.payment[order?.paymentMethod],
         Paid: order?.isPaid ? "Đã thanh toán" : "Chưa thanh toán",
         Delivered: order?.isDelivered ? "Đã giao" : "Chưa giao",
-        totalPrice: convertDataChart(order?.totalPrices),
+        totalPrice: convertDataChart && convertPrice(order?.totalPrice),
+        itemsPrice: convertPrice(order?.itemsPrice),
       };
     });
 

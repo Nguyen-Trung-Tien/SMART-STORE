@@ -1,12 +1,4 @@
-import React, { PureComponent } from "react";
-import {
-  PieChart,
-  Pie,
-  Sector,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { convertDataChart } from "../../utils";
 const ResponsiveChart = (props) => {
   const data = convertDataChart(props.data, "paymentMethod");

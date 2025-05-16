@@ -261,12 +261,12 @@ const PaymentPage = () => {
                   <WrapperRadio onChange={handleDelivery} value={delivery}>
                     <Radio value="fast">
                       <span style={{ color: "#ea8500", fontWeight: "bold" }}>
-                        FAST <span>Giao hàng tiết kiệm</span>
+                        <span>Giao hàng hỏa tốc</span>
                       </span>
                     </Radio>
                     <Radio>
                       <span style={{ color: "#ea8500", fontWeight: "bold" }}>
-                        GO_JEK <span>Giao hàng tiết kiệm</span>
+                        <span>Giao hàng tiết kiệm</span>
                       </span>
                     </Radio>
                   </WrapperRadio>
@@ -276,9 +276,14 @@ const PaymentPage = () => {
                 <div>
                   <Label>Chọn phương thức thanh toán</Label>
                   <WrapperRadio onChange={handlePayment} value={payment}>
-                    <Radio value="laster_money">Thanh toán khi giao hàng</Radio>
-                    <Radio value="PayPal">Thanh toán qua PayPal</Radio>
-                    {/* <Radio value="VnPay">Thanh toán qua VnPay</Radio> */}
+                    <Radio value="laster_money">Thanh toán khi nhận</Radio>
+                    <Radio value="bank">Thanh toán qua ngân hàng</Radio>
+                    <Radio value="PayPal">PayPal</Radio>
+                    <Radio value="VNPay">VNPay</Radio>
+                    <Radio value="MoMo">MoMo</Radio>
+                    <Radio value="9Pay">9Pay</Radio>
+                    <Radio value="Zalopay">Zalopay</Radio>
+                    <Radio value="ShopeePay">ShopeePay</Radio>
                   </WrapperRadio>
                 </div>
               </WrapperInfo>

@@ -499,6 +499,7 @@ const AdminProduct = () => {
   const handleCancelDeleteMany = () => {
     setIsModalOpenDeleteMany(false);
   };
+
   return (
     <div>
       <WrapperHeader>Quản lý sản phẩm</WrapperHeader>

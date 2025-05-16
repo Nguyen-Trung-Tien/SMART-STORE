@@ -1,11 +1,16 @@
 export const orderConstant = {
   delivery: {
-    fast: "FAST Giao hàng tiết kiệm",
-    gojek: "GO_JEK Giao hàng tiết kiệm",
+    super: "Giao hàng siêu tốc",
+    normal: "Giao hàng tiết kiệm",
   },
   payment: {
-    laster_money: "Thanh toán khi nhận hàng",
-    PayPal: "Thanh toán qua PayPal",
-    VnPay: "Thanh toán qua VnPay",
+    laster_money: "Thanh toán khi nhận",
+    bank: "Thanh toán qua ngân hàng",
+    PayPal: "PayPal",
+    VNPay: "VNPay",
+    MoMo: "MoMo",
+    Pay: "9Pay",
+    ShopeePay: "ShopeePay",
+    Zalopay: "Zalopay",
   },
 };

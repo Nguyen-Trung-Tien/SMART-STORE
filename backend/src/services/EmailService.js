@@ -7,7 +7,7 @@ const sendEmailCreateOrder = async (email, orderItems) => {
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 465,
-      secure: true, // true for port 465, false for other ports
+      secure: true,
       auth: {
         user: process.env.EMAIL_ACCOUNT,
         pass: process.env.EMAIL_PASSWORD,
@@ -23,7 +23,9 @@ const sendEmailCreateOrder = async (email, orderItems) => {
         <div>
           <img src="${order?.image}" alt="img" style="max-width: 200px;"/>
         </div>
-        <p>với số lượng: <b>${order?.amount}</b> và giá: <b>${order?.price}</b></p>
+        <p>với số lượng: <b>${order?.amount}</b> giá: <b>${order?.price
+        .toLocaleString()
+        .replaceAll(",", ".")}VND</b></p>
       </div>`;
       attachImage.push({
         filename: order?.name,
@@ -32,16 +34,16 @@ const sendEmailCreateOrder = async (email, orderItems) => {
     });
 
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_ACCOUNT, // sender address
-      to: process.env.EMAIL_ACCOUNT, // recipient email
-      subject: "Bạn đã đặt hàng thành công", // Subject line
-      text: "Bạn đã đặt hàng thành công của shop Smart-Store.", // plain text body
+      from: process.env.EMAIL_ACCOUNT,
+      to: process.env.EMAIL_ACCOUNT,
+      subject: "Bạn đã đặt hàng thành công",
+      text: "Shop Smart-Store.",
       html: `
         <div>
-          <b>Bạn đã đặt hàng thành công của shop Smart-Store</b>
+          <b>Bạn đã đặt hàng thành công từ shop Smart-Store</b>
         </div>
         ${listItem}`,
-      attachments: attachImage, // html body
+      attachments: attachImage,
     });
   } catch (error) {
     console.error("Error sending email:", error);
