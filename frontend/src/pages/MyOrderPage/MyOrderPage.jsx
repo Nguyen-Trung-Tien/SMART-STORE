@@ -83,7 +83,7 @@ const MyOrderPage = () => {
     });
   };
 
-  const mutation = useMutationHooks((data) => {
+  const cancelMutation = useMutationHooks((data) => {
     const { id, token, orderItems } = data;
     const res = OrderService.cancelOrder(id, token, orderItems);
     return res;
@@ -94,7 +94,20 @@ const MyOrderPage = () => {
     isPending: isPendingCancel,
     isSuccess: isSuccessCancel,
     isError: isErrorCancel,
-  } = mutation;
+  } = cancelMutation;
+
+  const confirmMutation = useMutationHooks((data) => {
+    const { id, token, orderItems } = data;
+    const res = OrderService.confirmOrder(id, token, orderItems);
+    return res;
+  });
+
+  const {
+    data: dataConfirm,
+    isPending: isPendingConfirm,
+    isSuccess: isSuccessConfirm,
+    isError: isErrorConfirm,
+  } = confirmMutation;
 
   useEffect(() => {
     if (isSuccessCancel && dataCancel?.status === "OK") {
@@ -104,8 +117,27 @@ const MyOrderPage = () => {
     }
   }, [isSuccessCancel, isErrorCancel, dataCancel]);
 
+  useEffect(() => {
+    if (isSuccessConfirm && dataConfirm?.status === "OK") {
+      message.success("Xác nhận đơn thành công!");
+    } else if (isErrorConfirm) {
+      message.error("Đã xẩy ra lỗi!");
+    }
+  }, [isSuccessConfirm, isErrorConfirm, dataConfirm]);
+
   const handleCancelOrder = (order) => {
-    mutation.mutate(
+    cancelMutation.mutate(
+      { id: order?._id, token: state?.token, orderItems: order?.orderItems },
+      {
+        onSuccess: () => {
+          queryOrder.refetch();
+        },
+      }
+    );
+  };
+
+  const handleConfirmOrder = (order) => {
+    confirmMutation.mutate(
       { id: order?._id, token: state?.token, orderItems: order?.orderItems },
       {
         onSuccess: () => {
@@ -127,7 +159,7 @@ const MyOrderPage = () => {
     <WrapperContainer>
       <div style={{ height: "100vh", width: "1270px", margin: "0 auto" }}>
         <h4>Đơn hàng của tôi</h4>
-        <Loading isLoading={isPending || isPendingCancel}>
+        <Loading isLoading={isPending || isPendingCancel || isPendingConfirm}>
           <WrapperListOrder>
             {Array.isArray(data) && data.length > 0 ? (
               data?.map((order) => {
@@ -191,7 +223,7 @@ const MyOrderPage = () => {
                       </div>
                       <div style={{ display: "flex", gap: "10px" }}>
                         <ButtonComponent
-                          onClick={() => handleCancelOrder(order)}
+                          onClick={() => handleConfirmOrder(order)}
                           size={40}
                           styleButton={{
                             height: "36px",
@@ -219,8 +251,7 @@ const MyOrderPage = () => {
                             fontSize: "14px",
                             fontWeight: "bold",
                           }}
-                        ></ButtonComponent>
-
+                        />
                         <ButtonComponent
                           onClick={() => handleDetailsOrder(order?._id)}
                           size={40}
@@ -235,7 +266,7 @@ const MyOrderPage = () => {
                             fontSize: "14px",
                             fontWeight: "bold",
                           }}
-                        ></ButtonComponent>
+                        />
                       </div>
                     </WrapperFooterItem>
                   </WrapperItemOrder>
