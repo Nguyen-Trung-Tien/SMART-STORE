@@ -1,7 +1,11 @@
 import React from "react";
 import { WrapperHeader } from "./style";
 import { Button, Space } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  CheckOutlined,
+  CloseOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import TableComponent from "../TableComponent/TableComponent";
 import InputComponent from "../InputComponent/InputComponent";
 import * as OrderService from "../../services/OrderService";
@@ -65,7 +69,29 @@ const AdminOrder = () => {
       },
     },
   });
-
+  const renderAction = () => {
+    return (
+      <div>
+        <CheckOutlined
+          style={{
+            color: "blue",
+            fontSize: "30px",
+            cursor: "pointer",
+          }}
+          // onClick={handleDetailProduct}
+        />
+        <CloseOutlined
+          style={{
+            color: "red",
+            fontSize: "30px",
+            cursor: "pointer",
+            paddingLeft: "15px",
+          }}
+          // onClick={() => setIsModalOpenDelete(true)}
+        />
+      </div>
+    );
+  };
   const columns = [
     {
       title: "User name",
@@ -107,6 +133,11 @@ const AdminOrder = () => {
       dataIndex: "paymentMethod",
       ...getColumnSearchProps("paymentMethod"),
       sorter: (a, b) => a.paymentMethod.length - b.paymentMethod.length,
+    },
+    {
+      title: "Action",
+      dataIndex: "action",
+      render: renderAction,
     },
   ];
 
