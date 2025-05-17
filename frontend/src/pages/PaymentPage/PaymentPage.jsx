@@ -29,7 +29,7 @@ const PaymentPage = () => {
   const user = useSelector((state) => state.user);
   const [isOpenModalUpdateInfo, setIsOpenModalUpdateInfo] = useState(false);
   const dispatch = useDispatch();
-  const [delivery, setDelivery] = useState("fast");
+  const [delivery, setDelivery] = useState("super", "normal");
   const [payment, setPayment] = useState("laster_money");
   const navigate = useNavigate();
   const [sdkReady, setSdkReady] = useState(false);
@@ -259,12 +259,12 @@ const PaymentPage = () => {
                 <div>
                   <Label>Chọn phương thức giao hàng</Label>
                   <WrapperRadio onChange={handleDelivery} value={delivery}>
-                    <Radio value="fast">
+                    <Radio value="super">
                       <span style={{ color: "#ea8500", fontWeight: "bold" }}>
                         <span>Giao hàng hỏa tốc</span>
                       </span>
                     </Radio>
-                    <Radio>
+                    <Radio value={"normal"}>
                       <span style={{ color: "#ea8500", fontWeight: "bold" }}>
                         <span>Giao hàng tiết kiệm</span>
                       </span>
@@ -430,7 +430,6 @@ const PaymentPage = () => {
               name="basic"
               labelCol={{ span: 4 }}
               wrapperCol={{ span: 20 }}
-              // onFinish={onUpdateUser}
               autoComplete="on"
               form={form}
             >

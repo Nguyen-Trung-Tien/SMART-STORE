@@ -53,7 +53,6 @@ const DetailsOrderPage = () => {
       totalPrice,
     } = data);
   }
-
   const priceMemo = useMemo(() => {
     if (!data?.orderItems) return 0;
     return data.orderItems.reduce((total, cur) => {
@@ -69,19 +68,20 @@ const DetailsOrderPage = () => {
     <Loading isLoading={isPending}>
       <div style={{ width: "100%", backgroundColor: "#f5f5fa" }}>
         <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
-          <h4>Chi tiết đơn hàng</h4>
+          <h4 style={{ fontSize: "14px" }}>Chi tiết đơn hàng</h4>
           <WrapperHeaderUser>
             <WrapperInfoUser>
               <WrapperLabel>Địa chỉ người nhận </WrapperLabel>
               <WrapperContentInfo>
-                <div className="user-info">{shippingAddress?.fullName}</div>
+                <div className="user-info">
+                  Họ và tên: {shippingAddress?.fullName}
+                </div>
                 <div className="address-info">
-                  <span>Địa chỉ:</span>
+                  <span>Địa chỉ:</span>{" "}
                   {`${shippingAddress?.address} ${shippingAddress?.city}`}
                 </div>
                 <div className="phone-info">
-                  <span>SĐT:</span>
-                  {shippingAddress?.phone}
+                  <span>SĐT(+84): </span> {shippingAddress?.phone}
                 </div>
               </WrapperContentInfo>
             </WrapperInfoUser>
@@ -89,11 +89,11 @@ const DetailsOrderPage = () => {
               <WrapperLabel>Phương thức giao hàng </WrapperLabel>
               <WrapperContentInfo>
                 <div className="delivery-info">
-                  <span className="name-delivery">FAST</span> Giao hàng tiết
-                  kiệm
+                  <span className="name-delivery"></span>
+                  {} Giao hàng tiết kiệm
                 </div>
                 <div className="delivery-free">
-                  <span>Phí giao hàng:</span> {shippingPrice}
+                  <span>Phí giao:</span> {convertPrice(shippingPrice)}
                 </div>
               </WrapperContentInfo>
             </WrapperInfoUser>
@@ -104,7 +104,7 @@ const DetailsOrderPage = () => {
                   {orderConstant[paymentMethod]}
                 </div>
                 <div className="status-payment">
-                  {isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
+                  {isPaid ? "Chưa thanh toán" : "Đã thanh toán"}
                 </div>
               </WrapperContentInfo>
             </WrapperInfoUser>

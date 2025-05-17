@@ -150,15 +150,17 @@ const MyOrderPage = () => {
   if (!state?.id || !state?.token) {
     return (
       <div style={{ padding: 20 }}>
-        <h2>Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.</h2>
+        <h2>Vui lòng đăng nhập lại!</h2>
       </div>
     );
   }
 
   return (
     <WrapperContainer>
-      <div style={{ height: "100vh", width: "1270px", margin: "0 auto" }}>
-        <h4>Đơn hàng của tôi</h4>
+      <div style={{ width: "1270px", margin: "0 auto" }}>
+        <h4 to="/" style={{ cursor: "pointer" }}>
+          Đơn hàng của tôi
+        </h4>
         <Loading isLoading={isPending || isPendingCancel || isPendingConfirm}>
           <WrapperListOrder>
             {Array.isArray(data) && data.length > 0 ? (
@@ -178,9 +180,10 @@ const MyOrderPage = () => {
                               fontWeight: "bold",
                               fontSize: "14px",
                             }}
-                          >{`${
-                            order?.isDelivered ? "Đã nhận" : "Chưa nhận"
-                          } `}</span>
+                          >
+                            {" "}
+                            {`${order?.isDelivered ? "Chưa nhận" : "Đã nhận"} `}
+                          </span>
                         </span>
                       </div>
                       <div>
@@ -192,9 +195,14 @@ const MyOrderPage = () => {
                               fontWeight: "bold",
                               fontSize: "14px",
                             }}
-                          >{`${
-                            order?.isPaid ? "Đã thanh toán" : "Chưa thanh toán"
-                          } `}</span>
+                          >
+                            {" "}
+                            {`${
+                              order?.isPaid
+                                ? "Chưa thanh toán"
+                                : "Đã thanh toán"
+                            } `}
+                          </span>
                         </span>
                       </div>
                     </WrapperStatus>

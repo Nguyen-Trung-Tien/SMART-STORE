@@ -345,7 +345,7 @@ const AdminProduct = () => {
     } else if (isErrorUpdated) {
       message.error("Không thể cập nhật sản phẩm!");
     }
-  }, [isSuccessUpdated, isErrorUpdated, dataUpdated]);
+  }, [isSuccessUpdated, isErrorUpdated]);
 
   useEffect(() => {
     if (isSuccessDeleted && dataDeleted?.status === "OK") {

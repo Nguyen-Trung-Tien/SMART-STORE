@@ -21,11 +21,12 @@ const sendEmailCreateOrder = async (email, orderItems) => {
       <div>
         <p>Bạn đã đặt sản phẩm: <b>${order?.name}</b></p>
         <div>
-          <img src="${order?.image}" alt="img" style="max-width: 200px;"/>
+          <img src="${order?.image}" style="max-width: 200px;"/>
         </div>
-        <p>với số lượng: <b>${order?.amount}</b> giá: <b>${order?.price
-        .toLocaleString()
-        .replaceAll(",", ".")}VND</b></p>
+        <p>với số lượng: <b>${order?.amount}</b> 
+        <b> ,giá: ${order?.price
+          .toLocaleString()
+          .replaceAll(",", ".")}VND</b></p>
       </div>`;
       attachImage.push({
         filename: order?.name,

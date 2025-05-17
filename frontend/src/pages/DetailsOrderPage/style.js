@@ -18,6 +18,7 @@ export const WrapperInfoUser = styled.div`
 
 export const WrapperLabel = styled.div`
   width: 200px;
+  font-size: 18px;
   align-items: flex-start;
   font-weight: bold;
   &:last-child {
@@ -28,6 +29,7 @@ export const WrapperLabel = styled.div`
 
 export const WrapperContentInfo = styled.div`
   display: flex;
+  font-size: 16px;
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
@@ -65,6 +67,8 @@ export const WrapperProduct = styled.div`
 
 export const WrapperNameProduct = styled.div`
   display: flex;
+  font-size: 14px;
+  font-weight: bold;
   align-items: flex-start;
   margin-top: 10px;
   width: 100%;

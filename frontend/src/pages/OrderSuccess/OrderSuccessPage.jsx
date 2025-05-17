@@ -8,7 +8,7 @@ import {
 } from "./style";
 
 import Loading from "../../components/LoadingComponent/Loading";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { orderConstant } from "../../constant";
 import { convertPrice } from "../../utils";
 
@@ -35,11 +35,17 @@ const OrderSuccessPage = () => {
             <WrapperContainer>
               <WrapperInfo>
                 <div>
-                  <Label>Phương thức giao hàng</Label>
+                  <Label to="/">Phương thức giao hàng</Label>
                   <WrapperValue>
-                    <span style={{ color: "#ea8500", fontWeight: "bold" }}>
+                    <span
+                      style={{
+                        color: "#ea8500",
+                        fontWeight: "bold",
+                        fontSize: "14px",
+                      }}
+                    >
                       {orderConstant.delivery[state?.delivery] ||
-                        "Đơn hàng không tồn tại!"}
+                        "Vui lòng kiểm tra đơn hàng!"}
                     </span>
                   </WrapperValue>
                 </div>
@@ -53,9 +59,9 @@ const OrderSuccessPage = () => {
                 </div>
               </WrapperInfo>
               <WrapperItemsOrderInfo>
-                {state?.order?.map((orders) => {
+                {state?.order?.map((orders, index) => {
                   return (
-                    <WrapperItemOrder key={orders?.id}>
+                    <WrapperItemOrder key={orders?.id || index}>
                       <div
                         style={{
                           width: "500px",

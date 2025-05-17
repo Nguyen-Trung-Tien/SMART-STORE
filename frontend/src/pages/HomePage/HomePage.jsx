@@ -88,7 +88,6 @@ const HomePage = () => {
           id="container"
           style={{
             backgroundColor: "#efefef",
-            height: "1000px",
             width: "1270px",
             margin: "0 auto",
             boxSizing: "border-box",

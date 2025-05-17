@@ -15,8 +15,9 @@ import { orderConstant } from "../../constant";
 import ResponsiveChart from "./ResponsiveChart";
 import { convertDataChart, convertPrice } from "../../utils";
 import Loading from "../LoadingComponent/Loading";
-import { useLocation } from "react-router-dom";
+import { data, useLocation } from "react-router-dom";
 import { useMutationHooks } from "../../hooks/useMutationHook";
+import * as ProductService from "../../services/ProductServices";
 import { message } from "antd";
 
 const AdminOrder = () => {
@@ -75,6 +76,17 @@ const AdminOrder = () => {
     },
   });
 
+  const getAllProduct = async () => {
+    const res = await ProductService.getAllProduct();
+    return res;
+  };
+
+  const queryProduct = useQuery({
+    queryKey: ["products"],
+    queryFn: getAllProduct,
+  });
+  const { isPending: isPendingProducts, data: products } = queryProduct;
+
   const renderAction = (record) => {
     return (
       <div>
@@ -103,7 +115,7 @@ const AdminOrder = () => {
 
   const columns = [
     {
-      title: "User name",
+      title: "User Name",
       dataIndex: "userName",
       sorter: (a, b) => a.userName.length - b.userName.length,
       ...getColumnSearchProps("userName"),
@@ -120,10 +132,10 @@ const AdminOrder = () => {
       sorter: (a, b) => a.address.length - b.address.length,
     },
     {
-      title: "Price Items",
-      dataIndex: "itemsPrice",
-      ...getColumnSearchProps("itemsPrice"),
-      sorter: (a, b) => a.itemsPrice.length - b.itemsPrice.length,
+      title: "Name",
+      dataIndex: "name",
+      ...getColumnSearchProps("name"),
+      sorter: (a, b) => a.name.length - b.name.length,
     },
     {
       title: "Paid",
@@ -240,9 +252,11 @@ const AdminOrder = () => {
         userName: order?.shippingAddress?.fullName,
         phone: order?.shippingAddress?.phone,
         address: order?.shippingAddress?.address,
+        name: order?.orderItems?.[0]?.name,
+        image: order?.orderItems?.[0]?.image,
         paymentMethod: orderConstant.payment[order?.paymentMethod],
-        Paid: order?.isPaid ? "Đã thanh toán" : "Chưa thanh toán",
-        Delivered: order?.isDelivered ? "Đã giao" : "Chưa giao",
+        Paid: order?.isPaid ? "Chưa thanh toán" : "Đã thanh toán",
+        Delivered: order?.isDelivered ? "Chưa nhận" : "Đã nhận",
         totalPrice: convertDataChart && convertPrice(order?.totalPrice),
         itemsPrice: convertPrice(order?.itemsPrice),
       };
