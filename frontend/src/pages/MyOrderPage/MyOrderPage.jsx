@@ -188,7 +188,7 @@ const MyOrderPage = () => {
                       </div>
                       <div>
                         <span>
-                          thanh toán:
+                          Thanh toán:
                           <span
                             style={{
                               color: "rgb(255, 66, 78)",
