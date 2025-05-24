@@ -168,11 +168,11 @@ const MyOrderPage = () => {
                 return (
                   <WrapperItemOrder key={order?._id}>
                     <WrapperStatus>
-                      <span style={{ fontSize: "14px", fontWeight: "bold" }}>
+                      <span style={{ fontSize: "16px", fontWeight: "bold" }}>
                         Trạng thái đơn hàng:
                       </span>
                       <div>
-                        <span>
+                        <span style={{ fontSize: "16px" }}>
                           Giao hàng:
                           <span
                             style={{
@@ -182,12 +182,12 @@ const MyOrderPage = () => {
                             }}
                           >
                             {" "}
-                            {`${order?.isDelivered ? "Chưa nhận" : "Đã nhận"} `}
+                            {`${order?.isDelivered ? "Đã nhận" : "Chưa nhận"} `}
                           </span>
                         </span>
                       </div>
                       <div>
-                        <span>
+                        <span style={{ fontSize: "16px" }}>
                           Thanh toán:
                           <span
                             style={{
@@ -199,8 +199,8 @@ const MyOrderPage = () => {
                             {" "}
                             {`${
                               order?.isPaid
-                                ? "Chưa thanh toán"
-                                : "Đã thanh toán"
+                                ? "Đã thanh toán"
+                                : "Chưa thanh toán"
                             } `}
                           </span>
                         </span>

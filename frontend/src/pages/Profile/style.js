@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 export const WrapperHeader = styled.h1`
   color: #000;
-  font-size: 24px;
+  font-size: 20px;
   margin: 4px 0;
 `;
 
@@ -12,6 +12,7 @@ export const WrapperContentProfile = styled.div`
   flex-direction: column;
   border: 1px solid #ccc;
   width: 600px;
+  height: 400px;
   margin: 0 auto;
   padding: 30px;
   border-radius: 10px;

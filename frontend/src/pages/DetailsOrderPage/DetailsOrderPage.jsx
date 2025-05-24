@@ -98,13 +98,11 @@ const DetailsOrderPage = () => {
               </WrapperContentInfo>
             </WrapperInfoUser>
             <WrapperInfoUser>
-              <WrapperLabel>Phương thức thanh toán </WrapperLabel>
+              <WrapperLabel>Trạng thái thanh toán </WrapperLabel>
               <WrapperContentInfo>
-                <div className="payment-info">
-                  {orderConstant[paymentMethod]}
-                </div>
+                <div className="payment-info">Phương thức: {paymentMethod}</div>
                 <div className="status-payment">
-                  {isPaid ? "Chưa thanh toán" : "Đã thanh toán"}
+                  Trạng thái: {isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
                 </div>
               </WrapperContentInfo>
             </WrapperInfoUser>

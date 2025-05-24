@@ -23,6 +23,7 @@ export const WrapperStatus = styled.div`
 
 export const WrapperFooterItem = styled.div`
   display: flex;
+  font-size: 16px;
   flex-direction: column;
   gap: 10px;
   align-items: center;
@@ -34,6 +35,7 @@ export const WrapperFooterItem = styled.div`
 export const WrapperContainer = styled.div`
   width: 100%;
   background-color: #f5f5fa;
+  font-size: 20px;
 `;
 
 export const WrapperListOrder = styled.div`

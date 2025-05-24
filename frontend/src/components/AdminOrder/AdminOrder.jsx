@@ -115,7 +115,7 @@ const AdminOrder = () => {
 
   const columns = [
     {
-      title: "User Name",
+      title: "User",
       dataIndex: "userName",
       sorter: (a, b) => a.userName.length - b.userName.length,
       ...getColumnSearchProps("userName"),
@@ -132,7 +132,7 @@ const AdminOrder = () => {
       sorter: (a, b) => a.address.length - b.address.length,
     },
     {
-      title: "Name",
+      title: "Name Products",
       dataIndex: "name",
       ...getColumnSearchProps("name"),
       sorter: (a, b) => a.name.length - b.name.length,
@@ -255,8 +255,8 @@ const AdminOrder = () => {
         name: order?.orderItems?.[0]?.name,
         image: order?.orderItems?.[0]?.image,
         paymentMethod: orderConstant.payment[order?.paymentMethod],
-        Paid: order?.isPaid ? "Chưa thanh toán" : "Đã thanh toán",
-        Delivered: order?.isDelivered ? "Chưa nhận" : "Đã nhận",
+        Paid: order?.isPaid ? "Đã thanh toán" : "Chưa thanh toán",
+        Delivered: order?.isDelivered ? "Đã nhận" : "Chưa nhận",
         totalPrice: convertDataChart && convertPrice(order?.totalPrice),
         itemsPrice: convertPrice(order?.itemsPrice),
       };

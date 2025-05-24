@@ -277,13 +277,11 @@ const PaymentPage = () => {
                   <Label>Chọn phương thức thanh toán</Label>
                   <WrapperRadio onChange={handlePayment} value={payment}>
                     <Radio value="laster_money">Thanh toán khi nhận</Radio>
-                    <Radio value="bank">Thanh toán qua ngân hàng</Radio>
+                    <Radio value="bank">Giao dịch bằng ngân hàng</Radio>
                     <Radio value="PayPal">PayPal</Radio>
                     <Radio value="VNPay">VNPay</Radio>
                     <Radio value="MoMo">MoMo</Radio>
-                    <Radio value="9Pay">9Pay</Radio>
                     <Radio value="Zalopay">Zalopay</Radio>
-                    <Radio value="ShopeePay">ShopeePay</Radio>
                   </WrapperRadio>
                 </div>
               </WrapperInfo>

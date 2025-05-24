@@ -5,12 +5,10 @@ export const orderConstant = {
   },
   payment: {
     laster_money: "Thanh toán khi nhận",
-    bank: "Thanh toán qua ngân hàng",
+    bank: "Giao dịch bằng ngân hàng",
     PayPal: "PayPal",
     VNPay: "VNPay",
     MoMo: "MoMo",
-    Pay: "9Pay",
-    ShopeePay: "ShopeePay",
     Zalopay: "Zalopay",
   },
 };

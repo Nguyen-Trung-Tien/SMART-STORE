@@ -30,10 +30,11 @@ export const WrapperLabel = styled.div`
 export const WrapperContentInfo = styled.div`
   display: flex;
   font-size: 16px;
+  font-weight: bold;
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  gap: 10px;
+  gap: 15px;
   margin-top: 20px;
   height: 100px;
 `;
@@ -58,7 +59,6 @@ export const WrapperItemLabel = styled.div`
 export const WrapperProduct = styled.div`
   display: flex;
   align-items: flex-start;
-  width: 100%;
   margin-top: 10px;
   border: 1px solid #f5f5f5;
   background: #fff;
