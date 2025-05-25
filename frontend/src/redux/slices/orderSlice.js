@@ -91,6 +91,9 @@ export const orderSlice = createSlice({
       });
       state.orderItemsSelected = orderSelected;
     },
+    setOrder: (state, action) => {
+      return { ...state, ...action.payload };
+    },
   },
 });
 
@@ -102,6 +105,7 @@ export const {
   removeAllOrderProduct,
   selectedOrder,
   resetOrder,
+  setOrder,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;
