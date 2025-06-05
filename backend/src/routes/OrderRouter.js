@@ -6,15 +6,11 @@ const {
   authMiddleware,
 } = require("../middleware/authMiddleware");
 
-router.post(
-  "/create",
-  authUserMiddleware,
-  authMiddleware,
-  OrderController.createOrder
-);
+router.post("/create", OrderController.createOrder);
 router.get(
   "/get-all-order/:id",
   authUserMiddleware,
+  authMiddleware,
   OrderController.getAllOrderDetails
 );
 router.get(
@@ -22,16 +18,7 @@ router.get(
   authUserMiddleware,
   OrderController.getDetailsOrder
 );
-router.delete(
-  "/cancel-order/:id",
-  authUserMiddleware,
-  OrderController.cancelOrderDetails
-);
-router.get("/get-all-order", authMiddleware, OrderController.getAllOrder);
-router.put(
-  "/confirm/:id",
-  authMiddleware,
-  authUserMiddleware,
-  OrderController.confirmOrderDetails
-);
+router.delete("/cancel-order/:id", OrderController.cancelOrderDetails);
+router.get("/get-all-order", OrderController.getAllOrder);
+router.put("/confirm/:id", OrderController.confirmOrderDetails);
 module.exports = router;

@@ -15,6 +15,7 @@ import * as ProductService from "../../services/ProductServices";
 import { useSelector } from "react-redux";
 import Loading from "../../components/LoadingComponent/Loading";
 import { useDebounce } from "../../hooks/useDebounce";
+import FooterComponent from "../../components/FooterComponent/FooterComponent";
 
 const HomePage = () => {
   const searchProduct = useSelector((state) => state?.product?.search);
@@ -131,6 +132,7 @@ const HomePage = () => {
                     ? "#f5f5fa"
                     : "rgb(11, 116, 229)"
                 }`,
+
                 height: "38px",
                 width: "240px",
                 borderRadius: "4px",
@@ -149,6 +151,7 @@ const HomePage = () => {
             />
           </div>
         </div>
+        <FooterComponent />
       </div>
     </Loading>
   );

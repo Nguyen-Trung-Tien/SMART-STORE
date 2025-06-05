@@ -286,7 +286,7 @@ const MyOrderPage = () => {
                 );
               })
             ) : (
-              <p>Không có sản phẩm nào! </p>
+              <p style={{ height: "100vh" }}>Không có sản phẩm nào! </p>
             )}
           </WrapperListOrder>
         </Loading>

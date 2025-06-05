@@ -16,6 +16,7 @@ export const WrapperButtonMore = styled(ButtonComponent)`
       color: #fff;
     }
   }
+
   width: 100%;
   text-align: center;
   cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
