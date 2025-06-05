@@ -14,7 +14,8 @@ import Loading from "../../components/LoadingComponent/Loading";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import { useEffect } from "react";
-import { message } from "antd";
+import { Button, message, Result } from "antd";
+import { HomeTwoTone, SmileOutlined } from "@ant-design/icons";
 
 const MyOrderPage = () => {
   const location = useLocation();
@@ -96,12 +97,10 @@ const MyOrderPage = () => {
     isError: isErrorCancel,
   } = cancelMutation;
 
-  const confirmMutation = useMutationHooks((data) => {
-    const { id, token, orderItems } = data;
-    const res = OrderService.confirmOrder(id, token, orderItems);
-    return res;
+  const confirmMutation = useMutationHooks(async (order) => {
+    await OrderService.updateOrderPaid(order._id, order.token);
+    await OrderService.updateOrderDelivered(order._id, order.token);
   });
-
   const {
     data: dataConfirm,
     isPending: isPendingConfirm,
@@ -111,17 +110,17 @@ const MyOrderPage = () => {
 
   useEffect(() => {
     if (isSuccessCancel && dataCancel?.status === "OK") {
-      message.success("Hủy đơn thành công!");
+      message.success("Hủy thành công!");
     } else if (isErrorCancel) {
-      message.error("Không thể hủy đơn!");
+      message.error("Không thể hủy!");
     }
   }, [isSuccessCancel, isErrorCancel, dataCancel]);
 
   useEffect(() => {
     if (isSuccessConfirm && dataConfirm?.status === "OK") {
-      message.success("Xác nhận đơn thành công!");
+      message.success("Xác nhận thành công!");
     } else if (isErrorConfirm) {
-      message.error("Đã xẩy ra lỗi!");
+      message.error("Xác nhận không thành công!");
     }
   }, [isSuccessConfirm, isErrorConfirm, dataConfirm]);
 
@@ -138,7 +137,7 @@ const MyOrderPage = () => {
 
   const handleConfirmOrder = (order) => {
     confirmMutation.mutate(
-      { id: order?._id, token: state?.token, orderItems: order?.orderItems },
+      { ...order, token: state?.token },
       {
         onSuccess: () => {
           queryOrder.refetch();
@@ -286,7 +285,23 @@ const MyOrderPage = () => {
                 );
               })
             ) : (
-              <p style={{ height: "100vh" }}>Không có sản phẩm nào! </p>
+              <div>
+                <Result
+                  icon={<SmileOutlined />}
+                  title="Hiện không có sản phẩm nào!"
+                  extra={
+                    <Button
+                      type="primary"
+                      onClick={() => navigate("/")}
+                      style={{ background: "rgb(11, 116, 229)" }}
+                    >
+                      Quay về trang chủ
+                      <HomeTwoTone style={{ fontSize: "20px" }} />
+                    </Button>
+                  }
+                  style={{ height: "100vh" }}
+                />
+              </div>
             )}
           </WrapperListOrder>
         </Loading>

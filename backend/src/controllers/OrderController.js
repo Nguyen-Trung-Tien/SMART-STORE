@@ -129,9 +129,9 @@ const updateOrderPaid = async (req, res) => {
     }
     return res.status(200).json(response);
   } catch (error) {
-    return res.status(500).json({
+    return res.status(404).json({
       status: "ERR",
-      message: error.message || "Lỗi server",
+      message: error.message,
     });
   }
 };
@@ -145,9 +145,9 @@ const updateOrderDelivered = async (req, res) => {
     }
     return res.status(200).json(response);
   } catch (error) {
-    return res.status(500).json({
+    return res.status(404).json({
       status: "ERR",
-      message: error.message || "Lỗi server",
+      message: error.message,
     });
   }
 };

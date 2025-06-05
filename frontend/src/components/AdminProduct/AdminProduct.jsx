@@ -11,7 +11,7 @@ import TableComponent from "../TableComponent/TableComponent";
 import InputComponent from "../InputComponent/InputComponent";
 import * as ProductService from "../../services/ProductServices";
 import { useMutationHooks } from "../../hooks/useMutationHook";
-import { getBase64, renderOptions } from "../../utils";
+import { convertPrice, getBase64, renderOptions } from "../../utils";
 import Loading from "../LoadingComponent/Loading";
 import * as message from "../../components/Message/Message";
 import { useQuery } from "@tanstack/react-query";
@@ -177,7 +177,7 @@ const AdminProduct = () => {
     },
 
     {
-      title: "Price",
+      title: "Price (VND)",
       dataIndex: "price",
       sorter: (a, b) => a.price - b.price,
       filters: [
@@ -197,6 +197,7 @@ const AdminProduct = () => {
           return record.price <= 50;
         }
       },
+      render: (price) => convertPrice(price),
     },
     {
       title: "Rating",
@@ -598,7 +599,7 @@ const AdminProduct = () => {
               />
             </Form.Item>
             <Form.Item
-              label="Price"
+              label="Price (VND)"
               name="price"
               rules={[{ required: true, message: "Please input your price!" }]}
             >
@@ -735,12 +736,12 @@ const AdminProduct = () => {
               />
             </Form.Item>
             <Form.Item
-              label="Price"
+              label="Price (VND)"
               name="price"
               rules={[{ required: true, message: "Please input your price!" }]}
             >
               <InputComponent
-                value={stateProductDetails.price}
+                value={stateProductDetails.convertPrice}
                 onChange={handleOnChangeDetails}
                 name="price"
               />

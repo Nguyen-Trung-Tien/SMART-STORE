@@ -10,7 +10,6 @@ router.post("/create", OrderController.createOrder);
 router.get(
   "/get-all-order/:id",
   authUserMiddleware,
-  authMiddleware,
   OrderController.getAllOrderDetails
 );
 router.get(
@@ -18,9 +17,22 @@ router.get(
   authUserMiddleware,
   OrderController.getDetailsOrder
 );
-router.delete("/cancel-order/:id", OrderController.cancelOrderDetails);
-router.get("/get-all-order", OrderController.getAllOrder);
-router.put("/confirm/:id", OrderController.confirmOrderDetails);
+router.delete(
+  "/cancel-order/:id",
+  authUserMiddleware,
+  OrderController.cancelOrderDetails
+);
+router.get(
+  "/get-all-order",
+  authUserMiddleware,
+  authMiddleware,
+  OrderController.getAllOrder
+);
+router.put(
+  "/confirm/:id",
+  authUserMiddleware,
+  OrderController.confirmOrderDetails
+);
 router.put("/pay/:id", authUserMiddleware, OrderController.updateOrderPaid);
 router.put(
   "/deliver/:id",
