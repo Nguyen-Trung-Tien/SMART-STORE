@@ -119,6 +119,38 @@ const getAllOrder = async (req, res) => {
     });
   }
 };
+
+const updateOrderPaid = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const response = await OrderService.updateOrderPaid(id);
+    if (response.status === "ERR") {
+      return res.status(404).json(response);
+    }
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      status: "ERR",
+      message: error.message || "Lỗi server",
+    });
+  }
+};
+
+const updateOrderDelivered = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const response = await OrderService.updateOrderDelivered(id);
+    if (response.status === "ERR") {
+      return res.status(404).json(response);
+    }
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(500).json({
+      status: "ERR",
+      message: error.message || "Lỗi server",
+    });
+  }
+};
 module.exports = {
   createOrder,
   getAllOrderDetails,
@@ -126,4 +158,6 @@ module.exports = {
   cancelOrderDetails,
   getAllOrder,
   confirmOrderDetails,
+  updateOrderDelivered,
+  updateOrderPaid,
 };

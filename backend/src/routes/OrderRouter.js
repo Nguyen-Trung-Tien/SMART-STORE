@@ -21,4 +21,10 @@ router.get(
 router.delete("/cancel-order/:id", OrderController.cancelOrderDetails);
 router.get("/get-all-order", OrderController.getAllOrder);
 router.put("/confirm/:id", OrderController.confirmOrderDetails);
+router.put("/pay/:id", authUserMiddleware, OrderController.updateOrderPaid);
+router.put(
+  "/deliver/:id",
+  authUserMiddleware,
+  OrderController.updateOrderDelivered
+);
 module.exports = router;

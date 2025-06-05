@@ -74,3 +74,27 @@ export const getAllOrder = async (access_token) => {
   );
   return res.data;
 };
+
+export const updateOrderPaid = async (id, access_token) => {
+  const res = await axiosJWT.put(
+    `${process.env.REACT_APP_API_KEY}/order/pay/${id}`,
+    {
+      headers: {
+        token: `Bearer ${access_token}`,
+      },
+    }
+  );
+  return res.data;
+};
+
+export const updateOrderDelivered = async (id, access_token) => {
+  const res = await axiosJWT.put(
+    `${process.env.REACT_APP_API_KEY}/order/deliver/${id}`,
+    {
+      headers: {
+        token: `Bearer ${access_token}`,
+      },
+    }
+  );
+  return res.data;
+};

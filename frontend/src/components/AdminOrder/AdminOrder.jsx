@@ -15,7 +15,7 @@ import { orderConstant } from "../../constant";
 import ResponsiveChart from "./ResponsiveChart";
 import { convertDataChart, convertPrice } from "../../utils";
 import Loading from "../LoadingComponent/Loading";
-import { data, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import * as ProductService from "../../services/ProductServices";
 import { message } from "antd";
@@ -191,11 +191,27 @@ const AdminOrder = () => {
     isError: isErrorCancel,
   } = cancelMutation;
 
-  const confirmMutation = useMutationHooks((data) => {
-    const { id, token, orderItems } = data;
-    const res = OrderService.confirmOrder(id, token, orderItems);
-    return res;
-  });
+  // const confirmMutation = useMutationHooks((data) => {
+  //   const { id, token, orderItems } = data;
+  //   const res = OrderService.confirmOrder(id, token, orderItems);
+  //   return res;
+  // });
+
+  const confirmMutation = useMutationHooks(
+    async (order) => {
+      await OrderService.updateOrderPaid(order._id, user?.access_token);
+      await OrderService.updateOrderDelivered(order._id, user?.access_token);
+    },
+    {
+      onSuccess: () => {
+        message.success("Xác nhận đơn thành công!");
+        queryOrder.refetch();
+      },
+      onError: () => {
+        message.error("Xác nhận đơn thất bại!");
+      },
+    }
+  );
 
   const {
     data: dataConfirm,
@@ -203,6 +219,10 @@ const AdminOrder = () => {
     isSuccess: isSuccessConfirm,
     isError: isErrorConfirm,
   } = confirmMutation;
+
+  const handleConfirmOrder = (order) => {
+    confirmMutation.mutate(order);
+  };
 
   useEffect(() => {
     if (isSuccessCancel && dataCancel?.status === "OK") {
@@ -231,16 +251,16 @@ const AdminOrder = () => {
     );
   };
 
-  const handleConfirmOrder = (order) => {
-    confirmMutation.mutate(
-      { id: order?._id, token: state?.token, orderItems: order?.orderItems },
-      {
-        onSuccess: () => {
-          queryOrder.refetch();
-        },
-      }
-    );
-  };
+  // const handleConfirmOrder = (order) => {
+  //   confirmMutation.mutate(
+  //     { id: order?._id, token: state?.token, orderItems: order?.orderItems },
+  //     {
+  //       onSuccess: () => {
+  //         queryOrder.refetch();
+  //       },
+  //     }
+  //   );
+  // };
 
   const { isPending: isPendingOrders, data: orders } = queryOrder;
   const dataTable =

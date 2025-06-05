@@ -205,6 +205,61 @@ const getAllOrder = () => {
     }
   });
 };
+
+const updateOrderPaid = async (orderId) => {
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return {
+        status: "ERR",
+        message: "Không tìm thấy đơn hàng",
+      };
+    }
+
+    order.isPaid = true;
+    order.paidAt = new Date();
+
+    const updatedOrder = await order.save();
+    return {
+      status: "OK",
+      message: "Đã cập nhật trạng thái thanh toán",
+      data: updatedOrder,
+    };
+  } catch (error) {
+    return {
+      status: "ERR",
+      message: error.message || "Có lỗi xảy ra khi cập nhật thanh toán",
+    };
+  }
+};
+
+const updateOrderDelivered = async (orderId) => {
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return {
+        status: "ERR",
+        message: "Không tìm thấy đơn hàng",
+      };
+    }
+
+    order.isDelivered = true;
+    order.deliveredAt = new Date();
+
+    const updatedOrder = await order.save();
+    return {
+      status: "OK",
+      message: "Đã cập nhật trạng thái giao hàng",
+      data: updatedOrder,
+    };
+  } catch (error) {
+    return {
+      status: "ERR",
+      message: error.message || "Có lỗi xảy ra khi cập nhật giao hàng",
+    };
+  }
+};
+
 module.exports = {
   createOrder,
   getAllOrderDetails,
@@ -212,4 +267,6 @@ module.exports = {
   cancelOrderDetails,
   getAllOrder,
   confirmOrderDetails,
+  updateOrderDelivered,
+  updateOrderPaid,
 };

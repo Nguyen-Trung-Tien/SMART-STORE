@@ -2,12 +2,12 @@ import React, { Fragment, useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { routes } from "./routes";
 import DefaultComponent from "./components/DefaultComponent/DefaultComponent";
+import { isJsonString } from "./utils";
 import { jwtDecode } from "jwt-decode";
 import * as UserService from "./services/UserServices";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "./redux/slices/userSlice";
 import Loading from "./components/LoadingComponent/Loading";
-import FooterComponent from "./components/FooterComponent/FooterComponent";
 
 function App() {
   const dispatch = useDispatch();
@@ -15,44 +15,37 @@ function App() {
   const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
-    const interceptor = UserService.axiosJWT.interceptors.request.use(
-      async (config) => {
-        const currentTime = new Date();
-        const { decoded } = handleDecoded();
-        if (decoded?.exp < currentTime.getTime() / 1000) {
-          const data = await UserService.refreshToken();
-          config.headers["token"] = `Bearer ${data?.access_token}`;
-        }
-        return config;
-      },
-      (err) => Promise.reject(err)
-    );
-
-    return () => {
-      UserService.axiosJWT.interceptors.request.eject(interceptor);
-    };
+    setIsPending(true);
+    const { storageData, decoded } = handleDecoded();
+    if (decoded?.id) {
+      handleGetDetailsUser(decoded?.id, storageData);
+    }
+    setIsPending(false);
   }, []);
 
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      setIsPending(true);
-      const { token, decoded } = handleDecoded();
-      if (decoded?.id) {
-        await handleGetDetailsUser(decoded?.id, token);
+  UserService.axiosJWT.interceptors.request.use(
+    async (config) => {
+      const currentTime = new Date();
+      const { decoded } = handleDecoded();
+      if (decoded?.exp < currentTime.getTime() / 1000) {
+        const data = await UserService.refreshToken();
+        config.headers["token"] = `Bearer ${data?.access_token}`;
       }
-      setIsPending(false);
-    };
-
-    fetchUserDetails();
-  }, []);
+      return config;
+    },
+    (err) => {
+      return Promise.reject(err);
+    }
+  );
 
   const handleDecoded = () => {
-    const token = localStorage.getItem("access_token");
+    let storageData = localStorage.getItem("access_token");
     let decoded = {};
-    if (token) {
-      decoded = jwtDecode(token);
+    if (storageData && isJsonString(storageData)) {
+      storageData = JSON.parse(storageData);
+      decoded = jwtDecode(storageData);
     }
-    return { decoded, token };
+    return { decoded, storageData };
   };
 
   const handleGetDetailsUser = async (id, token) => {
@@ -61,11 +54,13 @@ function App() {
       dispatch(updateUser({ ...res?.data, access_token: token }));
     } catch (error) {
       console.error("Failed to fetch user details:", error);
+    } finally {
+      setIsPending(false);
     }
   };
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div style={{ height: "100%", width: "100%" }}>
       <Loading isLoading={isPending}>
         <Router>
           <Routes>
@@ -80,7 +75,6 @@ function App() {
                   element={
                     <Layout>
                       <Page />
-                      {/* <FooterComponent /> */}
                     </Layout>
                   }
                 />
