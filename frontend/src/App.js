@@ -7,6 +7,7 @@ import * as UserService from "./services/UserServices";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "./redux/slices/userSlice";
 import Loading from "./components/LoadingComponent/Loading";
+import FooterComponent from "./components/FooterComponent/FooterComponent";
 
 function App() {
   const dispatch = useDispatch();
@@ -64,7 +65,7 @@ function App() {
   };
 
   return (
-    <div style={{ height: "100%", width: "100%" }}>
+    <div style={{ width: "100%", height: "100%" }}>
       <Loading isLoading={isPending}>
         <Router>
           <Routes>
@@ -79,6 +80,7 @@ function App() {
                   element={
                     <Layout>
                       <Page />
+                      {/* <FooterComponent /> */}
                     </Layout>
                   }
                 />
