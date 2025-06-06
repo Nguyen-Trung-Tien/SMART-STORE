@@ -93,7 +93,7 @@ const confirmOrderDetails = async (req, res) => {
   try {
     const orderId = req.params.id;
     if (!orderId) {
-      return res.status(400).json({
+      return res.status(404).json({
         status: "ERR",
         message: "The orderId is required",
       });
@@ -102,9 +102,9 @@ const confirmOrderDetails = async (req, res) => {
     const response = await OrderService.confirmOrderDetails(orderId);
     return res.status(200).json(response);
   } catch (e) {
-    return res.status(500).json({
+    return res.status(404).json({
       status: "ERR",
-      message: e.message || "Something went wrong",
+      message: e.message,
     });
   }
 };

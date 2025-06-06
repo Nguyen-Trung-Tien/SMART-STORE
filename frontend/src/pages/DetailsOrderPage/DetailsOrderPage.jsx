@@ -90,7 +90,7 @@ const DetailsOrderPage = () => {
               <WrapperContentInfo>
                 <div className="delivery-info">
                   <span className="name-delivery"></span>
-                  {} Giao hàng tiết kiệm
+                  {} Giao hàng nhanh
                 </div>
                 <div className="delivery-free">
                   <span>Phí giao:</span> {convertPrice(shippingPrice)}
