@@ -14,7 +14,7 @@ const { Text, Title } = Typography;
 const FooterComponent = () => {
   return (
     <div>
-      <div style={{ paddingTop: "10px" }}>
+      <div style={{ paddingTop: "10px", backgroundColor: "#f0f0f0" }}>
         <Footer
           style={{
             backgroundColor: "rgb(11, 116, 229)",

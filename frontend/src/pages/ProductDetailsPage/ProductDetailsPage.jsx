@@ -1,7 +1,6 @@
 import React from "react";
 import ProductDetailsComponent from "../../components/ProDuctDetailsComponent/ProDuctDetailsComponent";
 import { useNavigate, useParams } from "react-router-dom";
-import FooterComponent from "../../components/FooterComponent/FooterComponent";
 
 const ProductDetailsPage = () => {
   const { id } = useParams();
@@ -25,7 +24,6 @@ const ProductDetailsPage = () => {
         </h5>
         <ProductDetailsComponent idProduct={id} />
       </div>
-      <FooterComponent />
     </div>
   );
 };

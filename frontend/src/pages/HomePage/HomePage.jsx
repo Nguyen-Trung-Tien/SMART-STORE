@@ -15,7 +15,6 @@ import * as ProductService from "../../services/ProductServices";
 import { useSelector } from "react-redux";
 import Loading from "../../components/LoadingComponent/Loading";
 import { useDebounce } from "../../hooks/useDebounce";
-import FooterComponent from "../../components/FooterComponent/FooterComponent";
 
 const HomePage = () => {
   const searchProduct = useSelector((state) => state?.product?.search);
@@ -151,7 +150,6 @@ const HomePage = () => {
             />
           </div>
         </div>
-        <FooterComponent />
       </div>
     </Loading>
   );

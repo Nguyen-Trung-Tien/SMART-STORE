@@ -8,7 +8,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Loading from "../../components/LoadingComponent/Loading";
 import { useSelector } from "react-redux";
 import { useDebounce } from "../../hooks/useDebounce";
-import FooterComponent from "../../components/FooterComponent/FooterComponent";
 
 const TypeProductPage = () => {
   const searchProduct = useSelector((state) => state?.product?.search);
@@ -133,7 +132,6 @@ const TypeProductPage = () => {
             </Col>
           </Row>
         </div>
-        <FooterComponent />
       </div>
     </Loading>
   );

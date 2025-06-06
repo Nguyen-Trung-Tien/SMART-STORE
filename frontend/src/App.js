@@ -1,13 +1,13 @@
-import React, { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { routes } from "./routes";
-import DefaultComponent from "./components/DefaultComponent/DefaultComponent";
 import { isJsonString } from "./utils";
 import { jwtDecode } from "jwt-decode";
 import * as UserService from "./services/UserServices";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "./redux/slices/userSlice";
 import Loading from "./components/LoadingComponent/Loading";
+import LayoutComponent from "./components/LayoutFooter/LayoutFooter";
 
 function App() {
   const dispatch = useDispatch();
@@ -53,7 +53,6 @@ function App() {
       const res = await UserService.getDetailsUser(id, token);
       dispatch(updateUser({ ...res?.data, access_token: token }));
     } catch (error) {
-      console.error("Failed to fetch user details:", error);
     } finally {
       setIsPending(false);
     }
@@ -63,24 +62,29 @@ function App() {
     <div style={{ height: "100%", width: "100%" }}>
       <Loading isLoading={isPending}>
         <Router>
-          <Routes>
-            {routes.map((route) => {
-              const Page = route.page;
-              const isCheckAuth = !route.isPrivate || user.isAdmin;
-              const Layout = route.isShowHeader ? DefaultComponent : Fragment;
-              return (
-                <Route
-                  key={route.path}
-                  path={isCheckAuth ? route.path : undefined}
-                  element={
-                    <Layout>
-                      <Page />
-                    </Layout>
-                  }
-                />
-              );
-            })}
-          </Routes>
+          <LayoutComponent>
+            <Routes>
+              {routes.map((route) => {
+                const Page = route.page;
+                const isCheckAuth = !route.isPrivate || user.isAdmin;
+
+                return (
+                  <Route
+                    key={route.path}
+                    path={isCheckAuth ? route.path : undefined}
+                    element={
+                      <LayoutComponent
+                        isShowFooter={route.isShowFooter}
+                        isShowHeader={route.isShowHeader}
+                      >
+                        <Page />
+                      </LayoutComponent>
+                    }
+                  />
+                );
+              })}
+            </Routes>
+          </LayoutComponent>
         </Router>
       </Loading>
     </div>

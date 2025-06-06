@@ -206,9 +206,9 @@ const getAllOrder = () => {
   });
 };
 
-const updateOrderPaid = async (orderId) => {
+const updateOrderPaid = async (id) => {
   try {
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(id);
     if (!order) {
       return {
         status: "ERR",
@@ -233,16 +233,15 @@ const updateOrderPaid = async (orderId) => {
   }
 };
 
-const updateOrderDelivered = async (orderId) => {
+const updateOrderDelivered = async (id) => {
   try {
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(id);
     if (!order) {
       return {
         status: "ERR",
         message: "Không tìm thấy đơn hàng",
       };
     }
-
     order.isDelivered = true;
     order.deliveredAt = new Date();
 
