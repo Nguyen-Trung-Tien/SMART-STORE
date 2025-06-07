@@ -24,6 +24,7 @@ import { convertPrice, intitFakeBookSDK } from "../../utils";
 import * as message from "../../components/Message/Message";
 import LikeButtonComponent from "../LikeButtonComponent/LikeButtonComponent";
 import CommentComponent from "../CommentComponent/CommentComponent";
+import Descriptions from "../Descriptions/Descriptions";
 
 const ProductDetailsComponent = ({ idProduct }) => {
   const [numProduct, setNumProduct] = useState(1);
@@ -122,6 +123,47 @@ const ProductDetailsComponent = ({ idProduct }) => {
     return stars;
   };
 
+  const collapseItems = productDetails?.descriptions
+    ? productDetails.descriptions.map((item, index) => ({
+        key: index + 1,
+        label: item.title,
+        children: <p>{item.content}</p>,
+      }))
+    : [
+        {
+          key: 1,
+          label: "Mô tả sản phẩm",
+          children: <p>{productDetails?.description}</p>,
+        },
+        {
+          key: 2,
+          label: "Thông số sản phẩm ",
+          children: (
+            <div>
+              <p>
+                <strong>Tên sản phẩm:</strong> {productDetails?.name}
+              </p>
+              <p>
+                <strong>Thương hiệu:</strong> {productDetails?.type}
+              </p>
+              <p>
+                <strong>Giá:</strong> {convertPrice(productDetails?.price)}
+              </p>
+              <p>
+                <strong>Giảm giá:</strong> {productDetails?.discount || 0}%
+              </p>
+
+              <p>
+                <strong>Chất liệu:</strong> Nhựa
+              </p>
+              <p>
+                <strong>Trọng lượng:</strong> 170g
+              </p>
+            </div>
+          ),
+        },
+      ];
+
   const handleAddOrderProduct = () => {
     if (!user?.id) {
       navigate("/sign-in", { state: location?.pathname });
@@ -143,6 +185,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
               price: productDetails?.price,
               product: productDetails?._id,
               discount: productDetails?.discount,
+              description: productDetails?.description,
               countInStock: productDetails?.countInStock,
             },
           })
@@ -296,7 +339,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
                 <div
                   style={{
                     color: "red",
-                    fontSize: "15px",
+                    fontSize: "12px",
                     fontWeight: "700",
                   }}
                 >
@@ -329,6 +372,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
           }
           width="1270px"
         /> */}
+        <Descriptions items={collapseItems} />
       </Row>
     </Loading>
   );
