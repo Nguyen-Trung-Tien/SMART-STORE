@@ -79,3 +79,10 @@ export const WrapperInputNumber = styled(InputNumber)`
     }
   }
 `;
+
+export const ErrorText = styled.div`
+  color: red;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 5px;
+`;

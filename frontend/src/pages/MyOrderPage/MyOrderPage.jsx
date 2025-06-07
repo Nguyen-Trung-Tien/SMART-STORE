@@ -116,20 +116,17 @@ const MyOrderPage = () => {
     }
   }, [isSuccessCancel, isErrorCancel, dataCancel]);
 
-  useEffect(() => {
-    if (isSuccessConfirm && dataConfirm?.status === "OK") {
-      message.success("Xác nhận thành công!");
-    } else if (isErrorConfirm) {
-      message.error("Xác nhận không thành công!");
-    }
-  }, [isSuccessConfirm, isErrorConfirm, dataConfirm]);
-
   const handleCancelOrder = (order) => {
     cancelMutation.mutate(
       { id: order?._id, token: state?.token, orderItems: order?.orderItems },
       {
         onSuccess: () => {
           queryOrder.refetch();
+          message.success("Xác nhận thành công!");
+        },
+        onError: () => {
+          queryOrder.refetch();
+          message.error("Xác nhận không thành công!");
         },
       }
     );

@@ -249,7 +249,13 @@ const OrderPage = () => {
                   onChange={handleOnChangeCheckAll}
                   checked={listChecked?.length === order?.orderItems?.length}
                 ></Checkbox>
-                <span style={{ fontWeight: "bold", fontSize: "16px" }}>
+                <span
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "16px",
+                    marginLeft: "3px",
+                  }}
+                >
                   Tất cả ({order?.orderItems?.length} sản phẩm)
                 </span>
               </span>

@@ -191,37 +191,51 @@ const AdminOrder = () => {
     isError: isErrorCancel,
   } = cancelMutation;
 
-  // const confirmMutation = useMutationHooks((data) => {
-  //   const { id, token, orderItems } = data;
-  //   const res = OrderService.confirmOrder(id, token, orderItems);
-  //   return res;
-  // });
-
-  const confirmMutation = useMutationHooks(
+  const DeliveredMutation = useMutationHooks(
     async (order) => {
-      await OrderService.updateOrderPaid(order._id, user?.access_token);
-      await OrderService.updateOrderDelivered(order._id, user?.access_token);
+      const res = await OrderService.updateOrderDelivered(
+        order._id,
+        user?.access_token
+      );
+      return res;
     },
     {
       onSuccess: () => {
-        message.success("Xác nhận đơn thành công!");
         queryOrder.refetch();
-      },
-      onError: () => {
-        message.error("Xác nhận đơn thất bại!");
       },
     }
   );
 
+  const PaidMutation = useMutationHooks(
+    async (order) => {
+      const res = await OrderService.updateOrderPaid(
+        order._id,
+        user?.access_token
+      );
+      return res;
+    },
+    {
+      onSuccess: () => {
+        queryOrder.refetch();
+      },
+    }
+  );
   const {
-    data: dataConfirm,
-    isPending: isPendingConfirm,
-    isSuccess: isSuccessConfirm,
-    isError: isErrorConfirm,
-  } = confirmMutation;
+    data: dataPaid,
+    isPending: isPendingPaid,
+    isSuccess: isSuccessPaid,
+    isError: isErrorPaid,
+  } = PaidMutation;
 
+  const {
+    data: dataDelivery,
+    isPending: isPendingDelivery,
+    isSuccess: isSuccessDelivery,
+    isError: isErrorDelivery,
+  } = DeliveredMutation;
   const handleConfirmOrder = (order) => {
-    confirmMutation.mutate(order);
+    PaidMutation.mutate(order);
+    DeliveredMutation.mutate(order);
   };
 
   useEffect(() => {
@@ -233,12 +247,19 @@ const AdminOrder = () => {
   }, [isSuccessCancel, isErrorCancel, dataCancel]);
 
   useEffect(() => {
-    if (isSuccessConfirm && dataConfirm?.status === "OK") {
+    if (isSuccessDelivery && isSuccessPaid) {
       message.success("Xác nhận đơn thành công!");
-    } else if (isErrorConfirm) {
-      message.error("Đã xẩy ra lỗi!");
+    } else if (isErrorDelivery && isErrorPaid) {
+      message.error("Đã xảy ra lỗi!");
     }
-  }, [isSuccessConfirm, isErrorConfirm, dataConfirm]);
+  }, [
+    isSuccessDelivery,
+    dataDelivery,
+    isSuccessPaid,
+    dataPaid,
+    isErrorDelivery,
+    isErrorPaid,
+  ]);
 
   const handleCancelOrder = (order) => {
     cancelMutation.mutate(
@@ -250,17 +271,6 @@ const AdminOrder = () => {
       }
     );
   };
-
-  // const handleConfirmOrder = (order) => {
-  //   confirmMutation.mutate(
-  //     { id: order?._id, token: state?.token, orderItems: order?.orderItems },
-  //     {
-  //       onSuccess: () => {
-  //         queryOrder.refetch();
-  //       },
-  //     }
-  //   );
-  // };
 
   const { isPending: isPendingOrders, data: orders } = queryOrder;
   const dataTable =
@@ -283,7 +293,7 @@ const AdminOrder = () => {
     });
 
   return (
-    <Loading isLoading={isPendingCancel || isPendingConfirm}>
+    <Loading isLoading={isPendingCancel || isPendingDelivery || isPendingPaid}>
       <div>
         <WrapperHeader>Quản lý đơn hàng</WrapperHeader>
         <div style={{ width: 200, height: 200 }}>

@@ -2,6 +2,7 @@ import { Col, Image, Row } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
 // import ImageSmall from "../../assets/ImageSmall/testSmall.webp";
 import {
+  ErrorText,
   WrapperAddressProduct,
   WrapperInputNumber,
   WrapperPriceProduct,
@@ -152,7 +153,6 @@ const ProductDetailsComponent = ({ idProduct }) => {
               <p>
                 <strong>Giảm giá:</strong> {productDetails?.discount || 0}%
               </p>
-
               <p>
                 <strong>Chất liệu:</strong> Nhựa
               </p>
@@ -212,31 +212,45 @@ const ProductDetailsComponent = ({ idProduct }) => {
           <Image
             src={productDetails?.image}
             alt="image Product"
-            preview={false}
+            preview={true}
           />
-          {/* <Row style={{ marginTop: "12px", justifyContent: "space-between" }}>
+          <Row style={{ marginTop: "12px", justifyContent: "space-between" }}>
             <WrapperStyleColImage span={4}>
               <WrapperStyleImageSmall
-                src={ImageSmall}
+                src={productDetails?.image}
                 alt="image Small"
-                preview={false}
+                preview={true}
               />
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
               <WrapperStyleImageSmall
-                src={ImageSmall}
+                src={productDetails?.image}
                 alt="image Small"
-                preview={false}
+                preview={true}
               />
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
               <WrapperStyleImageSmall
-                src={ImageSmall}
+                src={productDetails?.image}
                 alt="image Small"
-                preview={false}
+                preview={true}
               />
             </WrapperStyleColImage>
-          </Row> */}
+            <WrapperStyleColImage span={4}>
+              <WrapperStyleImageSmall
+                src={productDetails?.image}
+                alt="image Small"
+                preview={true}
+              />
+            </WrapperStyleColImage>
+            <WrapperStyleColImage span={4}>
+              <WrapperStyleImageSmall
+                src={productDetails?.image}
+                alt="image Small"
+                preview={true}
+              />
+            </WrapperStyleColImage>
+          </Row>
         </Col>
         <Col span={14} style={{ paddingLeft: "10px" }}>
           <WrapperStyLeNameProduct>
@@ -258,13 +272,13 @@ const ProductDetailsComponent = ({ idProduct }) => {
             <span className="address"> {user?.address} </span> -
             <span className="change-address"> Đổi địa chỉ</span>
           </WrapperAddressProduct>
-          <LikeButtonComponent
+          {/* <LikeButtonComponent
             dataHref={
               process.env.REACT_APP_IS_LOCAL
                 ? "https://developers.facebook.com/docs/plugins/"
                 : window.location.href
             }
-          ></LikeButtonComponent>
+          /> */}
           <div
             style={{
               margin: "10px 0",
@@ -273,7 +287,10 @@ const ProductDetailsComponent = ({ idProduct }) => {
               borderTop: "1px solid #e5e5e5",
             }}
           >
-            <div style={{ marginBottom: "10px" }}>Số lượng</div>
+            <div style={{ marginBottom: "10px" }}>
+              <span>Số lượng</span>
+            </div>
+
             <WrapperQuantityProduct>
               <button
                 style={{
@@ -315,6 +332,9 @@ const ProductDetailsComponent = ({ idProduct }) => {
                 />
               </button>
             </WrapperQuantityProduct>
+            <span>
+              {errorLimitOrder && <ErrorText>Sản phẩm đã hết hàng</ErrorText>}
+            </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div>
@@ -334,34 +354,25 @@ const ProductDetailsComponent = ({ idProduct }) => {
                   fontSize: "15px",
                   fontWeight: "700",
                 }}
-              ></ButtonComponent>
-              {errorLimitOrder && (
-                <div
-                  style={{
-                    color: "red",
-                    fontSize: "12px",
-                    fontWeight: "700",
-                  }}
-                >
-                  Sản phẩm đã hết hàng
-                </div>
-              )}
+              />
+              <ButtonComponent
+                size={40}
+                onClick={handleAddOrderProduct}
+                styleButton={{
+                  background: "#fff",
+                  height: "40px",
+                  width: "220px",
+                  borderRadius: "4px",
+                  border: "1px solid rgb(13, 92, 182)",
+                  marginLeft: "10px",
+                }}
+                textButton={"Mua trả sau"}
+                styleTextButton={{
+                  color: "rgb(13, 92, 182)",
+                  fontSize: "15px",
+                }}
+              />
             </div>
-            <ButtonComponent
-              size={40}
-              styleButton={{
-                background: "#fff",
-                height: "40px",
-                width: "220px",
-                borderRadius: "4px",
-                border: "1px solid rgb(13, 92, 182)",
-              }}
-              textButton={"Mua trả sau"}
-              styleTextButton={{
-                color: "rgb(13, 92, 182)",
-                fontSize: "15px",
-              }}
-            ></ButtonComponent>
           </div>
         </Col>
         {/* <CommentComponent

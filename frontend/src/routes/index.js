@@ -24,7 +24,7 @@ export const routes = [
     path: "/order",
     page: OrderPage,
     isShowHeader: true,
-    isShowFooter: true,
+    isShowFooter: false,
   },
   {
     path: "/details-order/:id",
@@ -42,13 +42,13 @@ export const routes = [
     path: "/payment",
     page: PaymentPage,
     isShowHeader: true,
-    isShowFooter: true,
+    isShowFooter: false,
   },
   {
     path: "/orderSuccess",
     page: OrderSuccessPage,
     isShowHeader: true,
-    isShowFooter: true,
+    isShowFooter: false,
   },
   {
     path: "/products",
@@ -66,7 +66,7 @@ export const routes = [
     path: "/sign-in",
     page: SignInPage,
     isShowHeader: false,
-    isShowFooter: true,
+    isShowFooter: false,
   },
   {
     path: "/sign-up",
