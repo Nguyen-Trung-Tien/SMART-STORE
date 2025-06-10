@@ -89,9 +89,9 @@ const ProductDetailsComponent = ({ idProduct }) => {
     }
   };
 
-  useEffect(() => {
-    intitFakeBookSDK();
-  });
+  // useEffect(() => {
+  //   intitFakeBookSDK();
+  // });
 
   const renderStars = (num) => {
     if (!num || num <= 0) return null;
@@ -157,7 +157,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
                 <strong>Chất liệu:</strong> Nhựa
               </p>
               <p>
-                <strong>Trọng lượng:</strong> 170g
+                <strong>Trọng lượng:</strong> 210g
               </p>
             </div>
           ),
@@ -171,6 +171,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
       const orderRedux = order?.orderItems?.find(
         (item) => item?.product === productDetails?._id
       );
+
       if (
         orderRedux?.amount + numProduct <= orderRedux?.countInStock ||
         !orderRedux ||

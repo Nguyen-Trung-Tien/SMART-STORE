@@ -60,10 +60,6 @@ const DetailsOrderPage = () => {
     }, 0);
   }, [data]);
 
-  if (isPending) {
-    return <Loading isLoading />;
-  }
-
   return (
     <Loading isLoading={isPending}>
       <div style={{ width: "100%", backgroundColor: "#f5f5fa" }}>

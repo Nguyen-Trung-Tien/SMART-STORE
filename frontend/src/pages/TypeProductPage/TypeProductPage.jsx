@@ -22,22 +22,22 @@ const TypeProductPage = () => {
     total: 1,
   });
 
-  const fetchProductType = useCallback(
-    async (type, page, limit) => {
-      setPending(true);
-      const res = await ProductService.getProductType(type, page, limit);
-      if (res?.status === "OK") {
-        setPending(false);
-        setProducts(res?.data);
-        if (paginate.total !== res?.totalPage) {
-          setPaginate((prev) => ({ ...prev, total: res?.totalPage }));
+  const fetchProductType = useCallback(async (type, page, limit) => {
+    setPending(true);
+    const res = await ProductService.getProductType(type, page, limit);
+    if (res?.status === "OK") {
+      setProducts(res?.data);
+      setPending(false);
+      setPaginate((prev) => {
+        if (prev.total !== res?.totalPage) {
+          return { ...prev, total: res?.totalPage };
         }
-      } else {
-        setPending(false);
-      }
-    },
-    [paginate.total]
-  );
+        return prev;
+      });
+    } else {
+      setPending(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (state) {

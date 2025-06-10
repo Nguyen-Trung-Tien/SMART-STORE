@@ -17,7 +17,6 @@ import { convertDataChart, convertPrice } from "../../utils";
 import Loading from "../LoadingComponent/Loading";
 import { useLocation } from "react-router-dom";
 import { useMutationHooks } from "../../hooks/useMutationHook";
-import * as ProductService from "../../services/ProductServices";
 import { message } from "antd";
 
 const AdminOrder = () => {
@@ -75,17 +74,6 @@ const AdminOrder = () => {
       },
     },
   });
-
-  const getAllProduct = async () => {
-    const res = await ProductService.getAllProduct();
-    return res;
-  };
-
-  const queryProduct = useQuery({
-    queryKey: ["products"],
-    queryFn: getAllProduct,
-  });
-  const { isPending: isPendingProducts, data: products } = queryProduct;
 
   const renderAction = (record) => {
     return (
