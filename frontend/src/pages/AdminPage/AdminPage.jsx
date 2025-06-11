@@ -1,5 +1,6 @@
 import {
   AppstoreOutlined,
+  BarChartOutlined,
   ShoppingCartOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -10,13 +11,14 @@ import AdminUser from "../../components/AdminUser/AdminUser";
 import AdminProduct from "../../components/AdminProduct/AdminProduct";
 import AdminOrder from "../../components/AdminOrder/AdminOrder";
 import { AdminContainer, AdminSider, AdminContent } from "./style";
+import AdminRevenue from "../../components/AdminRevenue/AdminRevenue";
 
 const AdminPage = () => {
   const items = [
     getItem("Người dùng", "user", <UserOutlined />),
     getItem("Sản phẩm", "product", <AppstoreOutlined />),
     getItem("Đơn hàng", "order", <ShoppingCartOutlined />),
-    getItem("Doanh thu", "revenue", <ShoppingCartOutlined />),
+    getItem("Doanh thu", "revenue", <BarChartOutlined />),
   ];
 
   const [keySelected, setKeySelected] = useState("user");
@@ -29,8 +31,8 @@ const AdminPage = () => {
         return <AdminProduct />;
       case "order":
         return <AdminOrder />;
-      // case "revenue":
-      //   return <AdminOrder />;
+      case "revenue":
+        return <AdminRevenue />;
       default:
         return <></>;
     }

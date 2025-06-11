@@ -122,11 +122,9 @@ const MyOrderPage = () => {
       {
         onSuccess: () => {
           queryOrder.refetch();
-          message.success("Xác nhận thành công!");
         },
         onError: () => {
           queryOrder.refetch();
-          message.error("Xác nhận không thành công!");
         },
       }
     );
