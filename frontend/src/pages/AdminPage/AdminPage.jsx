@@ -45,7 +45,7 @@ const AdminPage = () => {
   return (
     <>
       <HeaderComponent isHiddenSearch isHiddenCart />
-      <AdminContainer>
+      <AdminContainer style={{ marginTop: "35px" }}>
         <AdminSider
           mode="inline"
           selectedKeys={[keySelected]}

@@ -24,16 +24,16 @@ const HomePage = () => {
 
   const [typeProducts, setTypeProducts] = useState([]);
 
-  const fetchProductAll = async ({ queryKey }) => {
-    const [, limit, search] = queryKey;
-    try {
-      const res = await ProductService.getAllProduct(search, limit);
-      return res;
-    } catch (err) {
-      console.error("Fetch product error:", err);
-      return { data: [], total: 0 };
-    }
-  };
+  // const fetchProductAll = async ({ queryKey }) => {
+  //   const [, limit, search] = queryKey;
+  //   try {
+  //     const res = await ProductService.getAllProduct(search, limit);
+  //     return res;
+  //   } catch (err) {
+  //     console.error("Fetch product error:", err);
+  //     return { data: [], total: 0 };
+  //   }
+  // };
 
   const fetchAllTypeProduct = async () => {
     try {
@@ -47,16 +47,17 @@ const HomePage = () => {
   };
 
   const {
-    isPending,
     data: products,
+    isPending,
     isPreviousData,
   } = useQuery({
     queryKey: ["products", limit, searchDebounce],
-    queryFn: fetchProductAll,
-    retry: 3,
-    retryDelay: 1000,
+    queryFn: () => ProductService.getAllProduct(searchDebounce, limit),
+    staleTime: 5 * 60 * 1000,
     keepPreviousData: true,
+    enabled: searchDebounce.length === 0 || searchDebounce.length >= 2,
   });
+
   useEffect(() => {
     const fetchData = async () => {
       setPending(true);
@@ -122,16 +123,20 @@ const HomePage = () => {
             }}
           >
             <WrapperButtonMore
-              textButton={isPreviousData ? "Load more" : "Xem thêm"}
+              textButton={
+                products?.data?.length >= products?.total
+                  ? "Đã tải hết sản phẩm"
+                  : isPreviousData
+                  ? "Load more"
+                  : "Xem thêm"
+              }
               type="outline"
               styleButton={{
                 border: "1px solid rgb(11, 116, 229)",
-                color: `${
-                  products?.total === products?.data?.length
+                color:
+                  products?.data?.length >= products?.total
                     ? "#f5f5fa"
-                    : "rgb(11, 116, 229)"
-                }`,
-
+                    : "rgb(11, 116, 229)",
                 height: "38px",
                 width: "240px",
                 borderRadius: "4px",
@@ -139,14 +144,18 @@ const HomePage = () => {
                 fontSize: "16px",
               }}
               disabled={
-                products?.total === products?.data?.length ||
+                products?.data?.length >= products?.total ||
                 products?.totalPage === 1
               }
               styleTextButton={{
                 fontWeight: 500,
-                color: products?.total === products?.data?.length && "#fff",
+                color: products?.data?.length >= products?.total && "#fff",
               }}
-              onClick={() => setLimit((prev) => prev + 6)}
+              onClick={() => {
+                if (products?.data?.length < products?.total) {
+                  setLimit((prev) => prev + 6);
+                }
+              }}
             />
           </div>
         </div>

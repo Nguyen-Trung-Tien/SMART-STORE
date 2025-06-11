@@ -66,7 +66,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
     } else if (productDetails?.countInStock === 0) {
       setErrorLimitOrder(true);
     }
-  }, [numProduct]);
+  }, [numProduct, productDetails]);
 
   useEffect(() => {
     if (order.isSuccessOrder) {
@@ -213,42 +213,42 @@ const ProductDetailsComponent = ({ idProduct }) => {
           <Image
             src={productDetails?.image}
             alt="image Product"
-            preview={true}
+            preview={false}
           />
           <Row style={{ marginTop: "12px", justifyContent: "space-between" }}>
             <WrapperStyleColImage span={4}>
               <WrapperStyleImageSmall
                 src={productDetails?.image}
                 alt="image Small"
-                preview={true}
+                preview={false}
               />
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
               <WrapperStyleImageSmall
                 src={productDetails?.image}
                 alt="image Small"
-                preview={true}
+                preview={false}
               />
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
               <WrapperStyleImageSmall
                 src={productDetails?.image}
                 alt="image Small"
-                preview={true}
+                preview={false}
               />
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
               <WrapperStyleImageSmall
                 src={productDetails?.image}
                 alt="image Small"
-                preview={true}
+                preview={false}
               />
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
               <WrapperStyleImageSmall
                 src={productDetails?.image}
                 alt="image Small"
-                preview={true}
+                preview={false}
               />
             </WrapperStyleColImage>
           </Row>
@@ -334,7 +334,11 @@ const ProductDetailsComponent = ({ idProduct }) => {
               </button>
             </WrapperQuantityProduct>
             <span>
-              {errorLimitOrder && <ErrorText>Sản phẩm đã hết hàng</ErrorText>}
+              {errorLimitOrder && (
+                <ErrorText>
+                  Số lượng vượt quá tồn kho ({productDetails?.countInStock})
+                </ErrorText>
+              )}
             </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>

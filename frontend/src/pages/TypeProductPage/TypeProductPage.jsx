@@ -99,7 +99,6 @@ const TypeProductPage = () => {
             }}
           >
             <WrapperNavbar span={4}>
-              {/* Truyền callback onFilter */}
               <NavbarComponent onFilter={handleFilter} />
             </WrapperNavbar>
             <Col

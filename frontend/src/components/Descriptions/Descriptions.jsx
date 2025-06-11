@@ -1,11 +1,11 @@
 import React from "react";
-import { Collapse } from "antd";
+import { StyledCollapse, WrapperDescriptions } from "./styler";
 
 const Descriptions = ({ items, accordion }) => {
   return (
-    <div style={{ marginTop: "10px", width: "516px" }}>
-      <Collapse accordion={accordion} items={items} />
-    </div>
+    <WrapperDescriptions>
+      <StyledCollapse accordion={accordion} items={items} />
+    </WrapperDescriptions>
   );
 };
 
