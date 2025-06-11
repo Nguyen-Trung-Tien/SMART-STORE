@@ -10,6 +10,11 @@ export const WrapperCardStyle = styled(Card)`
   position: relative;
   background-color: ${(props) => (props.disabled ? "#ccc" : "#fff")};
   cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  &:hover {
+    transform: scale(1.03);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
 `;
 
 export const WrapperImageStyle = styled.img`

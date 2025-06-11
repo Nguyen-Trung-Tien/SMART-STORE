@@ -520,6 +520,7 @@ const AdminProduct = () => {
       <div style={{ marginTop: "20px" }}>
         <TableComponent
           columns={columns}
+          fileName="sanpham"
           handleDeleteMany={handleDeleteManyProduct}
           isPending={isPendingProducts}
           data={dataTable}

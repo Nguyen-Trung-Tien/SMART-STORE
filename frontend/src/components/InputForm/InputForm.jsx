@@ -1,15 +1,22 @@
 import React from "react";
 import { WrapperInputStyle } from "./style";
 
-const InputForm = (props) => {
-  const { placeholder = "Nhập text", ...rests } = props;
+const InputForm = ({
+  placeholder = "Nhập text",
+  value,
+  onChange,
+  ...rests
+}) => {
   const handleOnChangeInput = (e) => {
-    props.onChange(e.target.value);
+    if (onChange) {
+      onChange(e.target.value);
+    }
   };
+
   return (
     <WrapperInputStyle
       placeholder={placeholder}
-      value={props.value}
+      value={value}
       {...rests}
       onChange={handleOnChangeInput}
     />
@@ -17,3 +24,25 @@ const InputForm = (props) => {
 };
 
 export default InputForm;
+
+// import React from "react";
+// import { WrapperInputStyle } from "./style";
+
+// const InputForm = ({ placeholder = "Nhập text", value, onChange, ...rests }) => {
+//   const handleOnChangeInput = (e) => {
+//     if (onChange) {
+//       onChange(e.target.value);
+//     }
+//   };
+
+//   return (
+//     <WrapperInputStyle
+//       placeholder={placeholder}
+//       value={value}
+//       {...rests}
+//       onChange={handleOnChangeInput}
+//     />
+//   );
+// };
+
+// export default InputForm;

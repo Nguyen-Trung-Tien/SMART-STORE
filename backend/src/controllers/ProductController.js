@@ -98,7 +98,7 @@ const deleteManyProduct = async (req, res) => {
         message: "The ids is required",
       });
     }
-    const response = await ProductService.deleteProduct(ids);
+    const response = await ProductService.deleteManyProduct(ids);
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({

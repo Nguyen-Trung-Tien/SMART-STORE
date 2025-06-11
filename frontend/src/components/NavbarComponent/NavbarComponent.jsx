@@ -1,94 +1,175 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   WrapperContent,
   WrapperLabelText,
   WrapperTextPrice,
   WrapperTextValue,
 } from "./style";
-import { Checkbox, Rate } from "antd";
+import { Rate } from "antd";
+import * as ProductService from "../../services/ProductServices";
+import Loading from "../LoadingComponent/Loading";
 
-const NavbarComponent = () => {
-  const onChange = () => {};
+const NavbarComponent = ({ onFilter }) => {
+  const [productList, setProductList] = useState([]);
 
-  const renderContent = (type, options) => {
-    switch (type.toLowerCase()) {
+  // State lưu lựa chọn lọc
+  const [selectedType, setSelectedType] = useState(null);
+  const [selectedRating, setSelectedRating] = useState(null);
+  const [selectedPrice, setSelectedPrice] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchProductList = async () => {
+      setLoading(true);
+
+      try {
+        const res = await ProductService.getAllProduct();
+        if (res?.data) {
+          setProductList(res.data);
+          console.log(">>", res);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProductList();
+  }, []);
+
+  const typeOptions = [...new Set(productList.map((item) => item.type))];
+  const ratingOptions = [3, 4, 5];
+  const priceOptions = [
+    { label: "Dưới 5 triệu", min: 0, max: 5000000 },
+    { label: "5 triệu - 10 triệu", min: 5000000, max: 10000000 },
+    { label: "Trên 10 triệu", min: 10000000, max: Infinity },
+  ];
+
+  // Hàm gọi onFilter với tất cả bộ lọc hiện tại
+  const triggerFilter = (newFilters) => {
+    if (onFilter) onFilter(newFilters);
+  };
+
+  const handleTypeClick = (type) => {
+    const newType = selectedType === type ? null : type;
+    setSelectedType(newType);
+    triggerFilter({
+      type: newType,
+      rating: selectedRating,
+      price: selectedPrice,
+    });
+  };
+
+  const handleRatingClick = (rating) => {
+    const newRating = selectedRating === rating ? null : rating;
+    setSelectedRating(newRating);
+    triggerFilter({
+      type: selectedType,
+      rating: newRating,
+      price: selectedPrice,
+    });
+  };
+
+  const handlePriceClick = (priceObj) => {
+    const newPrice = selectedPrice === priceObj.label ? null : priceObj.label;
+    setSelectedPrice(newPrice);
+    triggerFilter({
+      type: selectedType,
+      rating: selectedRating,
+      price: newPrice,
+    });
+  };
+
+  const renderContent = (filterType, options) => {
+    switch (filterType) {
       case "text":
-        return options.map((option) => {
-          return (
-            <WrapperTextValue name={option} key={option}>
-              {option}
-            </WrapperTextValue>
-          );
-        });
-      case "checkbox":
-        return (
-          <Checkbox.Group
+        return options.map((option) => (
+          <WrapperTextValue
+            key={option}
+            onClick={() => handleTypeClick(option)}
             style={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              gap: "12px",
+              cursor: "pointer",
+              padding: "5px 8px",
+              display: "block",
+              backgroundColor:
+                selectedType === option ? "#1890ff" : "transparent",
+              color: selectedType === option ? "white" : "rgb(56,56,61)",
+              borderRadius: "6px",
             }}
-            onChange={onChange}
           >
-            {options.map((option) => {
-              return (
-                <Checkbox
-                  style={{ marginLeft: 0 }}
-                  key={option.value}
-                  value={option.value}
-                >
-                  {option.label}
-                </Checkbox>
-              );
-            })}
-          </Checkbox.Group>
-        );
+            {option}
+          </WrapperTextValue>
+        ));
+
       case "star":
-        return options.map((option) => {
-          return (
-            <div
-              style={{ display: "flex", gap: "12px", alignItems: "center" }}
-              key={option}
-            >
-              <Rate
-                style={{ fontSize: "12px" }}
-                name="rating"
-                disabled
-                defaultValue={option}
-              />
-              <span>{`từ ${option} sao`}</span>
-            </div>
-          );
-        });
+        return options.map((option) => (
+          <div
+            key={option}
+            onClick={() => handleRatingClick(option)}
+            style={{
+              display: "flex",
+              gap: "8px",
+              alignItems: "center",
+              cursor: "pointer",
+              padding: "5px 8px",
+              borderRadius: "6px",
+              backgroundColor:
+                selectedRating === option ? "#1890ff" : "transparent",
+              color: selectedRating === option ? "white" : "rgb(56,56,61)",
+              userSelect: "none",
+            }}
+          >
+            <Rate
+              style={{ fontSize: "14px" }}
+              disabled
+              allowHalf
+              defaultValue={option}
+            />
+            <span>{`Từ ${option} sao`}</span>
+          </div>
+        ));
+
       case "price":
-        return options.map((option) => {
-          return <WrapperTextPrice key={option}>{option}</WrapperTextPrice>;
-        });
+        return options.map((option) => (
+          <WrapperTextPrice
+            key={option.label}
+            onClick={() => handlePriceClick(option)}
+            style={{
+              cursor: "pointer",
+              padding: "5px 8px",
+              display: "block",
+              backgroundColor:
+                selectedPrice === option.label ? "#1890ff" : "#eee",
+              color: selectedPrice === option.label ? "white" : "rgb(56,56,61)",
+              borderRadius: "6px",
+            }}
+          >
+            {option.label}
+          </WrapperTextPrice>
+        ));
+
       default:
-        return {};
+        return null;
     }
   };
 
   return (
-    <div>
-      <WrapperLabelText>Danh mục sản phẩm</WrapperLabelText>
-      <WrapperContent>
-        {renderContent("text", ["IPhone", "Samsung", "Xiaomi"])}
-      </WrapperContent>
-      {/* <WrapperContent>
-        {renderContent("checkbox", [
-          { value: "a", label: "Di động" },
-          { value: "b", label: "Máy tính" },
-        ])}
-      </WrapperContent> */}
-      <WrapperContent style={{ marginTop: "20px" }}>
-        {renderContent("star", [1, 2, 3, 4, 5])}
-      </WrapperContent>
-      <WrapperContent>
-        {renderContent("Price", ["dưới 40.000đ", "trên 50.000đ"])}
-      </WrapperContent>
-    </div>
+    <Loading isLoading={loading} size={20}>
+      <div>
+        <WrapperLabelText>Danh mục sản phẩm</WrapperLabelText>
+        <WrapperContent>{renderContent("text", typeOptions)}</WrapperContent>
+
+        <WrapperLabelText style={{ marginTop: "20px" }}>
+          Đánh giá
+        </WrapperLabelText>
+        <WrapperContent>{renderContent("star", ratingOptions)}</WrapperContent>
+
+        <WrapperLabelText style={{ marginTop: "20px" }}>
+          Khoảng giá
+        </WrapperLabelText>
+        <WrapperContent>{renderContent("price", priceOptions)}</WrapperContent>
+      </div>
+    </Loading>
   );
 };
 

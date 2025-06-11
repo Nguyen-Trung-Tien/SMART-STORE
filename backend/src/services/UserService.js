@@ -7,9 +7,9 @@ const createUser = (newUser) => {
     try {
       const checkUser = await User.findOne({ email: email });
       if (checkUser !== null) {
-        resolve({ status: "ERR", message: "The email is already" });
+        return resolve({ status: "ERR", message: "The email is already" });
       }
-      const hash = await bcrypt.hashSync(password, 10);
+      const hash = await bcrypt.hash(password, 10);
       const createUser = await User.create({
         name,
         email,
@@ -35,13 +35,16 @@ const loginUser = (userLogin) => {
     try {
       const checkUser = await User.findOne({ email: email });
       if (checkUser === null) {
-        resolve({ status: "ERR", message: "The user is not defined" });
+        return resolve({ status: "ERR", message: "The user is not defined" });
       }
 
-      const comparePassword = bcrypt.compareSync(password, checkUser.password);
+      const comparePassword = await bcrypt.compareSync(
+        password,
+        checkUser.password
+      );
 
       if (!comparePassword) {
-        resolve({
+        return resolve({
           status: "ERR",
           message: "The password or user is incorrect",
         });
@@ -121,19 +124,33 @@ const deleteManyUser = (ids) => {
     }
   });
 };
-const getAllUser = () => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const allUser = await User.find();
-      resolve({
-        status: "OK",
-        message: "Success",
-        data: allUser,
-      });
-    } catch (e) {
-      reject(e);
-    }
-  });
+
+// const getAllUser = () => {
+//   return new Promise(async (resolve, reject) => {
+//     try {
+//       const allUser = await User.find().sort({ createdAt: -1 }).lean();
+//       resolve({
+//         status: "OK",
+//         message: "Success",
+//         data: allUser,
+//       });
+//     } catch (e) {
+//       reject(e);
+//     }
+//   });
+// };
+
+const getAllUser = async () => {
+  try {
+    const allUser = await User.find().sort({ createdAt: -1 }).lean();
+    return {
+      status: "OK",
+      message: "Success",
+      data: allUser,
+    };
+  } catch (e) {
+    throw e;
+  }
 };
 
 const getDetailsUser = (id) => {
@@ -141,7 +158,7 @@ const getDetailsUser = (id) => {
     try {
       const user = await User.findOne({ _id: id });
       if (user === null) {
-        resolve({ status: "OK", message: "The user is not defined" });
+        return resolve({ status: "OK", message: "The user is not defined" });
       }
 
       resolve({

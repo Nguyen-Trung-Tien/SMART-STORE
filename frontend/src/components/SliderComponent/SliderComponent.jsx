@@ -12,20 +12,19 @@ const SliderComponent = ({ arrImages }) => {
     autoplay: true,
     autoplaySpeed: 1000,
   };
+
   return (
-    <WarperSliderStyle WarperSliderStyle {...settings}>
-      {arrImages.map((image) => {
-        return (
-          <Image
-            src={image}
-            key={image}
-            alt="image"
-            preview={false}
-            width={"100%"}
-            height={"240px"}
-          />
-        );
-      })}
+    <WarperSliderStyle {...settings}>
+      {arrImages.map((image) => (
+        <Image
+          src={image}
+          key={image}
+          alt="image"
+          preview={false}
+          width={"100%"}
+          height={"240px"}
+        />
+      ))}
     </WarperSliderStyle>
   );
 };

@@ -4,7 +4,7 @@ const ProductController = require("../controllers/ProductController");
 const { authMiddleware } = require("../middleware/authMiddleware");
 const delay = require("../middleware/delay");
 
-router.all("*", delay);
+// router.all("*", delay);
 router.post("/create", ProductController.createProduct);
 router.put("/update/:id", authMiddleware, ProductController.updateProduct);
 router.get("/get-details/:id", ProductController.getDetailsProduct);

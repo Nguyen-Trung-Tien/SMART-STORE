@@ -374,6 +374,7 @@ const AdminUser = () => {
       <div style={{ marginTop: "20px" }}>
         <TableComponent
           columns={columns}
+          fileName="Nguoidung"
           handleDeleteMany={handleDeleteManyUser}
           isPending={isPendingUser}
           data={dataTable}

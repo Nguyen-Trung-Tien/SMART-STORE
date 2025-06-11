@@ -12,7 +12,7 @@ const TableComponent = (props) => {
     handleDeleteMany,
   } = props;
   const [rowSelectedKeys, setRowSelectedKeys] = useState([]);
-
+  const { fileName = {} } = props;
   const newColumnExport = useMemo(() => {
     const arr = columns?.filter((col) => col.dataIndex !== "action");
     return arr;
@@ -28,6 +28,35 @@ const TableComponent = (props) => {
     // }),
   };
 
+  const deleteButtonStyle = {
+    background: "#1d1ddd",
+    color: "#fff",
+    fontWeight: "bold",
+    padding: "10px",
+    width: "70px",
+    cursor: "pointer",
+    marginTop: "10px",
+    borderRadius: "10px",
+    border: "none",
+    outline: "none",
+    marginBottom: "10px",
+  };
+
+  const exportButtonStyle = {
+    background: "blue",
+    color: "#fff",
+    fontWeight: "bold",
+    padding: "10px",
+    cursor: "pointer",
+    marginTop: "10px",
+    marginLeft: "990px",
+    marginBottom: "10px",
+    borderRadius: "10px",
+    border: "none",
+    outline: "none",
+    boxShadow:
+      "0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08)",
+  };
   const handleExcel = () => {
     try {
       if (!dataSource || !newColumnExport) {
@@ -59,7 +88,7 @@ const TableComponent = (props) => {
           str2Percent: false,
           header: true,
         })
-        .saveAs("product.xlsx");
+        .saveAs(`${fileName}.xlsx`);
     } catch (error) {
       console.error("Excel export failed:", error);
     }
@@ -72,42 +101,11 @@ const TableComponent = (props) => {
     <div>
       <Loading isLoading={isPending}>
         {rowSelectedKeys.length > 0 && (
-          <div
-            style={{
-              background: "#1d1ddd",
-              color: "#fff",
-              fontWeight: "bold",
-              padding: "10px",
-              cursor: "pointer",
-              marginTop: "10px",
-              borderRadius: "10px",
-              border: "none",
-              outline: "none",
-              marginBottom: "10px",
-            }}
-            onClick={handleDeleteAll}
-          >
+          <div style={deleteButtonStyle} onClick={handleDeleteAll}>
             Xoá tất cả
           </div>
         )}
-        <button
-          style={{
-            background: "blue",
-            color: "#fff",
-            fontWeight: "bold",
-            padding: "10px",
-            cursor: "pointer",
-            marginTop: "10px",
-            marginLeft: "990px",
-            marginBottom: "10px",
-            borderRadius: "10px",
-            border: "none",
-            outline: "none",
-            boxShadow:
-              "0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08)",
-          }}
-          onClick={handleExcel}
-        >
+        <button style={exportButtonStyle} onClick={handleExcel}>
           Export Excel
         </button>
         <Table

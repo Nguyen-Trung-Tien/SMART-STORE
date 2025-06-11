@@ -35,11 +35,23 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     navigate("/sign-in");
   };
 
+  // const handleLogout = async () => {
+  //   setPending(true);
+  //   await UserService.logoutUser();
+  //   dispatch(resetUser());
+  //   setPending(false);
+  // };
+
   const handleLogout = async () => {
-    setPending(true);
-    await UserService.logoutUser();
-    dispatch(resetUser());
-    setPending(false);
+    try {
+      setPending(true);
+      await UserService.logoutUser();
+      dispatch(resetUser());
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setPending(false);
+    }
   };
 
   useEffect(() => {
@@ -96,8 +108,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     >
       <WrapperHeader
         style={{
-          justifyContent:
-            isHiddenSearch && isHiddenSearch ? "space-between" : "unset",
+          justifyContent: isHiddenSearch ? "space-between" : "unset",
         }}
       >
         <Col span={5}>

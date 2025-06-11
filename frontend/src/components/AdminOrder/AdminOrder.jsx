@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { WrapperHeader } from "./style";
-import { Button, Space } from "antd";
+import { Button, Space, Tooltip } from "antd";
 import {
   CheckCircleOutlined,
   CloseOutlined,
@@ -62,10 +62,10 @@ const AdminOrder = () => {
       </div>
     ),
     filterIcon: (filtered) => (
-      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+      <SearchOutlined twoToneColor={filtered ? "#1677ff" : undefined} />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      String(record[dataIndex]).toLowerCase().includes(value.toLowerCase()),
     filterDropdownProps: {
       onOpenChange: (visible) => {
         if (visible) {
@@ -78,25 +78,29 @@ const AdminOrder = () => {
   const renderAction = (record) => {
     return (
       <div>
-        <CheckCircleOutlined
-          style={{
-            color: "blue",
-            fontSize: "30px",
-            cursor: "pointer",
-          }}
-          alt="Xác nhận"
-          onClick={() => handleConfirmOrder(record)}
-        />
-        <CloseOutlined
-          style={{
-            color: "red",
-            fontSize: "30px",
-            cursor: "pointer",
-            paddingLeft: "15px",
-          }}
-          alt="Hủy đơn"
-          onClick={() => handleCancelOrder(record)}
-        />
+        <Tooltip title="Xác nhận đơn">
+          <CheckCircleOutlined
+            style={{
+              color: "blue",
+              fontSize: "30px",
+              cursor: "pointer",
+            }}
+            alt="Xác nhận"
+            onClick={() => handleConfirmOrder(record)}
+          />
+        </Tooltip>
+        <Tooltip title="Hủy đơn">
+          <CloseOutlined
+            style={{
+              color: "red",
+              fontSize: "30px",
+              cursor: "pointer",
+              paddingLeft: "15px",
+            }}
+            alt="Hủy đơn"
+            onClick={() => handleCancelOrder(record)}
+          />
+        </Tooltip>
       </div>
     );
   };
@@ -275,29 +279,31 @@ const AdminOrder = () => {
         paymentMethod: orderConstant.payment[order?.paymentMethod],
         Paid: order?.isPaid ? "Đã thanh toán" : "Chưa thanh toán",
         Delivered: order?.isDelivered ? "Đã nhận" : "Chưa nhận",
-        totalPrice: convertDataChart && convertPrice(order?.totalPrice),
+        totalPrice: convertPrice(order?.totalPrice),
         itemsPrice: convertPrice(order?.itemsPrice),
       };
     });
 
+  const isLoadingAll =
+    isPendingCancel || isPendingDelivery || isPendingPaid || isPendingOrders;
+
   return (
-    <Loading isLoading={isPendingCancel || isPendingDelivery || isPendingPaid}>
-      <div>
-        <WrapperHeader>Quản lý đơn hàng</WrapperHeader>
+    <div>
+      <WrapperHeader>Quản lý đơn hàng</WrapperHeader>
+      <Loading isLoading={isLoadingAll}>
         <div style={{ width: 200, height: 200 }}>
           <ResponsiveChart data={orders?.data} />
         </div>
-        <Loading isLoading={isPendingOrders}>
-          <div style={{ marginTop: "20px" }}>
-            <TableComponent
-              columns={columns}
-              isPending={isPendingOrders}
-              data={dataTable}
-            />
-          </div>
-        </Loading>
-      </div>
-    </Loading>
+        <div style={{ marginTop: "20px" }}>
+          <TableComponent
+            fileName="Donhang"
+            columns={columns}
+            isPending={isPendingOrders}
+            data={dataTable}
+          />
+        </div>
+      </Loading>
+    </div>
   );
 };
 

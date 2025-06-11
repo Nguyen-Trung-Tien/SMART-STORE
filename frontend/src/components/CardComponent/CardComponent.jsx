@@ -9,6 +9,7 @@ import {
 } from "./style";
 import { StarFilled } from "@ant-design/icons";
 import logo from "../../assets/ImageSmall/logo.png";
+import defaultImage from "../../assets/images/defaultImage.jpg";
 import { useNavigate } from "react-router-dom";
 import { convertPrice } from "../../utils";
 
@@ -36,7 +37,13 @@ const CardComponent = (props) => {
         body: { padding: "10px" },
         header: { width: "200px", height: "200px" },
       }}
-      cover={<img alt="example" src={image} />}
+      cover={
+        <img
+          alt="product"
+          src={image || defaultImage}
+          onError={(e) => (e.target.src = defaultImage)}
+        />
+      }
       onClick={() => handleDetailProduct(id)}
     >
       <img
@@ -54,14 +61,18 @@ const CardComponent = (props) => {
       <StyleNameProducts>{name}</StyleNameProducts>
       <WrapperReportText>
         <span style={{ marginRight: "5px" }}>
-          <span>{rating}</span>
-          <StarFilled style={{ color: "#fadb14", fontSize: "14px" }} />
+          <span> {rating?.toFixed(1)}</span>
+          <StarFilled style={{ color: "#fadb14", fontSize: "12px" }} />
         </span>
         <WrapperStyleTextSell>| Đã bán: {selling || 0}</WrapperStyleTextSell>
       </WrapperReportText>
       <WrapperPriceText>
         <span style={{ marginRight: "8px" }}>{convertPrice(price)}</span>
-        <WrapperDiscountText> -{discount || 0}%</WrapperDiscountText>
+        <WrapperDiscountText>
+          {discount > 0 && (
+            <div className="badge-sale">Giảm giá: {discount}%</div>
+          )}
+        </WrapperDiscountText>
       </WrapperPriceText>
     </WrapperCardStyle>
   );

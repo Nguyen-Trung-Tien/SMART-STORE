@@ -2,7 +2,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import NavbarComponent from "../../components/NavbarComponent/NavbarComponent";
 import CardComponent from "../../components/CardComponent/CardComponent";
 import { Col, Pagination, Row } from "antd";
-import { WrapperNavbar, WrapperProducts } from "./style";
+import {
+  PaginationWrapper,
+  StyledPagination,
+  WrapperNavbar,
+  WrapperProducts,
+} from "./style";
 import * as ProductService from "../../services/ProductServices";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loading from "../../components/LoadingComponent/Loading";
@@ -22,6 +27,8 @@ const TypeProductPage = () => {
     total: 1,
   });
 
+  const [selectedType, setSelectedType] = useState(state || "");
+
   const fetchProductType = useCallback(async (type, page, limit) => {
     setPending(true);
     const res = await ProductService.getProductType(type, page, limit);
@@ -40,21 +47,31 @@ const TypeProductPage = () => {
   }, []);
 
   useEffect(() => {
-    if (state) {
-      fetchProductType(state, paginate.page, paginate.limit);
+    if (selectedType) {
+      fetchProductType(selectedType, paginate.page, paginate.limit);
     } else {
       navigate("/");
       alert("Không tìm thấy sản phẩm!");
     }
-  }, [state, paginate.page, paginate.limit, fetchProductType, navigate]);
+  }, [selectedType, paginate.page, paginate.limit, fetchProductType, navigate]);
 
   useEffect(() => {
-    let newProduct = [];
     if (searchDebounce) {
-      newProduct = products?.filter((pro) => pro?.name === searchDebounce);
-      setProducts(newProduct);
+      const filtered = products.filter((pro) =>
+        pro?.name?.toLowerCase().includes(searchDebounce.toLowerCase())
+      );
+      setProducts(filtered);
+    } else if (selectedType) {
+      fetchProductType(selectedType, paginate.page, paginate.limit);
     }
-  }, [searchDebounce, products]);
+  }, [searchDebounce]);
+
+  const handleFilter = (filterObj) => {
+    if (filterObj.type && filterObj.type !== selectedType) {
+      setSelectedType(filterObj.type);
+      setPaginate((prev) => ({ ...prev, page: 0 }));
+    }
+  };
 
   const onChange = (current, pageSize) => {
     setPaginate({
@@ -82,7 +99,8 @@ const TypeProductPage = () => {
             }}
           >
             <WrapperNavbar span={4}>
-              <NavbarComponent />
+              {/* Truyền callback onFilter */}
+              <NavbarComponent onFilter={handleFilter} />
             </WrapperNavbar>
             <Col
               span={20}
@@ -101,34 +119,29 @@ const TypeProductPage = () => {
                         ?.toLowerCase()
                         .includes(searchDebounce.toLowerCase())
                   )
-                  ?.map((product) => {
-                    return (
-                      <CardComponent
-                        key={product._id}
-                        countInStock={product.countInStock}
-                        description={product.description}
-                        image={product.image}
-                        name={product.name}
-                        price={product.price}
-                        rating={product.rating}
-                        type={product.type}
-                        discount={product.discount}
-                        selling={product.selling}
-                        id={product._id}
-                      />
-                    );
-                  })}
+                  ?.map((product) => (
+                    <CardComponent
+                      key={product._id}
+                      countInStock={product.countInStock}
+                      description={product.description}
+                      image={product.image}
+                      name={product.name}
+                      price={product.price}
+                      rating={product.rating}
+                      type={product.type}
+                      discount={product.discount}
+                      selling={product.selling}
+                      id={product._id}
+                    />
+                  ))}
               </WrapperProducts>
-              <Pagination
-                current={paginate.page + 1}
-                total={paginate.total * paginate.limit}
-                onChange={onChange}
-                style={{
-                  marginTop: "10px",
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              />
+              {products.length >= 10 && (
+                <StyledPagination
+                  current={paginate.page + 1}
+                  total={paginate.total * paginate.limit}
+                  onChange={onChange}
+                />
+              )}
             </Col>
           </Row>
         </div>

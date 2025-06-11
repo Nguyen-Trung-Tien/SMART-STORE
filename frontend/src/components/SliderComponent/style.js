@@ -11,6 +11,7 @@ export const WarperSliderStyle = styled(Slider)`
       color: #fff;
     }
   }
+
   & .slick-arrow.slick-next {
     right: 28px;
     top: 50%;
@@ -20,17 +21,20 @@ export const WarperSliderStyle = styled(Slider)`
       color: #fff;
     }
   }
+
   & .slick-dots {
     z-index: 10;
     bottom: -2px !important;
+
     li {
       button {
         &::before {
-          color: rgb(255, 255, 0.5);
+          color: rgba(255, 255, 255, 0.5);
         }
       }
     }
-    li.active {
+
+    li.slick-active {
       button {
         &::before {
           color: #fff;

@@ -7,8 +7,9 @@ const initialState = {
   address: "",
   avatar: "",
   access_token: "",
+  refreshToken: "",
   id: "",
-  isAdmin: true,
+  isAdmin: "",
   city: "",
 };
 
@@ -49,7 +50,7 @@ export const userSlice = createSlice({
       state.image = "";
       state.id = "";
       state.access_token = "";
-      state.isAdmin = false;
+      state.isAdmin = "";
       state.city = "";
       state.refreshToken = "";
     },
