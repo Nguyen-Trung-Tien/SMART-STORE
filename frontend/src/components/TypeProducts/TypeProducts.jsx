@@ -1,25 +1,22 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { TypeItem } from "./style";
 
 const TypeProducts = ({ name }) => {
   const navigate = useNavigate();
-  const handleNavigateType = (type) => {
-    navigate(
-      `/product/${type
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        ?.replace(/ /g, "_")}`,
-      { state: type }
-    );
+
+  const toSlug = (str) =>
+    str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "_")
+      .toLowerCase();
+
+  const handleNavigateType = () => {
+    navigate(`/product/${toSlug(name)}`, { state: name });
   };
-  return (
-    <div
-      style={{ padding: "0 10px", cursor: "pointer" }}
-      onClick={() => handleNavigateType(name)}
-    >
-      {name}
-    </div>
-  );
+
+  return <TypeItem onClick={handleNavigateType}>{name}</TypeItem>;
 };
 
 export default TypeProducts;

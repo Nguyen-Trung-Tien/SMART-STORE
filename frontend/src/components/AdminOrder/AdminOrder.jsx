@@ -1,10 +1,19 @@
 import React, { useEffect } from "react";
-import { WrapperHeader } from "./style";
+import {
+  ActionContainer,
+  ActionIcon,
+  IconButton,
+  WrapperHeader,
+} from "./style";
 import { Button, Space, Tooltip } from "antd";
 import {
+  CheckCircleFilled,
   CheckCircleOutlined,
+  CheckOutlined,
+  CheckSquareOutlined,
   CloseOutlined,
   SearchOutlined,
+  StopOutlined,
 } from "@ant-design/icons";
 import TableComponent from "../TableComponent/TableComponent";
 import InputComponent from "../InputComponent/InputComponent";
@@ -77,31 +86,24 @@ const AdminOrder = () => {
 
   const renderAction = (record) => {
     return (
-      <div>
+      <ActionContainer>
         <Tooltip title="Xác nhận đơn">
-          <CheckCircleOutlined
-            style={{
-              color: "blue",
-              fontSize: "30px",
-              cursor: "pointer",
-            }}
-            alt="Xác nhận"
+          <IconButton
+            bgColor="#52c41a"
             onClick={() => handleConfirmOrder(record)}
-          />
+          >
+            <CheckOutlined />
+          </IconButton>
         </Tooltip>
         <Tooltip title="Hủy đơn">
-          <CloseOutlined
-            style={{
-              color: "red",
-              fontSize: "30px",
-              cursor: "pointer",
-              paddingLeft: "15px",
-            }}
-            alt="Hủy đơn"
+          <IconButton
+            bgColor="#f5222d"
             onClick={() => handleCancelOrder(record)}
-          />
+          >
+            <StopOutlined />
+          </IconButton>
         </Tooltip>
-      </div>
+      </ActionContainer>
     );
   };
 
@@ -291,9 +293,9 @@ const AdminOrder = () => {
     <div>
       <WrapperHeader>Quản lý đơn hàng</WrapperHeader>
       <Loading isLoading={isLoadingAll}>
-        <div style={{ width: 200, height: 200 }}>
+        {/* <div style={{ width: 200, height: 200 }}>
           <ResponsiveChart data={orders?.data} />
-        </div>
+        </div> */}
         <div style={{ marginTop: "20px" }}>
           <TableComponent
             fileName="Donhang"
