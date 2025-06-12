@@ -26,16 +26,29 @@ const SignUpPage = () => {
 
   const mutation = useMutationHooks((data) => UserService.signupUser(data));
   const { data, isPending, isSuccess, isError } = mutation;
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     handleNavigateSignUp();
+  //     message.success("Đăng ký tài khoản thành công!");
+  //   }
+  //   if (isError) {
+  //     message.error("Tài khoản đã tồn tại! Vui lòng nhập tài khoản khác!");
+  //   }
+  // }, [isSuccess, isError]);
 
   useEffect(() => {
-    if (isSuccess) {
-      handleNavigateSignUp();
+    if (data?.status === "OK") {
       message.success("Đăng ký tài khoản thành công!");
+      navigate("/sign-in");
+    } else if (data?.status === "ERR") {
+      message.error(data?.message || "Đăng ký thất bại!");
     }
-    if (isError) {
-      message.error("Tài khoản đã tồn tại! Vui lòng nhập tài khoản khác!");
-    }
-  }, [isSuccess, isError]);
+  }, [data]);
+
   const handleOnChangeEmail = (value) => {
     setEmail(value);
   };
@@ -53,6 +66,14 @@ const SignUpPage = () => {
   };
 
   const handleSignUp = () => {
+    if (password !== confirmPassword) {
+      message.error("Mật khẩu xác nhận không trùng khớp!");
+      return;
+    }
+    if (!isValidEmail(email)) {
+      message.error("Email không hợp lệ!");
+      return;
+    }
     mutation.mutate({ email, password, confirmPassword });
   };
 
@@ -62,17 +83,19 @@ const SignUpPage = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#efefef",
+        background: "#f4f4f4",
         height: "100vh",
       }}
     >
       <div
         style={{
           width: "800px",
-          height: "445px",
-          borderRadius: "6px",
+          minHeight: "470px",
+          borderRadius: "8px",
           background: "#fff",
           display: "flex",
+          boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
+          overflow: "hidden",
         }}
       >
         <WrapperContainerLeft>
@@ -137,11 +160,13 @@ const SignUpPage = () => {
               size={40}
               styleButton={{
                 background: "rgb(255, 66, 78)",
-                height: "40px",
-                width: "100%  ",
+                height: "42px",
+                width: "100%",
                 borderRadius: "4px",
                 border: "none",
                 margin: "26px 0 10px",
+                transition: "all 0.3s",
+                cursor: "pointer",
               }}
               textButton={"Đăng ký"}
               styleTextButton={{
@@ -150,6 +175,11 @@ const SignUpPage = () => {
                 fontWeight: "700",
               }}
             />
+            {confirmPassword && confirmPassword !== password && (
+              <span style={{ color: "red" }}>
+                Mật khẩu xác nhận không khớp!
+              </span>
+            )}
           </Loading>
           <p>
             <WrapperTextLight>Quên mật khẩu</WrapperTextLight>

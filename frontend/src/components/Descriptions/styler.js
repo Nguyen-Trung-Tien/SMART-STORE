@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 export const WrapperDescriptions = styled.div`
   margin-top: 16px;
-  width: 520px;
+  width: 100%;
   border-radius: 8px;
   background: #ffffff;
   padding: 12px;

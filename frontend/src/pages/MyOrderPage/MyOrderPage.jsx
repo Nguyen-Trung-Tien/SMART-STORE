@@ -3,6 +3,7 @@ import * as OrderService from "../../services/OrderService";
 import {
   WrapperContainer,
   WrapperFooterItem,
+  WrapperHeader,
   WrapperHeaderItems,
   WrapperItemOrder,
   WrapperListOrder,
@@ -157,9 +158,7 @@ const MyOrderPage = () => {
   return (
     <WrapperContainer>
       <div style={{ width: "1270px", margin: "0 auto" }}>
-        <h4 to="/" style={{ cursor: "pointer" }}>
-          Đơn hàng của tôi
-        </h4>
+        <WrapperHeader>Đơn hàng của tôi</WrapperHeader>
         <Loading isLoading={isPending || isPendingCancel || isPendingConfirm}>
           <WrapperListOrder>
             {Array.isArray(data) && data.length > 0 ? (

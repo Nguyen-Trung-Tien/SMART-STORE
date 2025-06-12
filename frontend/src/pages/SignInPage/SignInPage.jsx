@@ -6,9 +6,14 @@ import {
 } from "./style";
 import InputForm from "../../components/InputForm/InputForm";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
-import { Image } from "antd";
+import { Button, Image } from "antd";
 import imageLogo from "../../assets/ImageSmall/logo-page.png";
-import { EyeFilled, EyeInvisibleFilled } from "@ant-design/icons";
+import {
+  ArrowLeftOutlined,
+  EyeFilled,
+  EyeInvisibleFilled,
+  HomeTwoTone,
+} from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as UserService from "../../services/UserServices";
 import { useMutationHooks } from "../../hooks/useMutationHook";
@@ -29,28 +34,58 @@ const SignInPage = () => {
   const mutation = useMutationHooks((data) => UserService.loginUser(data));
 
   const { data, isPending, isSuccess, isError } = mutation;
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  // useEffect(() => {
+  //   if (isSuccess && data?.status === "OK") {
+  //     message.success("Đăng nhập thành công!");
+  //     localStorage.setItem("access_token", JSON.stringify(data?.access_token));
+  //     if (data?.access_token) {
+  //       const decoded = jwtDecode(data?.access_token);
+  //       if (decoded?.id) {
+  //         handleGetDetailsUser(decoded?.id, data?.access_token);
+  //       }
+  //     }
+  //     navigate(location?.state || "/");
+  //   } else if (isSuccess && data?.status === "ERR") {
+  //     message.error(data?.message || "Lỗi đăng nhập!");
+  //   } else if (isError) {
+  //     message.error("Lỗi đăng nhập!");
+  //   }
+  // }, [isSuccess, isError, data]);
 
   useEffect(() => {
-    if (isSuccess && data?.status === "OK") {
-      message.success("Đăng nhập thành công!");
-      localStorage.setItem("access_token", JSON.stringify(data?.access_token));
-      if (data?.access_token) {
-        const decoded = jwtDecode(data?.access_token);
-        if (decoded?.id) {
-          handleGetDetailsUser(decoded?.id, data?.access_token);
+    const handleAfterLogin = async () => {
+      if (isSuccess && data?.status === "OK") {
+        message.success("Đăng nhập thành công!");
+        localStorage.setItem(
+          "access_token",
+          JSON.stringify(data?.access_token)
+        );
+        if (data?.access_token) {
+          const decoded = jwtDecode(data?.access_token);
+          if (decoded?.id) {
+            await handleGetDetailsUser(decoded?.id, data?.access_token);
+          }
         }
+        navigate(location?.state || "/");
+      } else if (isSuccess && data?.status === "ERR") {
+        message.error(data?.message || "Lỗi đăng nhập!");
+      } else if (isError) {
+        message.error("Lỗi đăng nhập!");
       }
-      navigate(location?.state || "/");
-    } else if (isSuccess && data?.status === "ERR") {
-      message.error(data?.message || "Lỗi đăng nhập!");
-    } else if (isError) {
-      message.error("Lỗi đăng nhập!");
-    }
+    };
+
+    handleAfterLogin();
   }, [isSuccess, isError, data]);
 
   const handleGetDetailsUser = async (id, token) => {
     const res = await UserService.getDetailsUser(id, token);
-    dispatch(updateUser({ ...res?.data, access_token: token }));
+    if (res?.status === "OK") {
+      dispatch(updateUser({ ...res?.data, access_token: token }));
+    } else {
+      message.error("Không lấy được thông tin người dùng.");
+    }
   };
 
   const handleNavigateSignUp = () => {
@@ -74,17 +109,19 @@ const SignInPage = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#efefef",
+        background: "#f4f4f4",
         height: "100vh",
       }}
     >
       <div
         style={{
           width: "800px",
-          height: "445px",
-          borderRadius: "6px",
+          minHeight: "470px",
+          borderRadius: "8px",
           background: "#fff",
           display: "flex",
+          boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
+          overflow: "hidden",
         }}
       >
         <WrapperContainerLeft>
@@ -121,16 +158,19 @@ const SignInPage = () => {
           )}
           <Loading isLoading={isPending}>
             <ButtonComponent
-              disabled={!email.length || !password.length}
+              // disabled={!email.length || !password.length}
+              disabled={!isValidEmail(email) || !password.length}
               onClick={handleSignIn}
               size={40}
               styleButton={{
                 background: "rgb(255, 66, 78)",
-                height: "40px",
-                width: "100%  ",
+                height: "42px",
+                width: "100%",
                 borderRadius: "4px",
                 border: "none",
                 margin: "26px 0 10px",
+                transition: "all 0.3s",
+                cursor: "pointer",
               }}
               textButton={"Đăng nhập"}
               styleTextButton={{
@@ -150,6 +190,7 @@ const SignInPage = () => {
             </WrapperTextLight>
           </p>
         </WrapperContainerLeft>
+
         <WrapperContainerRight>
           <Image
             src={imageLogo}

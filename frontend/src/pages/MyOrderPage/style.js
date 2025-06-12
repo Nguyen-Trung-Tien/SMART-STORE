@@ -1,17 +1,24 @@
 import styled from "styled-components";
 
+export const WrapperHeader = styled.h1`
+  color: #222;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: center;
+`;
+
 export const WrapperContainer = styled.div`
   width: 100%;
   background-color: #f2f2f7;
   font-size: 20px;
-  padding-bottom: 40px;
+  padding-bottom: 20px;
 `;
 
 export const WrapperListOrder = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 30px 0;
+  gap: 10px;
 `;
 
 export const WrapperItemOrder = styled.div`

@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   OrderButton,
   WrapperCountOrder,
+  WrapperHeader,
   WrapperInfo,
   WrapperInputNumber,
   WrapperItemOrder,
@@ -227,7 +228,7 @@ const OrderPage = () => {
   return (
     <div style={{ background: "#f5f5fa", width: "100%", height: "100vh" }}>
       <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
-        <h3 style={{ fontSize: "24px", marginTop: "10px" }}>Giỏ hàng</h3>
+        <WrapperHeader>Giỏ hàng</WrapperHeader>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <WrapperLeft>
             <WrapperStyleHeaderDelivery>

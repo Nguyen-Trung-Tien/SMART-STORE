@@ -1,6 +1,15 @@
 import { InputNumber } from "antd";
 import styled from "styled-components";
 
+export const WrapperHeader = styled.h1`
+  color: #222;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  text-align: center;
+`;
+
 export const WrapperStyleHeader = styled.div`
   background: #fff;
   padding: 12px 20px;
