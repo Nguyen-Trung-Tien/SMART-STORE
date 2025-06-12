@@ -520,7 +520,7 @@ const AdminProduct = () => {
       <div style={{ marginTop: "20px" }}>
         <TableComponent
           columns={columns}
-          fileName="sanpham"
+          fileName="Sanpham"
           handleDeleteMany={handleDeleteManyProduct}
           isPending={isPendingProducts}
           data={dataTable}
@@ -660,7 +660,7 @@ const AdminProduct = () => {
                   stateProduct?.image ? [{ url: stateProduct.image }] : []
                 }
                 onChange={handleOnChangeImage}
-                maxCount={1}
+                maxcount={1}
               >
                 <Button>Upload</Button>
                 {stateProduct?.image && (
@@ -796,7 +796,7 @@ const AdminProduct = () => {
                     : []
                 }
                 onChange={handleOnChangeImageDetails}
-                maxCount={1}
+                maxcount={1}
               >
                 <Button>Upload File</Button>
                 {stateProductDetails?.image && (

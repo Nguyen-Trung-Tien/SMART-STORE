@@ -40,7 +40,7 @@ export const ActionIcon = styled.div`
 `;
 
 export const IconButton = styled.button`
-  background-color: ${(props) => props.bgColor || "#ccc"};
+  background-color: ${(props) => props.bgcolor || "#ccc"};
   border: none;
   border-radius: 50%;
   padding: 10px;

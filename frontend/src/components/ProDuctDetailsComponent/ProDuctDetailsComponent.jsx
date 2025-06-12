@@ -26,6 +26,7 @@ import * as message from "../../components/Message/Message";
 import LikeButtonComponent from "../LikeButtonComponent/LikeButtonComponent";
 import CommentComponent from "../CommentComponent/CommentComponent";
 import Descriptions from "../Descriptions/Descriptions";
+import defaultImage from "../../assets/images/defaultImage.jpg";
 
 const ProductDetailsComponent = ({ idProduct }) => {
   const [numProduct, setNumProduct] = useState(1);
@@ -211,14 +212,24 @@ const ProductDetailsComponent = ({ idProduct }) => {
           style={{ borderRight: "1px solid #e5e5e5", paddingRight: "8px" }}
         >
           <Image
-            src={productDetails?.image}
+            src={productDetails?.image || defaultImage}
+            onError={(e) => (e.target.src = defaultImage)}
             alt="image Product"
             preview={false}
           />
           <Row style={{ marginTop: "12px", justifyContent: "space-between" }}>
             <WrapperStyleColImage span={4}>
               <WrapperStyleImageSmall
-                src={productDetails?.image}
+                src={productDetails?.image || defaultImage}
+                onError={(e) => (e.target.src = defaultImage)}
+                alt="image Small"
+                preview={false}
+              />
+            </WrapperStyleColImage>
+            <WrapperStyleColImage span={4}>
+              <WrapperStyleImageSmall
+                src={productDetails?.image || defaultImage}
+                onError={(e) => (e.target.src = defaultImage)}
                 alt="image Small"
                 preview={false}
               />
@@ -232,21 +243,16 @@ const ProductDetailsComponent = ({ idProduct }) => {
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
               <WrapperStyleImageSmall
-                src={productDetails?.image}
+                src={productDetails?.image || defaultImage}
+                onError={(e) => (e.target.src = defaultImage)}
                 alt="image Small"
                 preview={false}
               />
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
               <WrapperStyleImageSmall
-                src={productDetails?.image}
-                alt="image Small"
-                preview={false}
-              />
-            </WrapperStyleColImage>
-            <WrapperStyleColImage span={4}>
-              <WrapperStyleImageSmall
-                src={productDetails?.image}
+                src={productDetails?.image || defaultImage}
+                onError={(e) => (e.target.src = defaultImage)}
                 alt="image Small"
                 preview={false}
               />

@@ -27,10 +27,12 @@ import Loading from "../LoadingComponent/Loading";
 import { useLocation } from "react-router-dom";
 import { useMutationHooks } from "../../hooks/useMutationHook";
 import { message } from "antd";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AdminOrder = () => {
   const user = useSelector((state) => state?.user);
   const { state } = useLocation;
+  const queryClient = useQueryClient();
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
@@ -85,20 +87,25 @@ const AdminOrder = () => {
   });
 
   const renderAction = (record) => {
+    const disabled = record.isPaid || record.isDelivered;
     return (
       <ActionContainer>
         <Tooltip title="Xác nhận đơn">
           <IconButton
-            bgColor="#52c41a"
+            bgcolor={disabled ? "#ccc" : "#52c41a"}
             onClick={() => handleConfirmOrder(record)}
+            disabled={disabled}
+            style={{ cursor: disabled ? "not-allowed" : "pointer" }}
           >
             <CheckOutlined />
           </IconButton>
         </Tooltip>
         <Tooltip title="Hủy đơn">
           <IconButton
-            bgColor="#f5222d"
+            bgcolor={disabled ? "#ccc" : "#f5222d"}
             onClick={() => handleCancelOrder(record)}
+            disabled={disabled}
+            style={{ cursor: disabled ? "not-allowed" : "pointer" }}
           >
             <StopOutlined />
           </IconButton>
@@ -194,8 +201,18 @@ const AdminOrder = () => {
       return res;
     },
     {
-      onSuccess: () => {
-        queryOrder.refetch();
+      onSuccess: ({ res, orderId }) => {
+        if (res.status === "OK") {
+          queryClient.setQueryData(["orders"], (oldData) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              data: oldData.data.map((item) =>
+                item._id === orderId ? { ...item, isDelivered: true } : item
+              ),
+            };
+          });
+        }
       },
     }
   );
@@ -209,8 +226,18 @@ const AdminOrder = () => {
       return res;
     },
     {
-      onSuccess: () => {
-        queryOrder.refetch();
+      onSuccess: ({ res, orderId }) => {
+        if (res.status === "OK") {
+          queryClient.setQueryData(["orders"], (oldData) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              data: oldData.data.map((item) =>
+                item._id === orderId ? { ...item, isPaid: true } : item
+              ),
+            };
+          });
+        }
       },
     }
   );
@@ -232,13 +259,13 @@ const AdminOrder = () => {
     DeliveredMutation.mutate(order);
   };
 
-  useEffect(() => {
-    if (isSuccessCancel && dataCancel?.status === "OK") {
-      message.success("Hủy đơn thành công!");
-    } else if (isErrorCancel) {
-      message.error("Không thể hủy đơn!");
-    }
-  }, [isSuccessCancel, isErrorCancel, dataCancel]);
+  // useEffect(() => {
+  //   if (isSuccessCancel && dataCancel?.status === "OK") {
+  //     message.success("Hủy đơn thành công!");
+  //   } else if (isErrorCancel) {
+  //     message.error("Không thể hủy đơn!");
+  //   }
+  // }, [isSuccessCancel, isErrorCancel, dataCancel]);
 
   useEffect(() => {
     if (isSuccessDelivery && isSuccessPaid) {
@@ -259,8 +286,17 @@ const AdminOrder = () => {
     cancelMutation.mutate(
       { id: order?._id, token: state?.token, orderItems: order?.orderItems },
       {
-        onSuccess: () => {
-          queryOrder.refetch();
+        onSuccess: (res, variables) => {
+          queryClient.setQueryData(["orders"], (oldData) => {
+            const newOrders = oldData?.data?.filter(
+              (item) => item._id !== order._id
+            );
+            return { ...oldData, data: newOrders };
+          });
+          message.success("Hủy đơn thành công!");
+        },
+        onError: () => {
+          message.error("Không thể hủy đơn!");
         },
       }
     );

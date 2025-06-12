@@ -18,20 +18,17 @@ import {
 } from "./styler";
 
 const { Footer } = Layout;
-const { Text, Title } = Typography;
 
 const WrapperFooter = styled(Footer)`
   background-color: #0b74e5;
   color: rgb(239, 239, 239);
   padding: 20px;
-  margin-top: 20px;
 `;
 
 const FooterComponent = () => {
   return (
     <WrapperFooter>
       <Row gutter={[0, 24]}>
-        {/* Logo & Store Name */}
         <Col xs={24} sm={12} md={7}>
           <FooterTitle level={4}>SMART-STORE</FooterTitle>
           <FooterText>
@@ -47,7 +44,6 @@ const FooterComponent = () => {
           </div>
         </Col>
 
-        {/* Footer Menu */}
         <Col xs={12} sm={6} md={5}>
           <FooterListTitle>Thông tin</FooterListTitle>
           <FooterLink href="/about">Giới thiệu</FooterLink>
@@ -62,7 +58,6 @@ const FooterComponent = () => {
           <FooterLink href="/payment-guide">Hướng dẫn thanh toán</FooterLink>
         </Col>
 
-        {/* Social Icons */}
         <Col xs={24} sm={24} md={7}>
           <FooterListTitle>Kết nối với SMART-STORE:</FooterListTitle>
           <Space size="middle" style={{ marginTop: 8, flexWrap: "wrap" }}>

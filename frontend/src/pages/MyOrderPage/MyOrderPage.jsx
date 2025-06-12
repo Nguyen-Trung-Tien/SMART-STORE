@@ -23,12 +23,17 @@ const MyOrderPage = () => {
   const { state } = location;
 
   const fetchMyOrder = async () => {
-    const res = await OrderService.getOrderbyUserId(state?.id, state?.token);
-    return res.data;
+    try {
+      const res = await OrderService.getOrderbyUserId(state?.id, state?.token);
+      return res.data;
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
   };
 
   const queryOrder = useQuery({
-    queryKey: ["orders"],
+    queryKey: ["orders", state?.id],
     queryFn: fetchMyOrder,
     enabled: !!(state?.id && state?.token),
   });

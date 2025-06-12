@@ -20,7 +20,7 @@ const HomePage = () => {
   const searchProduct = useSelector((state) => state?.product?.search);
   const searchDebounce = useDebounce(searchProduct, 500);
   const [pending, setPending] = useState(false);
-  const [limit, setLimit] = useState(6);
+  const [limit, setLimit] = useState(12);
 
   const [typeProducts, setTypeProducts] = useState([]);
 
@@ -142,6 +142,7 @@ const HomePage = () => {
                 borderRadius: "4px",
                 fontWeight: "500",
                 fontSize: "16px",
+                marginBottom: "10px",
               }}
               disabled={
                 products?.data?.length >= products?.total ||
@@ -153,7 +154,7 @@ const HomePage = () => {
               }}
               onClick={() => {
                 if (products?.data?.length < products?.total) {
-                  setLimit((prev) => prev + 6);
+                  setLimit((prev) => prev + 12);
                 }
               }}
             />

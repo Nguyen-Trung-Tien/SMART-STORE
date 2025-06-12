@@ -2,15 +2,17 @@ import { InputNumber, Radio } from "antd";
 import styled from "styled-components";
 
 export const WrapperStyleHeader = styled.div`
-  background: rgb(255, 255, 255);
+  background: #fff;
   padding: 9px 16px;
-  border-radius: 4px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+
   span {
-    color: rgb(36, 36, 36);
-    font-size: 13px;
-    font-weight: 400;
+    color: #242424;
+    font-size: 14px;
+    font-weight: 500;
   }
 `;
 
@@ -19,35 +21,44 @@ export const WrapperContainer = styled.div`
 `;
 
 export const WrapperValue = styled.div`
-  background: rgb(240, 248, 255);
-  border: 1px solid rgb(194, 255, 255);
-  padding: 10px;
-  width: fit-content;
+  background: #f0f8ff;
+  border: 1px solid #c2ffff;
+  padding: 10px 14px;
   border-radius: 6px;
-  margin-top: 4px;
+  margin-top: 6px;
+  font-size: 14px;
+  color: #333;
 `;
 
 export const WrapperItemOrder = styled.div`
   display: flex;
   align-items: center;
-  padding: 9px 16px;
+  padding: 12px 16px;
   background: #fff;
-  margin-top: 12px;
-  justify-content: center;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 `;
 
 export const WrapperPriceDiscount = styled.span`
   color: #999;
-  font-size: 12px;
+  font-size: 13px;
   text-decoration: line-through;
-  margin-left: 4px;
+  margin-left: 6px;
 `;
+
 export const WrapperCountOrder = styled.div`
   display: flex;
   align-items: center;
-  width: 84px;
+  width: 90px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
+  overflow: hidden;
+
+  input {
+    text-align: center;
+    font-size: 14px;
+  }
 `;
 
 export const WrapperRight = styled.div`
@@ -55,42 +66,44 @@ export const WrapperRight = styled.div`
   margin-left: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
 `;
 
 export const WrapperInfo = styled.div`
   padding: 16px 20px;
-  border: 1px solid #f5f5f5;
+  border: 1px solid #f0f0f0;
   background: #fff;
-  border-top-right-radius: 6px;
-  border-top-left-radius: 6px;
+  border-radius: 8px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `;
 
 export const WrapperItemsOrderInfo = styled.div`
   padding: 16px 20px;
-  border: 1px solid #f5f5f5;
+  border: 1px solid #f0f0f0;
   background: #fff;
-  border-top-right-radius: 6px;
-  border-top-left-radius: 6px;
+  border-radius: 8px;
   width: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
 `;
 
 export const WrapperTotal = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 17px 20px;
+  padding: 20px;
   background: #fff;
-  border-bottom-right-radius: 6px;
-  border-bottom-left-radius: 6px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 `;
 
 export const Label = styled.span`
   font-size: 14px;
   color: #000;
-  font-weight: bold;
+  font-weight: 600;
 `;

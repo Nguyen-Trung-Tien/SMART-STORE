@@ -106,7 +106,7 @@ const ProfilePage = () => {
             <InputForm
               style={{ width: "400px", marginBottom: "20px" }}
               value={email}
-              id={email}
+              id="email"
               onChange={handleOnChangeEmail}
             />
           </WrapperInput>
@@ -115,7 +115,7 @@ const ProfilePage = () => {
             <InputForm
               style={{ width: "400px", marginBottom: "20px" }}
               value={phone}
-              id={phone}
+              id="phone"
               onChange={handleOnChangePhone}
             />
           </WrapperInput>
@@ -124,25 +124,27 @@ const ProfilePage = () => {
             <InputForm
               style={{ width: "400px", marginBottom: "20px" }}
               value={address}
-              id={address}
+              id="address"
               onChange={handleOnChangeAddress}
             />
           </WrapperInput>
           <WrapperInput>
             <WrapperLabel htmlFor="avatar">Avatar</WrapperLabel>
             <WrapperUploadFile onChange={handleOnChangeAvatar} maxCount={1}>
-              <Button icon={<UploadOutlined />}>Upload image</Button>
+              <Button icon={<UploadOutlined />}>Upload Avatar</Button>
             </WrapperUploadFile>
             {avatar && (
               <img
                 src={avatar}
                 style={{
-                  height: "100px",
-                  width: "100px",
-                  marginLeft: "80px",
+                  height: "80px",
+                  width: "80px",
                   borderRadius: "50%",
                   objectFit: "cover",
                 }}
+                onChange={handleOnChangeAvatar}
+                maxcount={1}
+                accept=".png,.jpg,.jpeg"
                 alt="avatar"
               />
             )}
@@ -151,14 +153,12 @@ const ProfilePage = () => {
             onClick={handleUpdate}
             size={40}
             styleButton={{
-              height: "40px",
-              width: "80px",
-              borderRadius: "10px",
+              height: "42px",
+              width: "120px",
+              borderRadius: "8px",
               border: "1px solid rgb(11, 116, 229)",
-              margin: "26px 0 10px",
-              marginTop: "70px",
-              marginLeft: "520px",
-              padding: "4px 6px 6px",
+              padding: "4px 6px",
+              marginTop: "30px",
             }}
             textButton={"Cập nhật"}
             styleTextButton={{

@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import {
   WrapperAllPrice,
   WrapperContentInfo,
+  WrapperHeader,
   WrapperHeaderUser,
   WrapperInfoUser,
   WrapperItem,
@@ -36,23 +37,29 @@ const DetailsOrderPage = () => {
   });
 
   const { isPending, data } = queryOrder;
-  let shippingAddress,
-    orderItems,
-    shippingPrice,
-    paymentMethod,
-    isPaid,
-    totalPrice;
+  const shippingAddress = data?.shippingAddress;
+  const orderItems = data?.orderItems;
+  const shippingPrice = data?.shippingPrice;
+  const paymentMethod = data?.paymentMethod;
+  const isPaid = data?.isPaid;
+  const totalPrice = data?.totalPrice;
+  // let shippingAddress,
+  //   orderItems,
+  //   shippingPrice,
+  //   paymentMethod,
+  //   isPaid,
+  //   totalPrice;
 
-  if (data) {
-    ({
-      shippingAddress,
-      orderItems,
-      shippingPrice,
-      paymentMethod,
-      isPaid,
-      totalPrice,
-    } = data);
-  }
+  // if (data) {
+  //   ({
+  //     shippingAddress,
+  //     orderItems,
+  //     shippingPrice,
+  //     paymentMethod,
+  //     isPaid,
+  //     totalPrice,
+  //   } = data);
+  // }
   const priceMemo = useMemo(() => {
     if (!data?.orderItems) return 0;
     return data.orderItems.reduce((total, cur) => {
@@ -60,11 +67,17 @@ const DetailsOrderPage = () => {
     }, 0);
   }, [data]);
 
+  if (!data && !isPending) {
+    return <div style={{ padding: 20 }}>Không tìm thấy đơn hàng.</div>;
+  }
+
   return (
     <Loading isLoading={isPending}>
       <div style={{ width: "100%", backgroundColor: "#f5f5fa" }}>
         <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
-          <h4 style={{ fontSize: "14px" }}>Chi tiết đơn hàng</h4>
+          <WrapperHeader style={{ fontSize: "14px" }}>
+            Chi tiết đơn hàng
+          </WrapperHeader>
           <WrapperHeaderUser>
             <WrapperInfoUser>
               <WrapperLabel>Địa chỉ người nhận </WrapperLabel>
@@ -158,7 +171,9 @@ const DetailsOrderPage = () => {
                   <WrapperItem>{order?.amount}</WrapperItem>
                   <WrapperItem>
                     {order?.discount
-                      ? convertPrice((priceMemo * order?.discount) / 100)
+                      ? convertPrice(
+                          (order.price * order.amount * order.discount) / 100
+                        )
                       : "0 VND"}
                   </WrapperItem>
                 </WrapperProduct>

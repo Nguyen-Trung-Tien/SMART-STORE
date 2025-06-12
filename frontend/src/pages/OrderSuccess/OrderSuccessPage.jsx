@@ -8,7 +8,7 @@ import {
 } from "./style";
 
 import Loading from "../../components/LoadingComponent/Loading";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { orderConstant } from "../../constant";
 import { convertPrice } from "../../utils";
 
@@ -25,7 +25,7 @@ const OrderSuccessPage = () => {
   }
 
   return (
-    <div style={{ background: "#f5f5fa", width: "100%", height: "100vh" }}>
+    <div style={{ background: "#f5f5fa", width: "100%", height: "100%" }}>
       <Loading isLoading={false}>
         <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
           <h3 style={{ fontSize: "24px", marginTop: "10px" }}>
@@ -35,7 +35,7 @@ const OrderSuccessPage = () => {
             <WrapperContainer>
               <WrapperInfo>
                 <div>
-                  <Label to="/">Phương thức giao hàng</Label>
+                  <Label>Phương thức giao hàng</Label>
                   <WrapperValue>
                     <span
                       style={{
@@ -59,8 +59,8 @@ const OrderSuccessPage = () => {
                 </div>
               </WrapperInfo>
               <WrapperItemsOrderInfo>
-                {state?.order?.map((orders, index) => {
-                  return (
+                {state?.order?.length > 0 ? (
+                  state.order.map((orders, index) => (
                     <WrapperItemOrder key={orders?.id || index}>
                       <div
                         style={{
@@ -122,9 +122,12 @@ const OrderSuccessPage = () => {
                         </span>
                       </div>
                     </WrapperItemOrder>
-                  );
-                })}
+                  ))
+                ) : (
+                  <div>Không có sản phẩm trong đơn hàng.</div>
+                )}
               </WrapperItemsOrderInfo>
+
               <span>
                 <span
                   style={{

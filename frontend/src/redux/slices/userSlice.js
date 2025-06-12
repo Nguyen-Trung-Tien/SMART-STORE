@@ -47,7 +47,6 @@ export const userSlice = createSlice({
       state.phone = "";
       state.address = "";
       state.avatar = "";
-      state.image = "";
       state.id = "";
       state.access_token = "";
       state.isAdmin = "";

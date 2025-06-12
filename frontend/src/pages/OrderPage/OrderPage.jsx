@@ -2,6 +2,7 @@ import { DeleteOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { Checkbox, Form } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  OrderButton,
   WrapperCountOrder,
   WrapperInfo,
   WrapperInputNumber,
@@ -505,7 +506,7 @@ const OrderPage = () => {
                 </span>
               </WrapperTotal>
             </div>
-            <ButtonComponent
+            {/* <ButtonComponent
               onClick={() => handleAddCard()}
               size={40}
               styleButton={{
@@ -521,7 +522,8 @@ const OrderPage = () => {
                 fontSize: "15px",
                 color: "#fff",
               }}
-            />
+            /> */}
+            <OrderButton onClick={() => handleAddCard()}>Đặt hàng</OrderButton>
           </WrapperRight>
         </div>
       </div>

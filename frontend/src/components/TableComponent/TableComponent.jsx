@@ -11,6 +11,7 @@ const TableComponent = (props) => {
     columns = [],
     handleDeleteMany,
   } = props;
+
   const [rowSelectedKeys, setRowSelectedKeys] = useState([]);
   const { fileName = {} } = props;
   const newColumnExport = useMemo(() => {
@@ -29,34 +30,40 @@ const TableComponent = (props) => {
   };
 
   const deleteButtonStyle = {
-    background: "#1d1ddd",
+    background: "#ff4d4f",
     color: "#fff",
-    fontWeight: "bold",
-    padding: "10px",
+    fontWeight: "600",
+    padding: "10px 16px",
     width: "70px",
     cursor: "pointer",
     marginTop: "10px",
-    borderRadius: "10px",
+    borderRadius: "8px",
     border: "none",
     outline: "none",
     marginBottom: "10px",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    transition: "all 0.3s ease",
   };
 
   const exportButtonStyle = {
-    background: "blue",
+    background: "#1890ff",
     color: "#fff",
-    fontWeight: "bold",
-    padding: "10px",
+    fontWeight: "600",
+    padding: "10px 16px",
     cursor: "pointer",
     marginTop: "10px",
-    marginLeft: "990px",
+    marginLeft: "auto",
     marginBottom: "10px",
-    borderRadius: "10px",
+    borderRadius: "8px",
     border: "none",
     outline: "none",
-    boxShadow:
-      "0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08)",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    transition: "all 0.3s ease",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
   };
+
   const handleExcel = () => {
     try {
       if (!dataSource || !newColumnExport) {
@@ -97,6 +104,7 @@ const TableComponent = (props) => {
   const handleDeleteAll = () => {
     handleDeleteMany(rowSelectedKeys);
   };
+
   return (
     <div>
       <Loading isLoading={isPending}>

@@ -2,6 +2,7 @@ import { Form, Radio } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Label,
+  OrderButton,
   WrapperInfo,
   WrapperLeft,
   WrapperRadio,
@@ -29,7 +30,7 @@ const PaymentPage = () => {
   const user = useSelector((state) => state.user);
   const [isOpenModalUpdateInfo, setIsOpenModalUpdateInfo] = useState(false);
   const dispatch = useDispatch();
-  const [delivery, setDelivery] = useState("super", "normal");
+  const [delivery, setDelivery] = useState("super");
   const [payment, setPayment] = useState("laster_money");
   const navigate = useNavigate();
   const [sdkReady, setSdkReady] = useState(false);
@@ -291,9 +292,9 @@ const PaymentPage = () => {
                 <WrapperInfo>
                   <div>
                     <span>Địa chỉ: </span>
-                    <span
-                      style={{ fontWeight: "bold" }}
-                    >{`${user?.address} ${user?.city}`}</span>
+                    <span style={{ fontWeight: "bold" }}>
+                      {user?.address}, {user?.city}
+                    </span>
                     -
                     <span
                       onClick={handleChangeAddress}
@@ -396,23 +397,28 @@ const PaymentPage = () => {
                   />
                 </div>
               ) : (
-                <ButtonComponent
-                  onClick={() => handleAddOrder()}
-                  size={40}
-                  styleButton={{
-                    background: "rgb(254,57,69)",
-                    height: "48px",
-                    width: "320px",
-                    border: "none",
-                    borderRadius: "4px",
-                  }}
-                  textButton={"Đặt hàng"}
-                  styleTextButton={{
-                    fontWeight: "500",
-                    fontSize: "15px",
-                    color: "#fff",
-                  }}
-                />
+                // <ButtonComponent
+                //   onClick={() => handleAddOrder()}
+                //   size={40}
+                //   styleButton={{
+                //     background: "linear-gradient(135deg, #ff5757, #ff2e63)",
+                //     height: "52px",
+                //     width: "360px",
+                //     border: "none",
+                //     borderRadius: "12px",
+                //     boxShadow: "0 6px 12px rgba(255, 46, 99, 0.25)",
+                //     transition: "all 0.3s ease",
+                //     cursor: "pointer",
+                //   }}
+                //   textButton={"Đặt hàng"}
+                //   styleTextButton={{
+                //     fontWeight: "600",
+                //     fontSize: "16px",
+                //     color: "#fff",
+                //     letterSpacing: "0.3px",
+                //   }}
+                // />
+                <OrderButton onClick={handleAddOrder}>Đặt hàng</OrderButton>
               )}
             </WrapperRight>
           </div>

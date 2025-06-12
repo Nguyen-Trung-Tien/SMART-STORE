@@ -464,7 +464,7 @@ const AdminUser = () => {
                     : []
                 }
                 onChange={handleOnChangeAvatarDetails}
-                maxCount={1}
+                maxcount={1}
               >
                 <Button>Upload File</Button>
                 {stateUserDetails?.avatar && (
