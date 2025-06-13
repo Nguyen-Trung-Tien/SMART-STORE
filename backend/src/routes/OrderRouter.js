@@ -16,25 +16,21 @@ router.get(
 );
 router.get(
   "/get-details-order/:id",
-
+  authUserMiddleware,
   OrderController.getDetailsOrder
 );
-router.delete(
-  "/cancel-order/:id",
-
-  OrderController.cancelOrderDetails
-);
+router.delete("/cancel-order/:id", OrderController.cancelOrderDetails);
 router.get(
   "/get-all-order",
   authUserMiddleware,
   authMiddleware,
   OrderController.getAllOrder
 );
+router.put("/confirm/:id", OrderController.confirmOrderDetails);
+router.put("/pay/:id", authUserMiddleware, OrderController.updateOrderPaid);
 router.put(
-  "/confirm/:id",
-
-  OrderController.confirmOrderDetails
+  "/deliver/:id",
+  authUserMiddleware,
+  OrderController.updateOrderDelivered
 );
-router.put("/pay/:id", OrderController.updateOrderPaid);
-router.put("/deliver/:id", OrderController.updateOrderDelivered);
 module.exports = router;

@@ -45,7 +45,8 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   const handleLogout = async () => {
     try {
       setPending(true);
-      await UserService.logoutUser();
+      await UserService.logoutUser(); // gọi API xóa refresh_token cookie
+      localStorage.removeItem("access_token");
       dispatch(resetUser());
     } catch (error) {
       console.error("Logout failed:", error);
