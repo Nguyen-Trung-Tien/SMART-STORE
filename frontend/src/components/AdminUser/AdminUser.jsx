@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { WrapperHeader, WrapperUploadFile } from "./style";
-import { Button, Form, Space } from "antd";
+import { ActionButton, WrapperHeader, WrapperUploadFile } from "./style";
+import { Button, Form, Space, Tooltip } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -69,24 +69,21 @@ const AdminUser = () => {
 
   const renderAction = () => {
     return (
-      <div>
-        <EditOutlined
-          style={{
-            color: "blue",
-            fontSize: "30px",
-            cursor: "pointer",
-          }}
-          onClick={handleDetailUser}
-        />
-        <DeleteOutlined
-          style={{
-            color: "red",
-            fontSize: "30px",
-            cursor: "pointer",
-            paddingLeft: "15px",
-          }}
-          onClick={() => setIsModalOpenDelete(true)}
-        />
+      <div style={{ display: "flex", gap: "12px" }}>
+        <Tooltip title="Chỉnh sửa">
+          <ActionButton bgcolor="#e6f7ff" onClick={handleDetailUser}>
+            <EditOutlined style={{ color: "#1890ff", fontSize: "24px" }} />
+          </ActionButton>
+        </Tooltip>
+
+        <Tooltip title="Xóa">
+          <ActionButton
+            bgcolor="#fff1f0"
+            onClick={() => setIsModalOpenDelete(true)}
+          >
+            <DeleteOutlined style={{ color: "#ff4d4f", fontSize: "24px" }} />
+          </ActionButton>
+        </Tooltip>
       </div>
     );
   };
@@ -195,6 +192,7 @@ const AdminUser = () => {
       title: "Action",
       dataIndex: "action",
       render: renderAction,
+      width: 120,
     },
   ];
 
@@ -391,7 +389,8 @@ const AdminUser = () => {
       <DrawerComponent
         title="Chi tiết người dùng"
         isOpen={isOpenDrawer}
-        onClose={() => setIsOpenDrawer(false)}
+        // onClose={() => setIsOpenDrawer(false)}
+        onClose={handleCloseDrawer}
         width="90%"
       >
         <Loading isLoading={isPendingUpdate || isPendingUser}>
@@ -459,12 +458,12 @@ const AdminUser = () => {
             >
               <WrapperUploadFile
                 fileList={
-                  stateUserDetails?.image
+                  stateUserDetails?.avatar
                     ? [{ url: stateUserDetails.avatar }]
                     : []
                 }
                 onChange={handleOnChangeAvatarDetails}
-                maxcount={1}
+                maxCount={1}
               >
                 <Button>Upload File</Button>
                 {stateUserDetails?.avatar && (

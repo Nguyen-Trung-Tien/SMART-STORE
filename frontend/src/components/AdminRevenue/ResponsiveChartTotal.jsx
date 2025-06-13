@@ -24,7 +24,7 @@ const getAllOrder = async (token) => {
 };
 
 const ResponsiveChartTotal = ({ user }) => {
-  const { data: orders, isPending } = useQuery({
+  const { data: orders } = useQuery({
     queryKey: ["orders"],
     queryFn: () => getAllOrder(user?.access_token),
     enabled: !!user?.access_token,

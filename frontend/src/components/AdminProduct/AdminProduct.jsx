@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { WrapperHeader, WrapperUploadFile } from "./style";
-import { Button, Form, Select, Space } from "antd";
+import { ActionButton, WrapperHeader, WrapperUploadFile } from "./style";
+import { Button, Form, Select, Space, Tooltip } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -86,24 +86,21 @@ const AdminProduct = () => {
 
   const renderAction = () => {
     return (
-      <div>
-        <EditOutlined
-          style={{
-            color: "blue",
-            fontSize: "30px",
-            cursor: "pointer",
-          }}
-          onClick={handleDetailProduct}
-        />
-        <DeleteOutlined
-          style={{
-            color: "red",
-            fontSize: "30px",
-            cursor: "pointer",
-            paddingLeft: "15px",
-          }}
-          onClick={() => setIsModalOpenDelete(true)}
-        />
+      <div style={{ display: "flex", gap: "12px" }}>
+        <Tooltip title="Chỉnh sửa">
+          <ActionButton bgcolor="#e6f7ff" onClick={handleDetailProduct}>
+            <EditOutlined style={{ color: "#1890ff", fontSize: "24px" }} />
+          </ActionButton>
+        </Tooltip>
+
+        <Tooltip title="Xóa">
+          <ActionButton
+            bgcolor="#fff1f0"
+            onClick={() => setIsModalOpenDelete(true)}
+          >
+            <DeleteOutlined style={{ color: "#ff4d4f", fontSize: "24px" }} />
+          </ActionButton>
+        </Tooltip>
       </div>
     );
   };
@@ -182,19 +179,19 @@ const AdminProduct = () => {
       sorter: (a, b) => a.price - b.price,
       filters: [
         {
-          text: ">= 50",
+          text: ">= 5.000.000",
           value: ">=",
         },
         {
-          text: "<= 50",
+          text: "<= 5.000.000",
           value: "<=",
         },
       ],
       onFilter: (value, record) => {
         if (value === ">=") {
-          return record.price >= 50;
+          return record.price >= 5000000;
         } else if (value === "<=") {
-          return record.price <= 50;
+          return record.price <= 5000000;
         }
       },
       render: (price) => convertPrice(price),
@@ -215,9 +212,9 @@ const AdminProduct = () => {
       ],
       onFilter: (value, record) => {
         if (value === ">=") {
-          return record.price >= 3;
+          return record.rating >= 3;
         } else if (value === "<=") {
-          return record.price <= 3;
+          return record.rating <= 3;
         }
       },
     },
@@ -230,6 +227,7 @@ const AdminProduct = () => {
       title: "Action",
       dataIndex: "action",
       render: renderAction,
+      width: 120,
     },
   ];
 
@@ -376,6 +374,7 @@ const AdminProduct = () => {
       { id: rowSelected, token: user?.access_token },
       {
         onSettled: () => {
+          setRowSelected("");
           queryProduct.refetch();
         },
       }
@@ -423,11 +422,13 @@ const AdminProduct = () => {
       countInStock: stateProduct.countInStock,
       discount: stateProduct.discount,
     };
-    mutation.mutate(params, {
-      onSettled: () => {
-        queryProduct.refetch();
-      },
-    });
+    if (!stateProduct.name || !stateProduct.price) {
+      mutation.mutate(params, {
+        onSettled: () => {
+          queryProduct.refetch();
+        },
+      });
+    }
   };
 
   const handleOnChangeImage = async ({ fileList }) => {
@@ -689,7 +690,8 @@ const AdminProduct = () => {
       <DrawerComponent
         title="Chi tiết sản phẩm"
         isOpen={isOpenDrawer}
-        onClose={() => setIsOpenDrawer(false)}
+        // onClose={() => setIsOpenDrawer(false)}
+        onClose={handleCloseDrawer}
         width="90%"
       >
         <Loading isLoading={isPendingUpdate || isPendingUpdated}>

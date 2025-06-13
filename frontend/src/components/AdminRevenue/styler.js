@@ -8,8 +8,8 @@ export const WrapperHeaderRevenue = styled.h1`
 `;
 
 export const ChartWrapper = styled.div`
-  width: 1000px;
-  padding: 24px;
+  width: 1100px;
+  padding: 28px;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
