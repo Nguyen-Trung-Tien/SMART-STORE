@@ -9,28 +9,11 @@ const delay = require("../middleware/delay");
 
 router.all("*", delay);
 router.post("/create", OrderController.createOrder);
-router.get(
-  "/get-all-order/:id",
-  authUserMiddleware,
-  OrderController.getAllOrderDetails
-);
-router.get(
-  "/get-details-order/:id",
-  authUserMiddleware,
-  OrderController.getDetailsOrder
-);
+router.get("/get-all-order/:id", OrderController.getAllOrderDetails);
+router.get("/get-details-order/:id", OrderController.getDetailsOrder);
 router.delete("/cancel-order/:id", OrderController.cancelOrderDetails);
-router.get(
-  "/get-all-order",
-  authUserMiddleware,
-  authMiddleware,
-  OrderController.getAllOrder
-);
+router.get("/get-all-order", authMiddleware, OrderController.getAllOrder);
 router.put("/confirm/:id", OrderController.confirmOrderDetails);
-router.put("/pay/:id", authUserMiddleware, OrderController.updateOrderPaid);
-router.put(
-  "/deliver/:id",
-  authUserMiddleware,
-  OrderController.updateOrderDelivered
-);
+router.put("/pay/:id", OrderController.updateOrderPaid);
+router.put("/deliver/:id", OrderController.updateOrderDelivered);
 module.exports = router;

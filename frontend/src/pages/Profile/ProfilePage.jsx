@@ -44,8 +44,8 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (isSuccess && data?.status === "OK") {
-      message.success("Cập nhật thành công");
       handleGetDetailsUser(user?.id, user?.access_token);
+      message.success("Cập nhật thành công");
     } else if (isError) {
       message.error("Cập nhật thất bại");
     }
@@ -87,6 +87,7 @@ const ProfilePage = () => {
       access_token: user?.access_token,
     });
   };
+
   return (
     <div style={{ width: "1270px ", margin: "0 auto", height: "500px" }}>
       <WrapperHeader>Thông tin của bạn</WrapperHeader>

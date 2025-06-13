@@ -1,8 +1,6 @@
 import axios from "axios";
 
-export const axiosJWT = axios.create({
-  baseURL: process.env.REACT_APP_API_KEY,
-});
+export const axiosJWT = axios.create();
 
 export const loginUser = async (data) => {
   const res = await axios.post(
