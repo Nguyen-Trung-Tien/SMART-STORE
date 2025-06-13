@@ -130,7 +130,7 @@ const DetailsOrderPage = () => {
                   fontWeight: "bold",
                   fontSize: "14px",
                   textAlign: "center",
-                  marginRight: "270px",
+                  marginRight: "300px",
                   width: "300px",
                 }}
               >

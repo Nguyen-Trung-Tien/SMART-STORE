@@ -70,13 +70,13 @@ const ProductDetailsComponent = ({ idProduct }) => {
   }, [numProduct, productDetails]);
 
   useEffect(() => {
-    if (order.isSuccessOrder) {
+    if (order?.isSuccessOrder) {
       message.success("Thêm vào giỏ hàng thành công");
     }
     return () => {
       dispatch(resetOrder());
     };
-  }, [order.isSuccessOrder]);
+  }, [order?.isSuccessOrder]);
 
   const handleChangeCount = (type, limited) => {
     if (type === "increase") {
@@ -236,7 +236,8 @@ const ProductDetailsComponent = ({ idProduct }) => {
             </WrapperStyleColImage>
             <WrapperStyleColImage span={4}>
               <WrapperStyleImageSmall
-                src={productDetails?.image}
+                src={productDetails?.image || defaultImage}
+                onError={(e) => (e.target.src = defaultImage)}
                 alt="image Small"
                 preview={false}
               />

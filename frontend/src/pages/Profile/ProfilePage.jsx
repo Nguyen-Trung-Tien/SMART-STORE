@@ -93,6 +93,14 @@ const ProfilePage = () => {
       <Loading isLoading={isPending}>
         <WrapperContentProfile>
           <WrapperInput>
+            <WrapperLabel>ID</WrapperLabel>
+            <InputForm
+              style={{ width: "400px", marginBottom: "20px" }}
+              value={user?.id}
+              id="id"
+            />
+          </WrapperInput>
+          <WrapperInput>
             <WrapperLabel htmlFor="name">Name</WrapperLabel>
             <InputForm
               style={{ width: "400px", marginBottom: "20px" }}

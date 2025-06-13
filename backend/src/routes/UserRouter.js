@@ -7,7 +7,7 @@ const {
 } = require("../middleware/authMiddleware");
 const delay = require("../middleware/delay");
 
-// router.all("*", delay);
+router.all("*", delay);
 router.post("/sign-up", userController.createUser);
 router.post("/sign-in", userController.loginUser);
 router.post("/log-out", userController.logoutUser);

@@ -7,7 +7,7 @@ const {
 } = require("../middleware/authMiddleware");
 const delay = require("../middleware/delay");
 
-// router.all("*", delay);
+router.all("*", delay);
 router.post("/create", OrderController.createOrder);
 router.get(
   "/get-all-order/:id",
