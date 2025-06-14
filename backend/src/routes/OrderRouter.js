@@ -1,13 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const OrderController = require("../controllers/OrderController");
-const {
-  authUserMiddleware,
-  authMiddleware,
-} = require("../middleware/authMiddleware");
-const delay = require("../middleware/delay");
 
-router.all("*", delay);
 router.post("/create", OrderController.createOrder);
 router.get("/get-all-order/:id", OrderController.getAllOrderDetails);
 router.get("/get-details-order/:id", OrderController.getDetailsOrder);

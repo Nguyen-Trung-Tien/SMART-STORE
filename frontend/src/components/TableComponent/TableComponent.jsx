@@ -10,58 +10,47 @@ const TableComponent = (props) => {
     isPending = false,
     columns = [],
     handleDeleteMany,
+    fileName = "export",
   } = props;
 
   const [rowSelectedKeys, setRowSelectedKeys] = useState([]);
-  const { fileName = {} } = props;
+
   const newColumnExport = useMemo(() => {
-    const arr = columns?.filter((col) => col.dataIndex !== "action");
-    return arr;
+    return columns?.filter((col) => col.dataIndex !== "action");
   }, [columns]);
 
   const rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
+    onChange: (selectedRowKeys) => {
       setRowSelectedKeys(selectedRowKeys);
     },
-    // getCheckboxProps: (record) => ({
-    //   disabled: record.name === "Disabled User", // Column configuration not to be checked
-    //   name: record.name,
-    // }),
+  };
+
+  const buttonStyle = {
+    fontWeight: "500",
+    padding: "8px 16px",
+    cursor: "pointer",
+    borderRadius: "6px",
+    border: "none",
+    outline: "none",
+    transition: "all 0.3s ease",
+    fontSize: "14px",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
   };
 
   const deleteButtonStyle = {
-    background: "#ff4d4f",
+    ...buttonStyle,
+    backgroundColor: "#ff4d4f",
     color: "#fff",
-    fontWeight: "600",
-    padding: "10px 16px",
-    width: "70px",
-    cursor: "pointer",
-    marginTop: "10px",
-    borderRadius: "8px",
-    border: "none",
-    outline: "none",
-    marginBottom: "10px",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    transition: "all 0.3s ease",
+    boxShadow: "0 2px 6px rgba(255, 77, 79, 0.3)",
   };
 
   const exportButtonStyle = {
-    background: "#1890ff",
+    ...buttonStyle,
+    backgroundColor: "#1890ff",
     color: "#fff",
-    fontWeight: "600",
-    padding: "10px 16px",
-    cursor: "pointer",
-    marginTop: "10px",
-    marginLeft: "auto",
-    marginBottom: "10px",
-    borderRadius: "8px",
-    border: "none",
-    outline: "none",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    transition: "all 0.3s ease",
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
+    boxShadow: "0 2px 6px rgba(24, 144, 255, 0.3)",
   };
 
   const handleExcel = () => {
@@ -102,20 +91,52 @@ const TableComponent = (props) => {
   };
 
   const handleDeleteAll = () => {
-    handleDeleteMany(rowSelectedKeys);
+    if (handleDeleteMany) {
+      handleDeleteMany(rowSelectedKeys);
+    }
   };
 
   return (
     <div>
       <Loading isLoading={isPending}>
-        {rowSelectedKeys.length > 0 && (
-          <div style={deleteButtonStyle} onClick={handleDeleteAll}>
-            Xoá tất cả
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            margin: "10px 0 20px",
+            flexWrap: "wrap",
+            gap: "10px",
+          }}
+        >
+          <div>
+            {handleDeleteMany && rowSelectedKeys.length > 0 && (
+              <button
+                style={deleteButtonStyle}
+                onClick={handleDeleteAll}
+                onMouseEnter={(e) =>
+                  (e.target.style.backgroundColor = "#d9363e")
+                }
+                onMouseLeave={(e) =>
+                  (e.target.style.backgroundColor = "#ff4d4f")
+                }
+              >
+                Xoá tất cả ({rowSelectedKeys.length})
+              </button>
+            )}
           </div>
-        )}
-        <button style={exportButtonStyle} onClick={handleExcel}>
-          Export Excel
-        </button>
+          <div>
+            <button
+              style={exportButtonStyle}
+              onClick={handleExcel}
+              onMouseEnter={(e) => (e.target.style.backgroundColor = "#1677ff")}
+              onMouseLeave={(e) => (e.target.style.backgroundColor = "#1890ff")}
+            >
+              Export Excel
+            </button>
+          </div>
+        </div>
+
         <Table
           rowSelection={Object.assign({ type: selectionType }, rowSelection)}
           columns={columns}

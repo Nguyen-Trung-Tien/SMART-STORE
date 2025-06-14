@@ -57,11 +57,11 @@ const SignInPage = () => {
   useEffect(() => {
     const handleAfterLogin = async () => {
       if (isSuccess && data?.status === "OK") {
-        message.success("Đăng nhập thành công!");
         localStorage.setItem(
           "access_token",
           JSON.stringify(data?.access_token)
         );
+        message.success("Đăng nhập thành công!");
         localStorage.setItem(
           "refresh_token",
           JSON.stringify(data?.refresh_token)

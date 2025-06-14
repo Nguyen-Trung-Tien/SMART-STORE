@@ -491,26 +491,28 @@ const AdminUser = () => {
           </Form>
         </Loading>
       </DrawerComponent>
-      <ModalComponent
-        title="Xóa người dùng"
-        open={isModalOpenDelete}
-        onCancel={handleCancelDelete}
-        onOk={handleDeleteUser}
-      >
-        <Loading isLoading={isPendingDeleted}>
+
+      <Loading isLoading={isPendingDeleted}>
+        <ModalComponent
+          title="Xóa người dùng"
+          open={isModalOpenDelete}
+          onCancel={handleCancelDelete}
+          onOk={handleDeleteUser}
+        >
           <div>Bạn có chắc xóa người dùng này?</div>
-        </Loading>
-      </ModalComponent>
-      <ModalComponent
-        title="Xóa người dùng"
-        open={isModalOpenDeleteMany}
-        onCancel={handleCancelDeleteMany}
-        onOk={handleCancelDeleteMany}
-      >
-        <Loading isLoading={isPendingDeletedMany}>
-          <div>Bạn chắc chắn xóa tất cả?</div>
-        </Loading>
-      </ModalComponent>
+        </ModalComponent>
+      </Loading>
+
+      <Loading isLoading={isPendingDeletedMany}>
+        <ModalComponent
+          title="Bạn có muốn xóa nhiều người dùng?"
+          open={isModalOpenDeleteMany}
+          onCancel={handleCancelDeleteMany}
+          onOk={handleCancelDeleteMany}
+        >
+          <p>Bạn chắc chắn xóa nhiều người dùng?</p>
+        </ModalComponent>
+      </Loading>
     </div>
   );
 };

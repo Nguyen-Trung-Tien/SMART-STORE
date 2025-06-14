@@ -139,7 +139,7 @@ const ProfilePage = () => {
           </WrapperInput>
           <WrapperInput>
             <WrapperLabel htmlFor="avatar">Avatar</WrapperLabel>
-            <WrapperUploadFile onChange={handleOnChangeAvatar} maxCount={1}>
+            <WrapperUploadFile onChange={handleOnChangeAvatar} maxcount={1}>
               <Button icon={<UploadOutlined />}>Upload Avatar</Button>
             </WrapperUploadFile>
             {avatar && (
@@ -152,7 +152,7 @@ const ProfilePage = () => {
                   objectFit: "cover",
                 }}
                 onChange={handleOnChangeAvatar}
-                maxCount={1}
+                maxcount={1}
                 accept=".png,.jpg,.jpeg"
                 alt="avatar"
               />

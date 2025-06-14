@@ -822,26 +822,27 @@ const AdminProduct = () => {
           </Form>
         </Loading>
       </DrawerComponent>
-      <ModalComponent
-        title="Xóa sản phẩm"
-        open={isModalOpenDelete}
-        onCancel={handleCancelDelete}
-        onOk={handleDeleteProduct}
-      >
-        <Loading isLoading={isPendingDeleted}>
+
+      <Loading isLoading={isPendingDeleted}>
+        <ModalComponent
+          title="Xóa sản phẩm"
+          open={isModalOpenDelete}
+          onCancel={handleCancelDelete}
+          onOk={handleDeleteProduct}
+        >
           <div>Bạn có chắc xóa sản phẩm này?</div>
-        </Loading>
-      </ModalComponent>
-      <ModalComponent
-        title="Xóa tất sản phẩm"
-        open={isModalOpenDeleteMany}
-        onCancel={handleCancelDeleteMany}
-        onOk={handleDeleteManyProduct}
-      >
-        <Loading isLoading={isPendingDeletedMany}>
-          <div>Bạn có chắc xóa tất sản phẩm này?</div>
-        </Loading>
-      </ModalComponent>
+        </ModalComponent>
+      </Loading>
+      <Loading isLoading={isPendingDeletedMany}>
+        <ModalComponent
+          title="Bạn muốn xóa nhiều sản phẩm?"
+          open={isModalOpenDeleteMany}
+          onCancel={handleCancelDeleteMany}
+          onOk={handleDeleteManyProduct}
+        >
+          <p>Bạn có chắc xóa tất sản phẩm này?</p>
+        </ModalComponent>
+      </Loading>
     </div>
   );
 };

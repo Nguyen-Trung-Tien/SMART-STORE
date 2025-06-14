@@ -1,28 +1,14 @@
 import React, { useEffect } from "react";
-import {
-  ActionContainer,
-  ActionIcon,
-  IconButton,
-  WrapperHeader,
-} from "./style";
+import { ActionContainer, IconButton, WrapperHeader } from "./style";
 import { Button, Space, Tooltip } from "antd";
-import {
-  CheckCircleFilled,
-  CheckCircleOutlined,
-  CheckOutlined,
-  CheckSquareOutlined,
-  CloseOutlined,
-  SearchOutlined,
-  StopOutlined,
-} from "@ant-design/icons";
+import { CheckOutlined, SearchOutlined, StopOutlined } from "@ant-design/icons";
 import TableComponent from "../TableComponent/TableComponent";
 import InputComponent from "../InputComponent/InputComponent";
 import * as OrderService from "../../services/OrderService";
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { orderConstant } from "../../constant";
-import ResponsiveChart from "./ResponsiveChart";
-import { convertDataChart, convertPrice } from "../../utils";
+import { convertPrice } from "../../utils";
 import Loading from "../LoadingComponent/Loading";
 import { useLocation } from "react-router-dom";
 import { useMutationHooks } from "../../hooks/useMutationHook";
@@ -116,7 +102,7 @@ const AdminOrder = () => {
 
   const columns = [
     {
-      title: "User",
+      title: "User Name",
       dataIndex: "userName",
       sorter: (a, b) => a.userName.length - b.userName.length,
       ...getColumnSearchProps("userName"),
@@ -151,7 +137,7 @@ const AdminOrder = () => {
       sorter: (a, b) => a.Delivered.length - b.Delivered.length,
     },
     {
-      title: "Payment method",
+      title: "Payment Method",
       dataIndex: "paymentMethod",
       ...getColumnSearchProps("paymentMethod"),
       sorter: (a, b) => a.paymentMethod.length - b.paymentMethod.length,
@@ -185,12 +171,7 @@ const AdminOrder = () => {
     return res;
   });
 
-  const {
-    data: dataCancel,
-    isPending: isPendingCancel,
-    isSuccess: isSuccessCancel,
-    isError: isErrorCancel,
-  } = cancelMutation;
+  const { isPending: isPendingCancel } = cancelMutation;
 
   const DeliveredMutation = useMutationHooks(
     async (order) => {
@@ -259,14 +240,6 @@ const AdminOrder = () => {
     DeliveredMutation.mutate(order);
   };
 
-  // useEffect(() => {
-  //   if (isSuccessCancel && dataCancel?.status === "OK") {
-  //     message.success("Hủy đơn thành công!");
-  //   } else if (isErrorCancel) {
-  //     message.error("Không thể hủy đơn!");
-  //   }
-  // }, [isSuccessCancel, isErrorCancel, dataCancel]);
-
   useEffect(() => {
     if (isSuccessDelivery && isSuccessPaid) {
       message.success("Xác nhận đơn thành công!");
@@ -303,6 +276,7 @@ const AdminOrder = () => {
   };
 
   const { isPending: isPendingOrders, data: orders } = queryOrder;
+
   const dataTable =
     orders?.data?.length &&
     orders?.data?.map((order) => {
