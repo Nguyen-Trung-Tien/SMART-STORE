@@ -422,13 +422,11 @@ const AdminProduct = () => {
       countInStock: stateProduct.countInStock,
       discount: stateProduct.discount,
     };
-    if (!stateProduct.name || !stateProduct.price) {
-      mutation.mutate(params, {
-        onSettled: () => {
-          queryProduct.refetch();
-        },
-      });
-    }
+    mutation.mutate(params, {
+      onSettled: () => {
+        queryProduct.refetch();
+      },
+    });
   };
 
   const handleOnChangeImage = async ({ fileList }) => {
@@ -798,7 +796,7 @@ const AdminProduct = () => {
                     : []
                 }
                 onChange={handleOnChangeImageDetails}
-                maxcount={1}
+                maxCount={1}
               >
                 <Button>Upload File</Button>
                 {stateProductDetails?.image && (
