@@ -30,6 +30,7 @@ const createUser = async (req, res) => {
     });
   }
 };
+
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -50,11 +51,11 @@ const loginUser = async (req, res) => {
     const { refresh_token, ...newResponse } = response;
     res.cookie("refresh_token", refresh_token, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "strict",
       path: "/",
     });
-    return res.status(200).json(newResponse);
+    return res.status(200).json({ ...newResponse, refresh_token });
   } catch (e) {
     return res.status(404).json({
       message: e,
@@ -113,6 +114,7 @@ const deleteManyUser = async (req, res) => {
     });
   }
 };
+
 const getAllUser = async (req, res) => {
   try {
     const response = await UserService.getAllUser();
@@ -143,7 +145,7 @@ const getDetailsUser = async (req, res) => {
 
 const refreshToken = async (req, res) => {
   try {
-    const token = req.cookies.refresh_token;
+    let token = req.headers.token.split(" ")[1];
     if (!token) {
       return res.status(200).json({
         status: "ERR",

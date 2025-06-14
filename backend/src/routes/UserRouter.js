@@ -1,10 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/UserController");
-const {
-  authMiddleware,
-  authUserMiddleware,
-} = require("../middleware/authMiddleware");
+const { authMiddleware } = require("../middleware/authMiddleware");
 const delay = require("../middleware/delay");
 
 router.all("*", delay);

@@ -7,6 +7,7 @@ const generalAccessToken = async (payload) => {
   });
   return access_token;
 };
+
 const generalRefreshToken = async (payload) => {
   const refresh_token = jwt.sign({ ...payload }, process.env.REFRESH_TOKEN, {
     expiresIn: "365d",
@@ -31,7 +32,7 @@ const refreshTokenJwtService = (token) => {
         resolve({
           status: "OK",
           message: "SUCCESS",
-          access_token,
+          access_token: access_token,
         });
       });
     } catch (e) {

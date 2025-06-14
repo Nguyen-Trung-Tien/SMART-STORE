@@ -62,10 +62,14 @@ const SignInPage = () => {
           "access_token",
           JSON.stringify(data?.access_token)
         );
+        localStorage.setItem(
+          "refresh_token",
+          JSON.stringify(data?.refresh_token)
+        );
         if (data?.access_token) {
           const decoded = jwtDecode(data?.access_token);
           if (decoded?.id) {
-            await handleGetDetailsUser(decoded?.id, data?.access_token);
+            handleGetDetailsUser(decoded?.id, data?.access_token);
           }
         }
         navigate(location?.state || "/");
@@ -75,14 +79,21 @@ const SignInPage = () => {
         message.error("Lỗi đăng nhập!");
       }
     };
-
     handleAfterLogin();
-  }, [isSuccess, isError, data]);
+  }, [isSuccess]);
 
   const handleGetDetailsUser = async (id, token) => {
+    const storage = localStorage.getItem("refresh_token");
+    const refreshToken = JSON.parse(storage);
     const res = await UserService.getDetailsUser(id, token);
+    dispatch(
+      updateUser({
+        ...res?.data,
+        access_token: token,
+        refreshToken: refreshToken,
+      })
+    );
     if (res?.status === "OK") {
-      dispatch(updateUser({ ...res?.data, access_token: token }));
     } else {
       message.error("Không lấy được thông tin người dùng.");
     }

@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { routes } from "./routes";
 import { isJsonString } from "./utils";
 import { jwtDecode } from "jwt-decode";
 import * as UserService from "./services/UserServices";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUser } from "./redux/slices/userSlice";
+import { resetUser, updateUser } from "./redux/slices/userSlice";
 import Loading from "./components/LoadingComponent/Loading";
 import LayoutComponent from "./components/LayoutFooter/LayoutFooter";
 
@@ -24,71 +29,87 @@ function App() {
   // }, []);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      setIsPending(true);
-      const { storageData, decoded } = handleDecoded();
-      if (decoded?.id) {
-        await handleGetDetailsUser(decoded?.id, storageData);
-      }
-      setIsPending(false);
-    };
-
-    fetchUser();
-  }, []);
-
-  // UserService.axiosJWT.interceptors.request.use(
-  //   async (config) => {
-  //     const currentTime = new Date();
-  //     const { decoded } = handleDecoded();
-  //     if (decoded?.exp < currentTime.getTime() / 1000) {
-  //       const data = await UserService.refreshToken();
-  //       config.headers["token"] = `Bearer ${data?.access_token}`;
-  //     }
-  //     return config;
-  //   },
-  //   (err) => {
-  //     return Promise.reject(err);
-  //   }
-  // );
-
-  useEffect(() => {
-    const interceptor = UserService.axiosJWT.interceptors.request.use(
-      async (config) => {
-        const currentTime = new Date();
-        const { decoded } = handleDecoded();
-        if (decoded?.exp < currentTime.getTime() / 1000) {
-          const data = await UserService.refreshToken();
-          config.headers["token"] = `Bearer ${data?.access_token}`;
-        }
-        return config;
-      },
-      (err) => Promise.reject(err)
-    );
-
-    return () => {
-      UserService.axiosJWT.interceptors.request.eject(interceptor);
-    };
+    setIsPending(true);
+    const { storageData, decoded } = handleDecoded();
+    if (decoded?.id) {
+      handleGetDetailsUser(decoded?.id, storageData);
+    }
+    setIsPending(false);
   }, []);
 
   const handleDecoded = () => {
-    let storageData = localStorage.getItem("access_token");
+    let storageData =
+      user?.access_token || localStorage.getItem("access_token");
     let decoded = {};
-    if (storageData && isJsonString(storageData)) {
+    if (storageData && isJsonString(storageData) && !user?.access_token) {
       storageData = JSON.parse(storageData);
       decoded = jwtDecode(storageData);
     }
     return { decoded, storageData };
   };
 
-  const handleGetDetailsUser = async (id, token) => {
-    try {
-      const res = await UserService.getDetailsUser(id, token);
-      dispatch(updateUser({ ...res?.data, access_token: token }));
-    } catch (error) {
-    } finally {
-      setIsPending(false);
+  UserService.axiosJWT.interceptors.request.use(
+    async (config) => {
+      const currentTime = new Date();
+      const { decoded } = handleDecoded();
+      let storageRefreshToken = localStorage.getItem("refresh_token");
+      const refreshToken = JSON.parse(storageRefreshToken);
+      const decodedRefreshToken = jwtDecode(refreshToken);
+      if (decoded?.exp < currentTime.getTime() / 1000) {
+        if (decodedRefreshToken?.exp > currentTime.getTime() / 1000) {
+          const data = await UserService.refreshToken(refreshToken);
+          config.headers["token"] = `Bearer ${data?.access_token}`;
+        } else {
+          dispatch(resetUser());
+        }
+      }
+      return config;
+    },
+    (err) => {
+      return Promise.reject(err);
     }
+  );
+
+  // useEffect(() => {
+  //   const interceptor = UserService.axiosJWT.interceptors.request.use(
+  //     async (config) => {
+  //       const currentTime = new Date();
+  //       const { decoded } = handleDecoded();
+  //       if (decoded?.exp < currentTime.getTime() / 1000) {
+  //         const data = await UserService.refreshToken();
+  //         config.headers["token"] = `Bearer ${data?.access_token}`;
+  //       }
+  //       return config;
+  //     },
+  //     (err) => Promise.reject(err)
+  //   );
+
+  //   return () => {
+  //     UserService.axiosJWT.interceptors.request.eject(interceptor);
+  //   };
+  // }, []);
+
+  const handleGetDetailsUser = async (id, token) => {
+    let storageRefreshToken = localStorage.getItem("refresh_token");
+    const refreshToken = JSON.parse(storageRefreshToken);
+    const res = await UserService.getDetailsUser(id, token);
+    dispatch(
+      updateUser({
+        ...res?.data,
+        access_token: token,
+        refreshToken: refreshToken,
+      })
+    );
   };
+  // const handleGetDetailsUser = async (id, token) => {
+  //   try {
+  //     const res = await UserService.getDetailsUser(id, token);
+  //     dispatch(updateUser({ ...res?.data, access_token: token }));
+  //   } catch (error) {
+  //   } finally {
+  //     setIsPending(false);
+  //   }
+  // };
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
