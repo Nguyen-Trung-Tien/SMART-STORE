@@ -152,7 +152,7 @@ const ProfilePage = () => {
                   objectFit: "cover",
                 }}
                 onChange={handleOnChangeAvatar}
-                maxcount={1}
+                maxCount={1}
                 accept=".png,.jpg,.jpeg"
                 alt="avatar"
               />

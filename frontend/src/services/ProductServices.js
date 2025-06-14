@@ -82,8 +82,3 @@ export const getAllTypeProduct = async () => {
   );
   return res.data;
 };
-
-const API_KEY = process.env.REACT_APP_API_KEY;
-if (!API_KEY) {
-  throw new Error("API key is not defined in environment variables.");
-}
