@@ -8,54 +8,32 @@ dotenv.config();
 
 router.post("/create_payment_url", (req, res) => {
   const { amount, orderDescription } = req.body;
+  const ipAddr = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
-  if (!amount || isNaN(amount) || amount <= 0) {
-    return res.status(400).json({ message: "Invalid amount" });
-  }
-
-  const vnp_TmnCode = process.env.VNP_TMNCODE;
-  const vnp_HashSecret = process.env.VNP_HASHSECRET;
-  const vnp_Url = process.env.VNP_URL;
-  const vnp_ReturnUrl = process.env.VNP_RETURNURL;
-
-  const date = new Date();
-  const createDate = moment(date).format("YYYYMMDDHHmmss");
-  const orderId = moment(date).format("HHmmss");
-
-  req.headers["x-forwarded-for"] ||
-    req.connection.remoteAddress ||
-    req.socket.remoteAddress ||
-    req.ip;
-
-  const orderInfo = orderDescription;
-  const orderType = "other";
-  const locale = "vn";
-  const currCode = "VND";
-
-  let vnp_Params = {
+  const vnp_Params = {
     vnp_Version: "2.1.0",
     vnp_Command: "pay",
-    vnp_TmnCode,
-    vnp_Locale: locale,
-    vnp_CurrCode: currCode,
-    vnp_TxnRef: orderId,
-    vnp_OrderInfo: orderInfo,
-    vnp_OrderType: orderType,
+    vnp_TmnCode: process.env.VNP_TMNCODE,
+    vnp_Locale: "vn",
+    vnp_CurrCode: "VND",
+    vnp_TxnRef: moment().format("HHmmss"),
+    vnp_OrderInfo: orderDescription,
+    vnp_OrderType: "other",
     vnp_Amount: amount * 100,
-    vnp_ReturnUrl,
+    vnp_ReturnUrl: process.env.VNP_RETURNURL,
     vnp_IpAddr: ipAddr,
-    vnp_CreateDate: createDate,
+    vnp_CreateDate: moment().format("YYYYMMDDHHmmss"),
   };
 
-  vnp_Params = sortObject(vnp_Params);
-  const signData = qs.stringify(vnp_Params, { encode: false });
-  const hmac = crypto.createHmac("sha512", vnp_HashSecret);
+  const sortedParams = sortObject(vnp_Params);
+  const signData = qs.stringify(sortedParams, { encode: false });
+  const hmac = crypto.createHmac("sha512", process.env.VNP_HASHSECRET);
   const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
-  vnp_Params["vnp_SecureHash"] = signed;
+  sortedParams["vnp_SecureHash"] = signed;
 
   const paymentUrl =
-    vnp_Url + "?" + qs.stringify(vnp_Params, { encode: false });
-
+    process.env.VNP_URL + "?" + qs.stringify(sortedParams, { encode: false });
+  console.log(">>>", paymentUrl);
   res.status(200).json({ paymentUrl });
 });
 
