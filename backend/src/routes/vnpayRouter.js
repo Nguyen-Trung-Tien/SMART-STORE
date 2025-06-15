@@ -22,8 +22,7 @@ router.post("/create_payment_url", (req, res) => {
   const createDate = moment(date).format("YYYYMMDDHHmmss");
   const orderId = moment(date).format("HHmmss");
 
-  const ipAddr =
-    req.headers["x-forwarded-for"] ||
+  req.headers["x-forwarded-for"] ||
     req.connection.remoteAddress ||
     req.socket.remoteAddress ||
     req.ip;

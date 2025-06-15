@@ -246,10 +246,12 @@ const PaymentPage = () => {
 
   const handleVNPayPayment = async () => {
     try {
-      const res = await getVNPayPayment(
-        totalPriceMemo,
-        `Thanh toán đơn hàng #${Date.now()}`
-      );
+      const amountToPay = totalPriceMemo > 100000000 ? 50000 : totalPriceMemo;
+
+      const orderDescription = `Thanh toan don hang ${Date.now()}`;
+
+      const res = await getVNPayPayment(amountToPay, orderDescription);
+
       if (res.paymentUrl) {
         window.location.href = res.paymentUrl;
       } else {
