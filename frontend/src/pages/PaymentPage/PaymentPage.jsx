@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { convertPrice } from "../../utils";
 import * as UserService from "../../services/UserServices";
 import * as PaymentService from "../../services/PaymentService";
+import getVNPayPayment from "../../services/vnpayService";
 import * as OrderService from "../../services/OrderService";
 import ModalComponent from "../../components/ModalComponent/ModalComponent";
 import InputComponent from "../../components/InputComponent/InputComponent";
@@ -72,7 +73,7 @@ const PaymentPage = () => {
   const priceDiscountMemo = useMemo(() => {
     const result = order?.orderItemsSelected?.reduce((total, cur) => {
       const totalDiscount = cur.discount ? cur.discount : 0;
-      return total + (priceMemo * (totalDiscount * cur.amount)) / 100;
+      return total + cur.price * (totalDiscount / 100) * cur.amount;
     }, 0);
     if (Number(result)) {
       return result || 0;
@@ -124,7 +125,7 @@ const PaymentPage = () => {
     } else if (isError) {
       message.error("Đặt hàng không thành công");
     }
-  }, [isSuccess, isError]);
+  }, [isSuccess, isError, dataAdd]);
 
   const handleAddOrder = () => {
     if (
@@ -137,28 +138,30 @@ const PaymentPage = () => {
       user?.city &&
       user?.id
     ) {
-    }
-    mutationAddOrder.mutate(
-      {
-        token: user?.access_token,
-        orderItems: order?.orderItemsSelected,
-        fullName: user?.name,
-        address: user?.address,
-        phone: user?.phone,
-        city: user?.city,
-        paymentMethod: payment,
-        itemsPrice: priceMemo,
-        shippingPrice: deliveryPriceMemo,
-        totalPrice: totalPriceMemo,
-        user: user?.id,
-        email: user?.email,
-      },
-      {
-        onSuccess: () => {
-          message.success("Đặt hàng thành công");
+      mutationAddOrder.mutate(
+        {
+          token: user?.access_token,
+          orderItems: order?.orderItemsSelected,
+          fullName: user?.name,
+          address: user?.address,
+          phone: user?.phone,
+          city: user?.city,
+          paymentMethod: payment,
+          itemsPrice: priceMemo,
+          shippingPrice: deliveryPriceMemo,
+          totalPrice: totalPriceMemo,
+          user: user?.id,
+          email: user?.email,
         },
-      }
-    );
+        {
+          onSuccess: () => {
+            message.success("Đặt hàng thành công");
+          },
+        }
+      );
+    } else {
+      message.error("Vui lòng điền đầy đủ thông tin trước khi đặt hàng");
+    }
   };
 
   const handleCancelUpdate = () => {
@@ -239,6 +242,23 @@ const PaymentPage = () => {
       setSdkReady(true);
     };
     document.body.appendChild(script);
+  };
+
+  const handleVNPayPayment = async () => {
+    try {
+      const res = await getVNPayPayment(
+        totalPriceMemo,
+        `Thanh toán đơn hàng #${Date.now()}`
+      );
+      if (res.paymentUrl) {
+        window.location.href = res.paymentUrl;
+      } else {
+        message.error("Không nhận được link thanh toán!");
+      }
+    } catch (err) {
+      console.error(err);
+      message.error("Có lỗi khi tạo thanh toán VNPay!");
+    }
   };
 
   useEffect(() => {
@@ -386,7 +406,11 @@ const PaymentPage = () => {
                   </span>
                 </WrapperTotal>
               </div>
-              {payment === "PayPal" && sdkReady ? (
+              {payment === "VNPay" ? (
+                <OrderButton onClick={handleVNPayPayment}>
+                  Thanh toán VNPay
+                </OrderButton>
+              ) : payment === "PayPal" && sdkReady ? (
                 <div style={{ width: "320px" }}>
                   <PayPalButton
                     amount={Math.round(totalPriceMemo / 50000)}
@@ -397,27 +421,6 @@ const PaymentPage = () => {
                   />
                 </div>
               ) : (
-                // <ButtonComponent
-                //   onClick={() => handleAddOrder()}
-                //   size={40}
-                //   styleButton={{
-                //     background: "linear-gradient(135deg, #ff5757, #ff2e63)",
-                //     height: "52px",
-                //     width: "360px",
-                //     border: "none",
-                //     borderRadius: "12px",
-                //     boxShadow: "0 6px 12px rgba(255, 46, 99, 0.25)",
-                //     transition: "all 0.3s ease",
-                //     cursor: "pointer",
-                //   }}
-                //   textButton={"Đặt hàng"}
-                //   styleTextButton={{
-                //     fontWeight: "600",
-                //     fontSize: "16px",
-                //     color: "#fff",
-                //     letterSpacing: "0.3px",
-                //   }}
-                // />
                 <OrderButton onClick={handleAddOrder}>Đặt hàng</OrderButton>
               )}
             </WrapperRight>

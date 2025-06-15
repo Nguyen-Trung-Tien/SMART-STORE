@@ -161,3 +161,25 @@ export const OrderButton = styled.button`
     box-shadow: 0 3px 8px rgba(255, 91, 102, 0.2);
   }
 `;
+
+// <ButtonComponent
+//   onClick={() => handleAddOrder()}
+//   size={40}
+//   styleButton={{
+//     background: "linear-gradient(135deg, #ff5757, #ff2e63)",
+//     height: "52px",
+//     width: "360px",
+//     border: "none",
+//     borderRadius: "12px",
+//     boxShadow: "0 6px 12px rgba(255, 46, 99, 0.25)",
+//     transition: "all 0.3s ease",
+//     cursor: "pointer",
+//   }}
+//   textButton={"Đặt hàng"}
+//   styleTextButton={{
+//     fontWeight: "600",
+//     fontSize: "16px",
+//     color: "#fff",
+//     letterSpacing: "0.3px",
+//   }}
+// />
