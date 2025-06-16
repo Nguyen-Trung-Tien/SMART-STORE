@@ -6,11 +6,11 @@ const initialState = {
   email: "",
   phone: "",
   address: "",
+  city: "",
   avatar: "",
   access_token: "",
   refreshToken: "",
   isAdmin: "",
-  city: "",
 };
 
 export const userSlice = createSlice({
@@ -21,11 +21,11 @@ export const userSlice = createSlice({
       const {
         name = "",
         email = "",
-        access_token = "",
         phone = "",
         address = "",
         city = "",
         avatar = "",
+        access_token = "",
         _id = "",
         isAdmin,
         refreshToken = "",

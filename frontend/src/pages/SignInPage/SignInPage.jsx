@@ -36,24 +36,6 @@ const SignInPage = () => {
   const { data, isPending, isSuccess, isError } = mutation;
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  // useEffect(() => {
-  //   if (isSuccess && data?.status === "OK") {
-  //     message.success("Đăng nhập thành công!");
-  //     localStorage.setItem("access_token", JSON.stringify(data?.access_token));
-  //     if (data?.access_token) {
-  //       const decoded = jwtDecode(data?.access_token);
-  //       if (decoded?.id) {
-  //         handleGetDetailsUser(decoded?.id, data?.access_token);
-  //       }
-  //     }
-  //     navigate(location?.state || "/");
-  //   } else if (isSuccess && data?.status === "ERR") {
-  //     message.error(data?.message || "Lỗi đăng nhập!");
-  //   } else if (isError) {
-  //     message.error("Lỗi đăng nhập!");
-  //   }
-  // }, [isSuccess, isError, data]);
-
   useEffect(() => {
     const handleAfterLogin = async () => {
       if (isSuccess && data?.status === "OK") {
@@ -140,7 +122,7 @@ const SignInPage = () => {
           <p>Đăng nhập tài khoản!</p>
           <InputForm
             style={{ marginBottom: "10px" }}
-            placeholder="abc@gmail.com"
+            placeholder=""
             value={email}
             onChange={handleOnChangeEmail}
           />

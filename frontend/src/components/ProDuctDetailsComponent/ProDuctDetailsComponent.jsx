@@ -155,10 +155,10 @@ const ProductDetailsComponent = ({ idProduct }) => {
                 <strong>Giảm giá:</strong> {productDetails?.discount || 0}%
               </p>
               <p>
-                <strong>Chất liệu:</strong> Nhựa
+                <strong>Chất liệu:</strong>Chưa có thông tin
               </p>
               <p>
-                <strong>Trọng lượng:</strong> 210g
+                <strong>Trọng lượng:</strong> Chưa có thông tin
               </p>
             </div>
           ),
@@ -280,13 +280,13 @@ const ProductDetailsComponent = ({ idProduct }) => {
             <span className="address"> {user?.address} </span> -
             <span className="change-address"> Đổi địa chỉ</span>
           </WrapperAddressProduct>
-          {/* <LikeButtonComponent
+          <LikeButtonComponent
             dataHref={
               process.env.REACT_APP_IS_LOCAL
                 ? "https://developers.facebook.com/docs/plugins/"
                 : window.location.href
             }
-          /> */}
+          />
           <div
             style={{
               margin: "10px 0",
@@ -360,7 +360,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
                   border: "none",
                 }}
                 onClick={handleAddOrderProduct}
-                textButton={"Chọn mua"}
+                textButton={"Thêm vào giỏ hàng"}
                 styleTextButton={{
                   color: "#fff",
                   fontSize: "15px",
@@ -387,14 +387,14 @@ const ProductDetailsComponent = ({ idProduct }) => {
             </div>
           </div>
         </Col>
-        {/* <CommentComponent
+        <CommentComponent
           dataHref={
             process.env.REACT_APP_IS_LOCAL
               ? " https://developers.facebook.com/docs/plugins/comments#configurator"
               : window.location.href
           }
           width="1270px"
-        /> */}
+        />
         <Descriptions items={collapseItems} />
       </Row>
     </Loading>

@@ -19,15 +19,6 @@ function App() {
   const user = useSelector((state) => state.user);
   const [isPending, setIsPending] = useState(false);
 
-  // useEffect(() => {
-  //   setIsPending(true);
-  //   const { storageData, decoded } = handleDecoded();
-  //   if (decoded?.id) {
-  //     handleGetDetailsUser(decoded?.id, storageData);
-  //   }
-  //   setIsPending(false);
-  // }, []);
-
   useEffect(() => {
     setIsPending(true);
     const { storageData, decoded } = handleDecoded();
@@ -70,25 +61,6 @@ function App() {
     }
   );
 
-  // useEffect(() => {
-  //   const interceptor = UserService.axiosJWT.interceptors.request.use(
-  //     async (config) => {
-  //       const currentTime = new Date();
-  //       const { decoded } = handleDecoded();
-  //       if (decoded?.exp < currentTime.getTime() / 1000) {
-  //         const data = await UserService.refreshToken();
-  //         config.headers["token"] = `Bearer ${data?.access_token}`;
-  //       }
-  //       return config;
-  //     },
-  //     (err) => Promise.reject(err)
-  //   );
-
-  //   return () => {
-  //     UserService.axiosJWT.interceptors.request.eject(interceptor);
-  //   };
-  // }, []);
-
   const handleGetDetailsUser = async (id, token) => {
     let storageRefreshToken = localStorage.getItem("refresh_token");
     const refreshToken = JSON.parse(storageRefreshToken);
@@ -101,15 +73,6 @@ function App() {
       })
     );
   };
-  // const handleGetDetailsUser = async (id, token) => {
-  //   try {
-  //     const res = await UserService.getDetailsUser(id, token);
-  //     dispatch(updateUser({ ...res?.data, access_token: token }));
-  //   } catch (error) {
-  //   } finally {
-  //     setIsPending(false);
-  //   }
-  // };
 
   return (
     <div style={{ height: "100%", width: "100%" }}>

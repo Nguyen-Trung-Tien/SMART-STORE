@@ -25,6 +25,7 @@ const ProfilePage = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
   const [avatar, setAvatar] = useState("");
 
   const mutation = useMutationHooks((data) => {
@@ -40,6 +41,7 @@ const ProfilePage = () => {
     setPhone(user?.phone);
     setAddress(user?.address);
     setAvatar(user?.avatar);
+    setCity(user?.city);
   }, [user]);
 
   useEffect(() => {
@@ -68,6 +70,10 @@ const ProfilePage = () => {
   const handleOnChangeAddress = (value) => {
     setAddress(value);
   };
+  const handleOnChangeCity = (value) => {
+    setCity(value);
+  };
+
   const handleOnChangeAvatar = async ({ fileList }) => {
     const file = fileList[0];
     if (!file.url && !file.preview) {
@@ -83,6 +89,7 @@ const ProfilePage = () => {
       email,
       phone,
       address,
+      city,
       avatar,
       access_token: user?.access_token,
     });
@@ -96,7 +103,7 @@ const ProfilePage = () => {
           <WrapperInput>
             <WrapperLabel>ID</WrapperLabel>
             <InputForm
-              style={{ width: "400px", marginBottom: "20px" }}
+              style={{ width: "400px", marginBottom: "15px" }}
               value={user?.id}
               id="id"
             />
@@ -104,7 +111,7 @@ const ProfilePage = () => {
           <WrapperInput>
             <WrapperLabel htmlFor="name">Name</WrapperLabel>
             <InputForm
-              style={{ width: "400px", marginBottom: "20px" }}
+              style={{ width: "400px", marginBottom: "15px" }}
               value={name}
               id="name"
               onChange={handleOnChangeName}
@@ -113,7 +120,7 @@ const ProfilePage = () => {
           <WrapperInput>
             <WrapperLabel htmlFor="email">Email</WrapperLabel>
             <InputForm
-              style={{ width: "400px", marginBottom: "20px" }}
+              style={{ width: "400px", marginBottom: "15px" }}
               value={email}
               id="email"
               onChange={handleOnChangeEmail}
@@ -122,7 +129,7 @@ const ProfilePage = () => {
           <WrapperInput>
             <WrapperLabel htmlFor="phone">Phone(+84)</WrapperLabel>
             <InputForm
-              style={{ width: "400px", marginBottom: "20px" }}
+              style={{ width: "400px", marginBottom: "15px" }}
               value={phone}
               id="phone"
               onChange={handleOnChangePhone}
@@ -131,10 +138,19 @@ const ProfilePage = () => {
           <WrapperInput>
             <WrapperLabel htmlFor="address">Address</WrapperLabel>
             <InputForm
-              style={{ width: "400px", marginBottom: "20px" }}
+              style={{ width: "400px", marginBottom: "15px" }}
               value={address}
               id="address"
               onChange={handleOnChangeAddress}
+            />
+          </WrapperInput>
+          <WrapperInput>
+            <WrapperLabel htmlFor="city">City</WrapperLabel>
+            <InputForm
+              style={{ width: "400px", marginBottom: "15px" }}
+              value={city}
+              id="city"
+              onChange={handleOnChangeCity}
             />
           </WrapperInput>
           <WrapperInput>
@@ -146,8 +162,8 @@ const ProfilePage = () => {
               <img
                 src={avatar}
                 style={{
-                  height: "80px",
-                  width: "80px",
+                  height: "60px",
+                  width: "60px",
                   borderRadius: "50%",
                   objectFit: "cover",
                 }}
@@ -162,8 +178,8 @@ const ProfilePage = () => {
             onClick={handleUpdate}
             size={40}
             styleButton={{
-              height: "42px",
-              width: "120px",
+              height: "40px",
+              width: "100px",
               borderRadius: "8px",
               border: "1px solid rgb(11, 116, 229)",
               padding: "4px 6px",

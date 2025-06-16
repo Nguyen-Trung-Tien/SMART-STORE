@@ -39,8 +39,8 @@ export const WrapperInput = styled.div`
 
 export const WrapperUploadFile = styled(Upload)`
   .ant-upload-select-picture-card {
-    width: 70px !important;
-    height: 70px !important;
+    width: 50px !important;
+    height: 50px !important;
     border-radius: 50% !important;
     overflow: hidden;
     border: 1px dashed #aaa !important;

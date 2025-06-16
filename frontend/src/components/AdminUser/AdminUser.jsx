@@ -32,6 +32,7 @@ const AdminUser = () => {
     phone: "",
     address: "",
     avatar: "",
+    city: "",
     isAdmin: false,
   });
 
@@ -46,6 +47,7 @@ const AdminUser = () => {
         phone: res?.data?.phone,
         avatar: res?.data?.avatar,
         address: res?.data?.address,
+        city: res?.data?.city,
         isAdmin: res?.data?.isAdmin,
       });
     }
@@ -174,6 +176,12 @@ const AdminUser = () => {
       sorter: (a, b) => a.address.length - b.address.length,
     },
     {
+      title: "City",
+      dataIndex: "city",
+      ...getColumnSearchProps("city"),
+      sorter: (a, b) => a.city.length - b.city.length,
+    },
+    {
       title: "Admin",
       dataIndex: "isAdmin",
       ...getColumnSearchProps("isAdmin"),
@@ -275,6 +283,7 @@ const AdminUser = () => {
       email: "",
       phone: "",
       address: "",
+      city: "",
       isAdmin: false,
     });
     form.resetFields();
@@ -450,11 +459,24 @@ const AdminUser = () => {
                 name="address"
               />
             </Form.Item>
+            <Form.Item
+              label="City"
+              name="city"
+              rules={[
+                { required: true, message: "Please input your address!" },
+              ]}
+            >
+              <InputComponent
+                value={stateUserDetails.city}
+                onChange={handleOnChangeDetails}
+                name="city"
+              />
+            </Form.Item>
 
             <Form.Item
               label="Avatar"
               name="avatar"
-              rules={[{ required: true, message: "Please upload an Avatar!" }]}
+              rules={[{ message: "Please upload an Avatar!" }]}
             >
               <WrapperUploadFile
                 fileList={
