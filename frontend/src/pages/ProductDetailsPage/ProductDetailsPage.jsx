@@ -1,7 +1,7 @@
 import React from "react";
-import ProductDetailsComponent from "../../components/ProDuctDetailsComponent/ProDuctDetailsComponent";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb, WrapperContainer, WrapperPage } from "./styler";
+import ProductDetailsComponent from "../../components/ProductDetailsComponent/ProductDetailsComponent";
 
 const ProductDetailsPage = () => {
   const { id } = useParams();

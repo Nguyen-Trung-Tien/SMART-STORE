@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { addOrderProduct, resetOrder } from "../../redux/slices/orderSlice";
 import { convertPrice, intitFakeBookSDK } from "../../utils";
-import * as message from "../../components/Message/Message";
+import * as message from "../Message/Message";
 import LikeButtonComponent from "../LikeButtonComponent/LikeButtonComponent";
 import CommentComponent from "../CommentComponent/CommentComponent";
 import Descriptions from "../Descriptions/Descriptions";
