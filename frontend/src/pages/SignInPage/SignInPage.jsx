@@ -122,7 +122,7 @@ const SignInPage = () => {
           <p>Đăng nhập tài khoản!</p>
           <InputForm
             style={{ marginBottom: "10px" }}
-            placeholder=""
+            placeholder="email"
             value={email}
             onChange={handleOnChangeEmail}
           />

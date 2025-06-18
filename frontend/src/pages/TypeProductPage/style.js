@@ -22,7 +22,7 @@ export const WrapperNavbar = styled(Col)`
   padding: 16px;
   border-radius: 6px;
   margin-top: 20px;
-  width: 220px !important;
+  width: 200px !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   height: fit-content;
 `;

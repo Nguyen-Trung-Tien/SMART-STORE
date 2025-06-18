@@ -33,7 +33,6 @@ router.post("/create_payment_url", (req, res) => {
 
   const paymentUrl =
     process.env.VNP_URL + "?" + qs.stringify(sortedParams, { encode: false });
-  console.log(">>>", paymentUrl);
   res.status(200).json({ paymentUrl });
 });
 

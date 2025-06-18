@@ -1,6 +1,5 @@
 import { Col, Image, Row } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
-// import ImageSmall from "../../assets/ImageSmall/testSmall.webp";
 import {
   ErrorText,
   WrapperAddressProduct,
@@ -14,7 +13,7 @@ import {
   WrapperStyleTextSell,
 } from "./style";
 import * as ProductService from "../../services/ProductServices";
-import { MinusOutlined, PlusOutlined, StarFilled } from "@ant-design/icons";
+import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../LoadingComponent/Loading";
@@ -27,6 +26,7 @@ import LikeButtonComponent from "../LikeButtonComponent/LikeButtonComponent";
 import CommentComponent from "../CommentComponent/CommentComponent";
 import Descriptions from "../Descriptions/Descriptions";
 import defaultImage from "../../assets/images/defaultImage.jpg";
+import Rating from "../RatingComponent/Rating";
 
 const ProductDetailsComponent = ({ idProduct }) => {
   const [numProduct, setNumProduct] = useState(1);
@@ -37,7 +37,16 @@ const ProductDetailsComponent = ({ idProduct }) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const onChange = (value) => {
-    setNumProduct(Number(value));
+    if (value > productDetails?.countInStock) {
+      setNumProduct(productDetails?.countInStock);
+      setErrorLimitOrder(true);
+    } else if (value < 1) {
+      setNumProduct(1);
+      setErrorLimitOrder(false);
+    } else {
+      setNumProduct(Number(value));
+      setErrorLimitOrder(false);
+    }
   };
 
   const fetchGetDetailsProduct = async (context) => {
@@ -93,38 +102,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
   // useEffect(() => {
   //   intitFakeBookSDK();
   // });
-
-  const renderStars = (num) => {
-    if (!num || num <= 0) return null;
-    const stars = [];
-    const fullStars = Math.floor(num);
-    const hasHalfStar = num % 1 !== 0;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <StarFilled
-          key={`full-${i}`}
-          style={{ color: "#fadb14", fontSize: "14px" }}
-        />
-      );
-    }
-
-    if (hasHalfStar) {
-      stars.push(
-        <StarFilled
-          key="half"
-          style={{
-            color: "#fadb14",
-            fontSize: "14px",
-            clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)", // Render half star
-          }}
-        />
-      );
-    }
-
-    return stars;
-  };
-
+  const smallImages = productDetails?.smallImages || [productDetails?.image];
   const collapseItems = productDetails?.descriptions
     ? productDetails.descriptions.map((item, index) => ({
         key: index + 1,
@@ -198,6 +176,9 @@ const ProductDetailsComponent = ({ idProduct }) => {
     }
   };
 
+  const discountedPrice =
+    productDetails?.price * (1 - (productDetails?.discount || 0) / 100);
+
   return (
     <Loading isLoading={isPending}>
       <Row
@@ -218,62 +199,67 @@ const ProductDetailsComponent = ({ idProduct }) => {
             preview={false}
           />
           <Row style={{ marginTop: "12px", justifyContent: "space-between" }}>
-            <WrapperStyleColImage span={4}>
-              <WrapperStyleImageSmall
-                src={productDetails?.image || defaultImage}
-                onError={(e) => (e.target.src = defaultImage)}
-                alt="image Small"
-                preview={false}
-              />
-            </WrapperStyleColImage>
-            <WrapperStyleColImage span={4}>
-              <WrapperStyleImageSmall
-                src={productDetails?.image || defaultImage}
-                onError={(e) => (e.target.src = defaultImage)}
-                alt="image Small"
-                preview={false}
-              />
-            </WrapperStyleColImage>
-            <WrapperStyleColImage span={4}>
-              <WrapperStyleImageSmall
-                src={productDetails?.image || defaultImage}
-                onError={(e) => (e.target.src = defaultImage)}
-                alt="image Small"
-                preview={false}
-              />
-            </WrapperStyleColImage>
-            <WrapperStyleColImage span={4}>
-              <WrapperStyleImageSmall
-                src={productDetails?.image || defaultImage}
-                onError={(e) => (e.target.src = defaultImage)}
-                alt="image Small"
-                preview={false}
-              />
-            </WrapperStyleColImage>
-            <WrapperStyleColImage span={4}>
-              <WrapperStyleImageSmall
-                src={productDetails?.image || defaultImage}
-                onError={(e) => (e.target.src = defaultImage)}
-                alt="image Small"
-                preview={false}
-              />
-            </WrapperStyleColImage>
+            {smallImages.map((img, idx) => (
+              <WrapperStyleColImage span={4} key={idx}>
+                <WrapperStyleImageSmall
+                  src={img || defaultImage}
+                  onError={(e) => (e.target.src = defaultImage)}
+                  alt={`image Small ${idx + 1}`}
+                  preview={false}
+                />
+              </WrapperStyleColImage>
+            ))}
           </Row>
         </Col>
         <Col span={14} style={{ paddingLeft: "10px" }}>
           <WrapperStyLeNameProduct>
             {productDetails?.name}
           </WrapperStyLeNameProduct>
-          <div>
-            {renderStars(productDetails?.rating)}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Rating rating={productDetails?.rating} />
             <WrapperStyleTextSell>
               | Đã bán: {productDetails?.selling || 0}
             </WrapperStyleTextSell>
           </div>
-          <WrapperPriceProduct>
-            <WrapperPriceTextProduct>
-              {convertPrice(productDetails?.price)}
-            </WrapperPriceTextProduct>
+          <WrapperPriceProduct
+            style={{ display: "flex", alignItems: "center", gap: "12px" }}
+          >
+            {productDetails?.discount > 0 ? (
+              <>
+                <WrapperPriceTextProduct
+                  style={{
+                    textDecoration: "line-through",
+                    color: "#888",
+                  }}
+                >
+                  {convertPrice(productDetails?.price)}
+                </WrapperPriceTextProduct>
+                <WrapperPriceTextProduct
+                  style={{
+                    color: "#ff4d4f",
+                    fontWeight: "700",
+                  }}
+                >
+                  {convertPrice(discountedPrice)}
+                </WrapperPriceTextProduct>
+                <span
+                  style={{
+                    color: "#ff4d4f",
+                    fontWeight: "600",
+                    backgroundColor: "#fff1f0",
+                    padding: "2px 6px",
+                    borderRadius: "4px",
+                    fontSize: "13px",
+                  }}
+                >
+                  Giảm giá: {productDetails.discount}%
+                </span>
+              </>
+            ) : (
+              <WrapperPriceTextProduct>
+                {convertPrice(productDetails?.price)}
+              </WrapperPriceTextProduct>
+            )}
           </WrapperPriceProduct>
           <WrapperAddressProduct>
             <span>Giao đến</span>
@@ -359,8 +345,13 @@ const ProductDetailsComponent = ({ idProduct }) => {
                   borderRadius: "4px",
                   border: "none",
                 }}
+                disabled={productDetails?.countInStock === 0}
                 onClick={handleAddOrderProduct}
-                textButton={"Thêm vào giỏ hàng"}
+                textButton={
+                  productDetails?.countInStock === 0
+                    ? "Hết hàng"
+                    : "Thêm vào giỏ hàng"
+                }
                 styleTextButton={{
                   color: "#fff",
                   fontSize: "15px",

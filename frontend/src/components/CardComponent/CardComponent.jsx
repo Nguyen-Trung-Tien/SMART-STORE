@@ -27,52 +27,71 @@ const CardComponent = (props) => {
     id,
   } = props;
   const navigate = useNavigate();
+
   const handleDetailProduct = (id) => {
     navigate(`/product-details/${id}`);
   };
+
   return (
     <WrapperCardStyle
-      style={{ width: 200 }}
-      styles={{
-        body: { padding: "10px" },
-        header: { width: "200px", height: "200px" },
-      }}
+      style={{ width: 200, position: "relative", overflow: "hidden" }}
       cover={
-        <img
-          alt="product"
-          src={image || defaultImage}
-          onError={(e) => (e.target.src = defaultImage)}
-        />
+        <div style={{ position: "relative" }}>
+          <img
+            alt="product"
+            src={image || defaultImage}
+            onError={(e) => (e.target.src = defaultImage)}
+            style={{
+              width: "100%",
+              height: "200px",
+              objectFit: "cover",
+              borderTopLeftRadius: "6px",
+              borderTopRightRadius: "6px",
+            }}
+          />
+
+          <img
+            src={logo}
+            alt="logo"
+            style={{
+              width: "45px",
+              height: "14px",
+              position: "absolute",
+              top: 5,
+              left: 5,
+              borderRadius: "3px",
+            }}
+          />
+
+          {discount > 0 && (
+            <WrapperDiscountText>
+              <div className="badge-sale">-{discount}%</div>
+            </WrapperDiscountText>
+          )}
+        </div>
       }
       onClick={() => handleDetailProduct(id)}
     >
-      <img
-        src={logo}
-        alt="images"
-        style={{
-          width: "40px",
-          height: "12px",
-          position: "absolute",
-          borderTopLeftRadius: "3px",
-          top: -1,
-          left: -1,
-        }}
-      />
       <StyleNameProducts>{name}</StyleNameProducts>
+
       <WrapperReportText>
-        <span style={{ marginRight: "5px" }}>
-          <span> {rating?.toFixed(1)}</span>
-          <StarFilled style={{ color: "#fadb14", fontSize: "12px" }} />
-        </span>
-        <WrapperStyleTextSell>| Đã bán: {selling || 0}</WrapperStyleTextSell>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span
+            style={{ marginRight: 5, display: "flex", alignItems: "center" }}
+          >
+            <span>{rating?.toFixed(1)}</span>
+            <StarFilled
+              style={{ color: "#fadb14", fontSize: 13, marginLeft: 3 }}
+            />
+          </span>
+          <WrapperStyleTextSell> | Đã bán: {selling || 0}</WrapperStyleTextSell>
+        </div>
       </WrapperReportText>
+
       <WrapperPriceText>
-        <span style={{ marginRight: "8px" }}>{convertPrice(price)}</span>
-        <WrapperDiscountText>
-          {discount > 0 && (
-            <div className="badge-sale">Giảm giá: {discount}%</div>
-          )}
-        </WrapperDiscountText>
+        <span style={{ color: "#ee4d2d", fontWeight: "600", fontSize: 16 }}>
+          {convertPrice(price)}
+        </span>
       </WrapperPriceText>
     </WrapperCardStyle>
   );

@@ -12,7 +12,6 @@ import Loading from "../LoadingComponent/Loading";
 const NavbarComponent = ({ onFilter }) => {
   const [productList, setProductList] = useState([]);
 
-  // State lưu lựa chọn lọc
   const [selectedType, setSelectedType] = useState(null);
   const [selectedRating, setSelectedRating] = useState(null);
   const [selectedPrice, setSelectedPrice] = useState(null);
@@ -21,7 +20,6 @@ const NavbarComponent = ({ onFilter }) => {
   useEffect(() => {
     const fetchProductList = async () => {
       setLoading(true);
-
       try {
         const res = await ProductService.getAllProduct();
         if (res?.data) {
@@ -37,15 +35,19 @@ const NavbarComponent = ({ onFilter }) => {
     fetchProductList();
   }, []);
 
-  const typeOptions = [...new Set(productList.map((item) => item.type))];
-  const ratingOptions = [3, 4, 5];
+  const typeOptions = [...new Set(productList.map((item) => item.type))].filter(
+    Boolean
+  );
+  const ratingOptions = [...new Set(productList.map((item) => item.rating))]
+    .filter(Boolean)
+    .sort((a, b) => b - a);
+
   const priceOptions = [
     { label: "Dưới 5 triệu", min: 0, max: 5000000 },
     { label: "5 triệu - 10 triệu", min: 5000000, max: 10000000 },
     { label: "Trên 10 triệu", min: 10000000, max: Infinity },
   ];
 
-  // Hàm gọi onFilter với tất cả bộ lọc hiện tại
   const triggerFilter = (newFilters) => {
     if (onFilter) onFilter(newFilters);
   };
@@ -71,7 +73,7 @@ const NavbarComponent = ({ onFilter }) => {
   };
 
   const handlePriceClick = (priceObj) => {
-    const newPrice = selectedPrice === priceObj.label ? null : priceObj.label;
+    const newPrice = selectedPrice === priceObj ? null : priceObj;
     setSelectedPrice(newPrice);
     triggerFilter({
       type: selectedType,
@@ -89,12 +91,12 @@ const NavbarComponent = ({ onFilter }) => {
             onClick={() => handleTypeClick(option)}
             style={{
               cursor: "pointer",
-              padding: "5px 8px",
+              padding: "6px 10px",
               display: "block",
-              backgroundColor:
-                selectedType === option ? "#1890ff" : "transparent",
-              color: selectedType === option ? "white" : "rgb(56,56,61)",
+              backgroundColor: selectedType === option ? "#1890ff" : "#f5f5f5",
+              color: selectedType === option ? "white" : "#333",
               borderRadius: "6px",
+              marginBottom: "5px",
             }}
           >
             {option}
@@ -108,22 +110,23 @@ const NavbarComponent = ({ onFilter }) => {
             onClick={() => handleRatingClick(option)}
             style={{
               display: "flex",
-              gap: "8px",
               alignItems: "center",
+              gap: "8px",
               cursor: "pointer",
-              padding: "5px 8px",
+              padding: "6px 10px",
               borderRadius: "6px",
               backgroundColor:
-                selectedRating === option ? "#1890ff" : "transparent",
-              color: selectedRating === option ? "white" : "rgb(56,56,61)",
+                selectedRating === option ? "#1890ff" : "#f5f5f5",
+              color: selectedRating === option ? "white" : "#333",
+              marginBottom: "5px",
               userSelect: "none",
             }}
           >
             <Rate
-              style={{ fontSize: "14px" }}
               disabled
               allowHalf
               defaultValue={option}
+              style={{ fontSize: "14px" }}
             />
             <span>{`Từ ${option} sao`}</span>
           </div>
@@ -136,12 +139,13 @@ const NavbarComponent = ({ onFilter }) => {
             onClick={() => handlePriceClick(option)}
             style={{
               cursor: "pointer",
-              padding: "5px 8px",
+              padding: "6px 10px",
               display: "block",
               backgroundColor:
-                selectedPrice === option.label ? "#1890ff" : "#eee",
-              color: selectedPrice === option.label ? "white" : "rgb(56,56,61)",
+                selectedPrice?.label === option.label ? "#1890ff" : "#f5f5f5",
+              color: selectedPrice?.label === option.label ? "white" : "#333",
               borderRadius: "6px",
+              marginBottom: "5px",
             }}
           >
             {option.label}
