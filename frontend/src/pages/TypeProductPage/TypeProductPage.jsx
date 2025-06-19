@@ -1,13 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import NavbarComponent from "../../components/NavbarComponent/NavbarComponent";
 import CardComponent from "../../components/CardComponent/CardComponent";
-import { Col, Pagination, Row } from "antd";
-import {
-  PaginationWrapper,
-  StyledPagination,
-  WrapperNavbar,
-  WrapperProducts,
-} from "./style";
+import { Col, Row } from "antd";
+import { StyledPagination, WrapperNavbar, WrapperProducts } from "./style";
 import * as ProductService from "../../services/ProductServices";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loading from "../../components/LoadingComponent/Loading";

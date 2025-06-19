@@ -71,6 +71,7 @@ const HomePage = () => {
     <Loading isLoading={isPending || pending}>
       <div
         style={{
+          borderBottom: "1px solid #efefef",
           width: "1270px",
           margin: " 0 auto",
         }}

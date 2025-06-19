@@ -29,7 +29,8 @@ export const WrapperNavbar = styled(Col)`
 
 export const WrapperProducts = styled.div`
   display: flex;
-  gap: 16px;
+  gap: 12px;
+  margin-left: 10px;
   margin-top: 20px;
   flex-wrap: wrap;
   justify-content: flex-start;
