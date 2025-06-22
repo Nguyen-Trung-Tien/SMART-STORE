@@ -5,6 +5,7 @@ export const AdminContainer = styled.div`
   display: flex;
   height: 100vh;
   background-color: #f4f6f8;
+  margin-top: 35px;
 `;
 
 export const AdminSider = styled(Menu)`

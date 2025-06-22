@@ -2,7 +2,6 @@ import { Row } from "antd";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-// Header container
 export const WrapperHeader = styled(Row)`
   background: #0b74e5;
   align-items: center;
@@ -22,7 +21,6 @@ export const WrapperHeader = styled(Row)`
   }
 `;
 
-// Logo hoặc text header
 export const WrapperTextHeader = styled(Link)`
   font-size: 22px;
   color: #ffffff;
@@ -41,15 +39,13 @@ export const WrapperTextHeader = styled(Link)`
   }
 `;
 
-// Account / User Section
 export const WrapperHeaderAccount = styled.div`
   display: flex;
   align-items: center;
   color: #ffffff;
-  gap: 16px; /* Khoảng cách giữa Account và Cart */
+  gap: 16px;
   cursor: pointer;
 
-  /* Xóa margin-right lớn */
   margin-left: 10px;
 
   @media (max-width: 768px) {
@@ -57,7 +53,6 @@ export const WrapperHeaderAccount = styled.div`
   }
 `;
 
-// Text nhỏ trên header
 export const WrapperTextHeaderSmall = styled.span`
   font-size: 13px;
   color: #e0e0e0;
@@ -68,7 +63,6 @@ export const WrapperTextHeaderSmall = styled.span`
   }
 `;
 
-// Content trong popup (menu dropdown chẳng hạn)
 export const WrapperContentPopup = styled.p`
   cursor: pointer;
   margin: 0;
