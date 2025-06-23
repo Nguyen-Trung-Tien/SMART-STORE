@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Badge, Col, Popover } from "antd";
+import React, { useCallback, useEffect, useState } from "react";
+import { Badge, Col, notification, Popover } from "antd";
 import {
   WrapperHeader,
   WrapperTextHeader,
@@ -20,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { resetUser } from "../../redux/slices/userSlice";
 import Loading from "../LoadingComponent/Loading";
 import { searchProduct } from "../../redux/slices/productSlice";
+import debounce from "lodash.debounce";
 
 const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   const navigate = useNavigate();
@@ -35,21 +36,29 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     navigate("/sign-in");
   };
 
-  // const handleLogout = async () => {
-  //   setPending(true);
-  //   await UserService.logoutUser();
-  //   dispatch(resetUser());
-  //   setPending(false);
-  // };
+  const debounceSearch = useCallback(
+    debounce((value) => {
+      dispatch(searchProduct(value));
+    }, 500),
+    [dispatch]
+  );
+
+  const onSearch = (e) => {
+    debounceSearch(e.target.value);
+  };
 
   const handleLogout = async () => {
     try {
       setPending(true);
-      await UserService.logoutUser(); // gọi API xóa refresh_token cookie
+      await UserService.logoutUser();
       localStorage.removeItem("access_token");
       dispatch(resetUser());
+      navigate("/");
     } catch (error) {
-      console.error("Logout failed:", error);
+      notification.error({
+        message: "Đăng xuất thất bại",
+        description: error.message || "Có lỗi xảy ra, vui lòng thử lại.",
+      });
     } finally {
       setPending(false);
     }
@@ -73,7 +82,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
           Quản lý hệ thống
         </WrapperContentPopup>
       )}
-      <WrapperContentPopup onClick={() => handleClickNavigate()}>
+      <WrapperContentPopup onClick={() => handleClickNavigate("logout")}>
         Đăng xuất
       </WrapperContentPopup>
     </div>
@@ -88,14 +97,10 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
       navigate("/my-order", {
         state: { id: user?.id, token: user?.access_token },
       });
-    } else {
+    } else if (type === "logout") {
       handleLogout();
     }
     setIsOpenPopup(false);
-  };
-  const onSearch = (e) => {
-    setSearch(e.target.value);
-    dispatch(searchProduct(e.target.value));
   };
 
   return (
@@ -150,11 +155,13 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
               )}
               {user?.access_token ? (
                 <>
-                  <Popover content={content} trigger="click" open={isOpenPopup}>
-                    <div
-                      style={{ cursor: "pointer" }}
-                      onClick={() => setIsOpenPopup((prev) => !prev)}
-                    >
+                  <Popover
+                    content={content}
+                    trigger="click"
+                    open={isOpenPopup}
+                    onOpenChange={(visible) => setIsOpenPopup(visible)}
+                  >
+                    <div style={{ cursor: "pointer" }}>
                       {userName?.length ? userName : user?.email}
                     </div>
                   </Popover>
@@ -182,7 +189,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
               onClick={() => navigate("/order")}
               style={{ cursor: "pointer" }}
             >
-              <Badge count={order?.orderItems?.length || 0} size="small">
+              <Badge count={order?.orderItems?.length ?? 0} size="small">
                 <ShoppingCartOutlined
                   style={{ fontSize: "30px", color: "rgb(255, 255, 255)" }}
                 />

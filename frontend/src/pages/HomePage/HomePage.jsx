@@ -21,19 +21,7 @@ const HomePage = () => {
   const searchDebounce = useDebounce(searchProduct, 500);
   const [pending, setPending] = useState(false);
   const [limit, setLimit] = useState(12);
-
   const [typeProducts, setTypeProducts] = useState([]);
-
-  // const fetchProductAll = async ({ queryKey }) => {
-  //   const [, limit, search] = queryKey;
-  //   try {
-  //     const res = await ProductService.getAllProduct(search, limit);
-  //     return res;
-  //   } catch (err) {
-  //     console.error("Fetch product error:", err);
-  //     return { data: [], total: 0 };
-  //   }
-  // };
 
   const fetchAllTypeProduct = async () => {
     try {
@@ -72,7 +60,8 @@ const HomePage = () => {
       <div
         style={{
           borderBottom: "1px solid #efefef",
-          width: "1270px",
+          maxWidth: "1270px",
+          width: "100%",
           margin: " 0 auto",
         }}
       >
@@ -97,23 +86,24 @@ const HomePage = () => {
         >
           <SliderComponent arrImages={[image1, image2, image3]} />
           <WrapperProducts>
-            {products?.data?.map((product) => {
-              return (
-                <CardComponent
-                  key={product._id}
-                  countInStock={product.countInStock}
-                  description={product.description}
-                  image={product.image}
-                  name={product.name}
-                  price={product.price}
-                  rating={product.rating}
-                  type={product.type}
-                  discount={product.discount}
-                  selling={product.selling}
-                  id={product._id}
-                />
-              );
-            })}
+            {products?.data?.length > 0 &&
+              products?.data?.map((product) => {
+                return (
+                  <CardComponent
+                    key={product._id}
+                    countInStock={product.countInStock}
+                    description={product.description}
+                    image={product.image}
+                    name={product.name}
+                    price={product.price}
+                    rating={product.rating}
+                    type={product.type}
+                    discount={product.discount}
+                    selling={product.selling}
+                    id={product._id}
+                  />
+                );
+              })}
           </WrapperProducts>
           <div
             style={{
@@ -125,7 +115,7 @@ const HomePage = () => {
           >
             <WrapperButtonMore
               textButton={
-                products?.data?.length >= products?.total
+                isPending || products?.data?.length >= products?.total
                   ? "Đã tải hết sản phẩm"
                   : isPreviousData
                   ? "Load more"
