@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Badge, Col, notification, Popover } from "antd";
 import {
   WrapperHeader,
@@ -27,24 +27,12 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [userName, setUserName] = useState("");
-  const [search, setSearch] = useState("");
   const [isOpenPopup, setIsOpenPopup] = useState(false);
   const order = useSelector((state) => state?.order);
   const [userAvatar, setUserAvatar] = useState("");
   const [pending, setPending] = useState(false);
   const handleNavigateLogin = () => {
     navigate("/sign-in");
-  };
-
-  const debounceSearch = useCallback(
-    debounce((value) => {
-      dispatch(searchProduct(value));
-    }, 500),
-    [dispatch]
-  );
-
-  const onSearch = (e) => {
-    debounceSearch(e.target.value);
   };
 
   const handleLogout = async () => {
@@ -68,6 +56,24 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     setUserName(user?.name || user?.email);
     setUserAvatar(user?.avatar);
   }, [user?.name, user?.avatar, user?.email]);
+
+  const debounceSearch = useMemo(
+    () =>
+      debounce((value) => {
+        dispatch(searchProduct(value));
+      }, 500),
+    [dispatch]
+  );
+
+  const onSearch = (e) => {
+    debounceSearch(e.target.value);
+  };
+
+  useEffect(() => {
+    return () => {
+      debounceSearch.cancel();
+    };
+  }, [debounceSearch]);
 
   const content = (
     <div>

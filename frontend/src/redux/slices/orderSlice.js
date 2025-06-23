@@ -50,6 +50,8 @@ export const orderSlice = createSlice({
         }
       } else {
         state.orderItems.push(orderItem);
+        state.isSuccessOrder = true;
+        state.isErrorOrder = false;
       }
     },
     resetOrder: (state) => {

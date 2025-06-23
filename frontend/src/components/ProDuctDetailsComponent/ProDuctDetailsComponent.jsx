@@ -76,7 +76,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
     } else if (productDetails?.countInStock === 0) {
       setErrorLimitOrder(true);
     }
-  }, [numProduct, productDetails]);
+  }, [numProduct, productDetails?._id, productDetails?.countInStock, order]);
 
   useEffect(() => {
     if (order?.isSuccessOrder) {
@@ -85,23 +85,21 @@ const ProductDetailsComponent = ({ idProduct }) => {
     return () => {
       dispatch(resetOrder());
     };
-  }, [order?.isSuccessOrder]);
+  }, [order?.isSuccessOrder, dispatch]);
 
   const handleChangeCount = (type, limited) => {
-    if (type === "increase") {
-      if (!limited) {
-        setNumProduct(numProduct + 1);
-      }
-    } else {
-      if (!limited) {
-        setNumProduct(numProduct - 1);
-      }
+    if (type === "increase" && numProduct < productDetails?.countInStock) {
+      setNumProduct(numProduct + 1);
+    }
+    if (type === "decrease" && numProduct > 1) {
+      setNumProduct(numProduct - 1);
     }
   };
 
   // useEffect(() => {
   //   intitFakeBookSDK();
   // });
+
   const smallImages = productDetails?.smallImages || [productDetails?.image];
   const collapseItems = productDetails?.descriptions
     ? productDetails.descriptions.map((item, index) => ({
@@ -146,6 +144,9 @@ const ProductDetailsComponent = ({ idProduct }) => {
   const handleAddOrderProduct = () => {
     if (!user?.id) {
       navigate("/sign-in", { state: location?.pathname });
+    } else if (productDetails?.countInStock === 0) {
+      message.error("Sản phẩm đã hết hàng!");
+      setErrorLimitOrder(true);
     } else {
       const orderRedux = order?.orderItems?.find(
         (item) => item?.product === productDetails?._id
