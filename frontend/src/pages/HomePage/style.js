@@ -3,7 +3,7 @@ import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 export const WrapperTypeProducts = styled.div`
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 5px;
   justify-content: flex-start;
   height: 44px;
 `;

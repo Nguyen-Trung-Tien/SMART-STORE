@@ -38,9 +38,7 @@ const NavbarComponent = ({ onFilter }) => {
   const typeOptions = [...new Set(productList.map((item) => item.type))].filter(
     Boolean
   );
-  const ratingOptions = [...new Set(productList.map((item) => item.rating))]
-    .filter(Boolean)
-    .sort((a, b) => b - a);
+  const ratingOptions = [...new Set(productList.map((item) => item.rating))];
 
   const priceOptions = [
     { label: "Dưới 5 triệu", min: 0, max: 5000000 },
@@ -111,7 +109,7 @@ const NavbarComponent = ({ onFilter }) => {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "8px",
+              gap: "5px",
               cursor: "pointer",
               padding: "6px 10px",
               borderRadius: "6px",
@@ -122,12 +120,7 @@ const NavbarComponent = ({ onFilter }) => {
               userSelect: "none",
             }}
           >
-            <Rate
-              disabled
-              allowHalf
-              defaultValue={option}
-              style={{ fontSize: "14px" }}
-            />
+            <Rate defaultValue={option} style={{ fontSize: "10px" }} />
             <span>{`Từ ${option} sao`}</span>
           </div>
         ));
