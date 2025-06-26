@@ -143,3 +143,21 @@ export const OrderButton = styled.button`
     box-shadow: 0 3px 8px rgba(255, 91, 102, 0.2);
   }
 `;
+
+/* <ButtonComponent
+              onClick={() => handleAddCard()}
+              size={40}
+              styleButton={{
+                background: "rgb(254,57,69)",
+                height: "48px",
+                width: "320px",
+                border: "none",
+                borderRadius: "4px",
+              }}
+              textButton={"Mua hàng"}
+              styleTextButton={{
+                fontWeight: "500",
+                fontSize: "15px",
+                color: "#fff",
+              }}
+            /> */

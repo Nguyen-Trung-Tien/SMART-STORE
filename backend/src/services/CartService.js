@@ -51,7 +51,7 @@ const removeCartItem = async (cartId, itemId) => {
   const cart = await Cart.findById(cartId);
   if (!cart) throw new Error("Cart not found");
 
-  cart.items.id(itemId).remove();
+  cart.items.id(itemId).delete();
   return await cart.save();
 };
 

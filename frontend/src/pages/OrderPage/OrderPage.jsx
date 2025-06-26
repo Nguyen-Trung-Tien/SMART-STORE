@@ -34,7 +34,6 @@ import * as message from "../../components/Message/Message";
 import { updateUser } from "../../redux/slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import StepComponent from "../../components/StepComponent/StepComponent";
-import * as CartService from "../../services/CartService";
 
 const OrderPage = () => {
   const order = useSelector((state) => state.order);
@@ -43,7 +42,6 @@ const OrderPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [listChecked, setListChecked] = useState([]);
-  const [cartId, setCartId] = useState();
 
   const [stateUserDetails, setStateUserDetails] = useState({
     name: "",
@@ -71,24 +69,13 @@ const OrderPage = () => {
     return result || 0;
   }, [order]);
 
-  // useEffect(() => {
-  //   const fetchCart = async () => {
-  //     const cartData = await CartService.getCartByUser(
-  //       user.id,
-  //       user.access_token
-  //     );
-  //     setCartId(cartData._id);
-  //   };
-  //   if (user?.id) fetchCart();
-  // }, [user]);
-
   const priceDiscountMemo = useMemo(() => {
     const result = order?.orderItemsSelected?.reduce((total, cur) => {
       const totalDiscount = cur.discount ? cur.discount : 0;
-      return total + (priceMemo * (totalDiscount * cur.amount)) / 100;
+      return total + (cur.price * cur.amount * totalDiscount) / 100;
     }, 0);
     return Number(result) || 0;
-  }, [order]);
+  }, [order, priceMemo]);
 
   const deliveryPriceMemo = useMemo(() => {
     if (!order?.orderItemsSelected?.length) {
@@ -132,34 +119,14 @@ const OrderPage = () => {
     }
   };
 
-  // const handleChangeCount = async (type, idProduct, limited) => {
-  //   if (limited) return;
-
-  //   const cartId = user.cartId; // hoặc lấy từ state user, hoặc fetch giỏ hàng về
-
-  //   try {
-  //     const quantity = type === "increase" ? 1 : -1;
-  //     await CartService.updateCartItem(cartId, idProduct, quantity);
-  //     // dispatch cập nhật lại Redux hoặc reload lại cart
-  //     message.success("Cập nhật thành công!");
-  //   } catch (err) {
-  //     message.error("Cập nhật thất bại!");
-  //   }
-  // };
-
   const handleDeleteOrder = (idProduct) => {
     dispatch(removeOrderProduct({ idProduct }));
+    if (idProduct) {
+      message.success("Xóa sản phẩm thành công");
+    } else {
+      message.error("Hệ thống đang gặp sự cố!");
+    }
   };
-
-  // const handleDeleteOrder = async (idProduct) => {
-  //   try {
-  //     await CartService.removeCartItem(cartId, idProduct, user.access_token);
-  //     dispatch(removeOrderProduct({ idProduct }));
-  //     message.success("Đã xoá sản phẩm!");
-  //   } catch (err) {
-  //     message.error("Xoá thất bại!");
-  //   }
-  // };
 
   const handleOnChangeCheckAll = (e) => {
     if (e.target.checked) {
@@ -176,21 +143,17 @@ const OrderPage = () => {
   const handleRemoveAllOrder = () => {
     if (listChecked?.length > 1) {
       dispatch(removeAllOrderProduct({ listChecked }));
+      if (listChecked) {
+        message.success("Xóa sản phẩm thành công");
+      } else {
+        message.error("Hệ thống đang gặp sự cố!");
+      }
     }
   };
-  // const handleRemoveAllOrder = async () => {
-  //   try {
-  //     await CartService.clearCart(user.id);
-  //     dispatch(removeAllOrderProduct({ listChecked }));
-  //     message.success("Đã xoá giỏ hàng!");
-  //   } catch (err) {
-  //     message.error("Xoá thất bại!");
-  //   }
-  // };
 
   useEffect(() => {
     dispatch(selectedOrder({ listChecked }));
-  }, [listChecked]);
+  }, [listChecked, dispatch]);
 
   useEffect(() => {
     form.setFieldsValue(stateUserDetails);
@@ -205,7 +168,7 @@ const OrderPage = () => {
         city: user?.city,
       });
     }
-  }, [isOpenModalUpdateInfo]);
+  }, [isOpenModalUpdateInfo, user]);
 
   const handleAddCard = () => {
     if (!order?.orderItemsSelected?.length) {
@@ -216,32 +179,6 @@ const OrderPage = () => {
       navigate("/payment");
     }
   };
-
-  // const handleAddCard = async () => {
-  //   if (!order?.orderItemsSelected?.length) {
-  //     message.error("Vui lòng chọn sản phẩm!");
-  //   } else if (!user?.phone || !user?.address || !user?.name || !user?.city) {
-  //     setIsOpenModalUpdateInfo(true);
-  //   } else {
-  //     try {
-  //       for (const item of order?.orderItemsSelected) {
-  //         await CartService.addToCart({
-  //           userId: user?.id,
-  //           productId: item.product,
-  //           quantity: item.amount,
-  //           price: item.price,
-  //           name: item.name,
-  //           image: item.image,
-  //         });
-  //       }
-  //       message.success("Đã thêm vào giỏ hàng!");
-  //       navigate("/payment");
-  //     } catch (error) {
-  //       message.error("Thêm vào giỏ thất bại!");
-  //       console.error(error);
-  //     }
-  //   }
-  // };
 
   const handleCancelUpdate = () => {
     setStateUserDetails({
@@ -265,7 +202,16 @@ const OrderPage = () => {
         },
         {
           onSuccess: () => {
-            dispatch(updateUser({ name, phone, address, city }));
+            dispatch(
+              updateUser({
+                ...user,
+                name,
+                phone,
+                address,
+                city,
+              })
+            );
+            message.success("Cập nhật thông tin thành công!");
             setIsOpenModalUpdateInfo(false);
           },
         }
@@ -299,6 +245,14 @@ const OrderPage = () => {
     },
   ];
 
+  const getCurrentStep = () => {
+    if (order?.orderItems?.length === 0) return 0;
+    if (deliveryPriceMemo === 20000) return 0;
+    if (deliveryPriceMemo === 10000) return 1;
+    if (deliveryPriceMemo === 0) return 2;
+    return 0;
+  };
+
   return (
     <div style={{ background: "#f5f5fa", width: "100%", height: "100vh" }}>
       <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
@@ -306,18 +260,7 @@ const OrderPage = () => {
         <div style={{ display: "flex", justifyContent: "center" }}>
           <WrapperLeft>
             <WrapperStyleHeaderDelivery>
-              <StepComponent
-                items={itemsDelivery}
-                current={
-                  deliveryPriceMemo === 10000
-                    ? 1
-                    : deliveryPriceMemo === 20000
-                    ? 2
-                    : order?.orderItems?.length === 0
-                    ? 1
-                    : 3
-                }
-              />
+              <StepComponent items={itemsDelivery} current={getCurrentStep()} />
             </WrapperStyleHeaderDelivery>
             <WrapperStyleHeader>
               <span style={{ display: "inline-block", width: "390px" }}>
@@ -581,23 +524,6 @@ const OrderPage = () => {
                 </span>
               </WrapperTotal>
             </div>
-            {/* <ButtonComponent
-              onClick={() => handleAddCard()}
-              size={40}
-              styleButton={{
-                background: "rgb(254,57,69)",
-                height: "48px",
-                width: "320px",
-                border: "none",
-                borderRadius: "4px",
-              }}
-              textButton={"Mua hàng"}
-              styleTextButton={{
-                fontWeight: "500",
-                fontSize: "15px",
-                color: "#fff",
-              }}
-            /> */}
             <OrderButton onClick={() => handleAddCard()}>Đặt hàng</OrderButton>
           </WrapperRight>
         </div>
