@@ -29,15 +29,6 @@ export const orderSlice = createSlice({
           item.product === orderItem.product && item.userId === orderItem.userId
       );
 
-      // if (itemOrder) {
-      //   if (itemOrder.amount <= itemOrder.countInStock) {
-      //     itemOrder.amount += orderItem?.amount;
-      //     state.isSuccessOrder = true;
-      //     state.isErrorOrder = false;
-      //   }
-      // } else {
-      //   state.orderItems.push(orderItem);
-      // }
       if (itemOrder) {
         const newAmount = itemOrder.amount + orderItem.amount;
         if (newAmount <= itemOrder.countInStock) {
@@ -57,21 +48,6 @@ export const orderSlice = createSlice({
     resetOrder: (state) => {
       state.isSuccessOrder = false;
     },
-
-    // increaseAmount: (state, action) => {
-    //   const { idProduct } = action.payload;
-    //   const itemOrder = state?.orderItems?.find(
-    //     (item) => item?.product === idProduct
-    //   );
-    //   const itemOrderSelected = state?.orderItemsSelected?.find(
-    //     (item) => item?.product === idProduct
-    //   );
-    //   itemOrder.amount++;
-    //   if (itemOrderSelected) {
-    //     itemOrderSelected.amount++;
-    //   }
-    // },
-
     increaseAmount: (state, action) => {
       const { idProduct } = action.payload;
       const itemOrder = state.orderItems.find(
@@ -84,20 +60,6 @@ export const orderSlice = createSlice({
       if (itemOrder) itemOrder.amount++;
       if (itemOrderSelected) itemOrderSelected.amount++;
     },
-
-    // decreaseAmount: (state, action) => {
-    //   const { idProduct } = action.payload;
-    //   const itemOrder = state?.orderItems?.find(
-    //     (item) => item?.product === idProduct
-    //   );
-    //   const itemOrderSelected = state?.orderItemsSelected?.find(
-    //     (item) => item?.product === idProduct
-    //   );
-    //   itemOrder.amount--;
-    //   if (itemOrderSelected) {
-    //     itemOrderSelected.amount--;
-    //   }
-    // },
 
     decreaseAmount: (state, action) => {
       const { idProduct } = action.payload;

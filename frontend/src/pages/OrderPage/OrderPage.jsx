@@ -34,6 +34,7 @@ import * as message from "../../components/Message/Message";
 import { updateUser } from "../../redux/slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import StepComponent from "../../components/StepComponent/StepComponent";
+import * as CartService from "../../services/CartService";
 
 const OrderPage = () => {
   const order = useSelector((state) => state.order);
@@ -42,6 +43,8 @@ const OrderPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [listChecked, setListChecked] = useState([]);
+  const [cartId, setCartId] = useState();
+
   const [stateUserDetails, setStateUserDetails] = useState({
     name: "",
     phone: "",
@@ -67,6 +70,17 @@ const OrderPage = () => {
     }, 0);
     return result || 0;
   }, [order]);
+
+  // useEffect(() => {
+  //   const fetchCart = async () => {
+  //     const cartData = await CartService.getCartByUser(
+  //       user.id,
+  //       user.access_token
+  //     );
+  //     setCartId(cartData._id);
+  //   };
+  //   if (user?.id) fetchCart();
+  // }, [user]);
 
   const priceDiscountMemo = useMemo(() => {
     const result = order?.orderItemsSelected?.reduce((total, cur) => {
@@ -118,9 +132,34 @@ const OrderPage = () => {
     }
   };
 
+  // const handleChangeCount = async (type, idProduct, limited) => {
+  //   if (limited) return;
+
+  //   const cartId = user.cartId; // hoặc lấy từ state user, hoặc fetch giỏ hàng về
+
+  //   try {
+  //     const quantity = type === "increase" ? 1 : -1;
+  //     await CartService.updateCartItem(cartId, idProduct, quantity);
+  //     // dispatch cập nhật lại Redux hoặc reload lại cart
+  //     message.success("Cập nhật thành công!");
+  //   } catch (err) {
+  //     message.error("Cập nhật thất bại!");
+  //   }
+  // };
+
   const handleDeleteOrder = (idProduct) => {
     dispatch(removeOrderProduct({ idProduct }));
   };
+
+  // const handleDeleteOrder = async (idProduct) => {
+  //   try {
+  //     await CartService.removeCartItem(cartId, idProduct, user.access_token);
+  //     dispatch(removeOrderProduct({ idProduct }));
+  //     message.success("Đã xoá sản phẩm!");
+  //   } catch (err) {
+  //     message.error("Xoá thất bại!");
+  //   }
+  // };
 
   const handleOnChangeCheckAll = (e) => {
     if (e.target.checked) {
@@ -139,6 +178,15 @@ const OrderPage = () => {
       dispatch(removeAllOrderProduct({ listChecked }));
     }
   };
+  // const handleRemoveAllOrder = async () => {
+  //   try {
+  //     await CartService.clearCart(user.id);
+  //     dispatch(removeAllOrderProduct({ listChecked }));
+  //     message.success("Đã xoá giỏ hàng!");
+  //   } catch (err) {
+  //     message.error("Xoá thất bại!");
+  //   }
+  // };
 
   useEffect(() => {
     dispatch(selectedOrder({ listChecked }));
@@ -168,6 +216,32 @@ const OrderPage = () => {
       navigate("/payment");
     }
   };
+
+  // const handleAddCard = async () => {
+  //   if (!order?.orderItemsSelected?.length) {
+  //     message.error("Vui lòng chọn sản phẩm!");
+  //   } else if (!user?.phone || !user?.address || !user?.name || !user?.city) {
+  //     setIsOpenModalUpdateInfo(true);
+  //   } else {
+  //     try {
+  //       for (const item of order?.orderItemsSelected) {
+  //         await CartService.addToCart({
+  //           userId: user?.id,
+  //           productId: item.product,
+  //           quantity: item.amount,
+  //           price: item.price,
+  //           name: item.name,
+  //           image: item.image,
+  //         });
+  //       }
+  //       message.success("Đã thêm vào giỏ hàng!");
+  //       navigate("/payment");
+  //     } catch (error) {
+  //       message.error("Thêm vào giỏ thất bại!");
+  //       console.error(error);
+  //     }
+  //   }
+  // };
 
   const handleCancelUpdate = () => {
     setStateUserDetails({

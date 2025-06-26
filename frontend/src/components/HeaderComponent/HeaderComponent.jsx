@@ -21,7 +21,7 @@ import { resetUser } from "../../redux/slices/userSlice";
 import Loading from "../LoadingComponent/Loading";
 import { searchProduct } from "../../redux/slices/productSlice";
 import debounce from "lodash.debounce";
-
+import { clearOrder } from "../../redux/slices/orderSlice";
 const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
@@ -41,6 +41,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
       await UserService.logoutUser();
       localStorage.removeItem("access_token");
       dispatch(resetUser());
+      dispatch(clearOrder());
       navigate("/");
     } catch (error) {
       notification.error({

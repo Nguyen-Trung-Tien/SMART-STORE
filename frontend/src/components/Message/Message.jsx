@@ -16,7 +16,6 @@ const info = (mess = "Info", duration = 2) => {
   message.info(mess, duration);
 };
 
-// Hoặc hàm notify đa năng
 const notify = (type = "info", mess = "", duration = 2) => {
   message[type](mess, duration);
 };
