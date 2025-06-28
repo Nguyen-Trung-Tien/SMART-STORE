@@ -175,6 +175,86 @@ const logoutUser = async (req, res) => {
   }
 };
 
+const updatePassword = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "All fields are required",
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "New password and confirm password do not match",
+      });
+    }
+
+    const response = await UserService.updatePassword(
+      userId,
+      oldPassword,
+      newPassword
+    );
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "Email is required",
+      });
+    }
+
+    const response = await UserService.forgotPassword(email);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    console.log("req.body token:", req.body.token); // check có token chưa
+
+    const { token, newPassword, confirmPassword } = req.body;
+
+    if (!token || !newPassword || !confirmPassword) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "All fields are required",
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "New password and confirm password do not match",
+      });
+    }
+
+    const response = await UserService.resetPassword(token, newPassword);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
+    });
+  }
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -185,4 +265,7 @@ module.exports = {
   refreshToken,
   logoutUser,
   deleteManyUser,
+  resetPassword,
+  forgotPassword,
+  updatePassword,
 };

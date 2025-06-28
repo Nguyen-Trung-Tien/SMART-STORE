@@ -30,15 +30,6 @@ const SignUpPage = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     handleNavigateSignUp();
-  //     message.success("Đăng ký tài khoản thành công!");
-  //   }
-  //   if (isError) {
-  //     message.error("Tài khoản đã tồn tại! Vui lòng nhập tài khoản khác!");
-  //   }
-  // }, [isSuccess, isError]);
 
   useEffect(() => {
     if (data?.status === "OK") {
@@ -47,7 +38,7 @@ const SignUpPage = () => {
     } else if (data?.status === "ERR") {
       message.error(data?.message || "Đăng ký thất bại!");
     }
-  }, [data]);
+  }, [data, navigate]);
 
   const handleOnChangeEmail = (value) => {
     setEmail(value);

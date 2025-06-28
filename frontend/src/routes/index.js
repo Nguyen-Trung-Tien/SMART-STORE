@@ -1,5 +1,6 @@
 import AdminPage from "../pages/AdminPage/AdminPage";
 import DetailsOrderPage from "../pages/DetailsOrderPage/DetailsOrderPage";
+import ForgotPasswordPage from "../pages/ForgotPasswordPage/ForgotPasswordPage";
 import HomePage from "../pages/HomePage/HomePage";
 import MyOrderPage from "../pages/MyOrderPage/MyOrderPage";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
@@ -9,6 +10,7 @@ import PaymentPage from "../pages/PaymentPage/PaymentPage";
 import ProductDetailsPage from "../pages/ProductDetailsPage/ProductDetailsPage";
 import ProductsPage from "../pages/ProductsPage/ProductsPage";
 import ProfilePage from "../pages/Profile/ProfilePage";
+import RestorePage from "../pages/RestorePage/RestorePage";
 import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
 import TypeProductPage from "../pages/TypeProductPage/TypeProductPage";
@@ -71,6 +73,18 @@ export const routes = [
   {
     path: "/sign-up",
     page: SignUpPage,
+    isShowHeader: false,
+    isShowFooter: false,
+  },
+  {
+    path: "/reset-password/:token",
+    page: RestorePage,
+    isShowHeader: false,
+    isShowFooter: false,
+  },
+  {
+    path: "/forgot-password",
+    page: ForgotPasswordPage,
     isShowHeader: false,
     isShowFooter: false,
   },

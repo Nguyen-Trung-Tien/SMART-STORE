@@ -2,6 +2,40 @@ const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 dotenv.config();
 
+const sendEmailResetPassword = async (email, resetLink) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_ACCOUNT,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_ACCOUNT,
+      to: email,
+      subject: "Yêu cầu đặt lại mật khẩu",
+      text: "Smart-Store Password Reset",
+      html: `
+        <div>
+          <p>Chào bạn,</p>
+          <p>Bạn đã yêu cầu đặt lại mật khẩu. Nhấn vào link dưới đây để đặt lại:</p>
+          <a href="${resetLink}">Đặt lại mật khẩu</a>
+          <p>Link này sẽ hết hạn sau 1 giờ.</p>
+          <p>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
+          <p>-- Smart-Store --</p>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("Error sending reset password email:", error);
+    throw new Error("Failed to send reset password email");
+  }
+};
+
 const sendEmailCreateOrder = async (email, orderItems) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -52,4 +86,4 @@ const sendEmailCreateOrder = async (email, orderItems) => {
   }
 };
 
-module.exports = { sendEmailCreateOrder };
+module.exports = { sendEmailCreateOrder, sendEmailResetPassword };

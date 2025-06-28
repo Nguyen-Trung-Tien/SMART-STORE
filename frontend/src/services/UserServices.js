@@ -18,6 +18,30 @@ export const signupUser = async (data) => {
   return res.data;
 };
 
+export const forgotPassword = async (email) => {
+  const res = await axios.post(
+    `${process.env.REACT_APP_API_KEY}/user/forgot-password`,
+    { email }
+  );
+  return res.data;
+};
+
+export const resetPassword = async (data) => {
+  const res = await axios.post(
+    `${process.env.REACT_APP_API_KEY}/user/reset-password`,
+    data
+  );
+  return res.data;
+};
+
+export const updatePassword = async (id, data) => {
+  const res = await axiosJWT.put(
+    `${process.env.REACT_APP_API_KEY}/user/update-password/${id}`,
+    data
+  );
+  return res.data;
+};
+
 export const getDetailsUser = async (id, access_token) => {
   const res = await axiosJWT.get(
     `${process.env.REACT_APP_API_KEY}/user/get-details/${id}`,

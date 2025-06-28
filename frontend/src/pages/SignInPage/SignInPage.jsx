@@ -89,6 +89,10 @@ const SignInPage = () => {
     setEmail(value);
   };
 
+  const handleRestore = () => {
+    navigate("/forgot-password");
+  };
+
   const handleOnChangePassword = (value) => {
     setPassword(value);
   };
@@ -174,7 +178,9 @@ const SignInPage = () => {
             ></ButtonComponent>
           </Loading>
           <p>
-            <WrapperTextLight>Quên mật khẩu?</WrapperTextLight>
+            <WrapperTextLight onClick={handleRestore}>
+              Quên mật khẩu?
+            </WrapperTextLight>
           </p>
           <p>
             Bạn chưa có tài khoản?

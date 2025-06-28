@@ -1,6 +1,12 @@
 const User = require("../models/UserModel");
+const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
 const { generalAccessToken, generalRefreshToken } = require("./JwtService");
+const { sendEmailResetPassword } = require("../services/EmailService");
+dotenv.config();
+
+const crypto = require("crypto");
+
 const createUser = (newUser) => {
   return new Promise(async (resolve, reject) => {
     const { name, email, password, confirmPassword, phone } = newUser;
@@ -125,32 +131,19 @@ const deleteManyUser = (ids) => {
   });
 };
 
-// const getAllUser = () => {
-//   return new Promise(async (resolve, reject) => {
-//     try {
-//       const allUser = await User.find().sort({ createdAt: -1 }).lean();
-//       resolve({
-//         status: "OK",
-//         message: "Success",
-//         data: allUser,
-//       });
-//     } catch (e) {
-//       reject(e);
-//     }
-//   });
-// };
-
-const getAllUser = async () => {
-  try {
-    const allUser = await User.find().sort({ createdAt: -1 }).lean();
-    return {
-      status: "OK",
-      message: "Success",
-      data: allUser,
-    };
-  } catch (e) {
-    throw e;
-  }
+const getAllUser = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const allUser = await User.find().sort({ createdAt: -1 }).lean();
+      resolve({
+        status: "OK",
+        message: "Success",
+        data: allUser,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
 };
 
 const getDetailsUser = (id) => {
@@ -172,6 +165,89 @@ const getDetailsUser = (id) => {
   });
 };
 
+const updatePassword = (id, oldPassword, newPassword) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await User.findById(id);
+      if (!user) {
+        return resolve({ status: "ERR", message: "User not found" });
+      }
+
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isMatch) {
+        return resolve({ status: "ERR", message: "Old password is incorrect" });
+      }
+
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedNewPassword;
+      await user.save();
+
+      resolve({
+        status: "OK",
+        message: "Password updated successfully",
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const resetPassword = async (token, newPassword) => {
+  try {
+    const user = await User.findOne({
+      resetToken: token,
+      resetTokenExpiry: { $gt: new Date() },
+    });
+    console.log("Found user:", user);
+    if (!user) {
+      return { status: "ERR", message: "Invalid or expired token" };
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.resetToken = undefined;
+    user.resetTokenExpiry = undefined;
+    await user.save();
+
+    return { status: "OK", message: "Password reset successfully" };
+  } catch (err) {
+    console.error(err);
+    return { status: "ERR", message: err.message };
+  }
+};
+
+const forgotPassword = (email) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await User.findOne({ email });
+      if (!user) {
+        return resolve({ status: "ERR", message: "Email not found" });
+      }
+
+      const resetToken = crypto.randomBytes(32).toString("hex");
+      const resetTokenExpiry = Date.now() + 3600000;
+
+      user.resetToken = resetToken;
+      user.resetTokenExpiry = resetTokenExpiry;
+      await user.save();
+
+      console.log("Saved resetToken to user:", resetToken);
+      await sendEmailResetPassword(
+        email,
+        `${process.env.URL_PORT_GET_EMAIL}/reset-password/${resetToken}`
+      );
+
+      resolve({
+        status: "OK",
+        message: "Reset password link has been sent to your email",
+        resetToken,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   createUser,
   loginUser,
@@ -180,4 +256,7 @@ module.exports = {
   getAllUser,
   getDetailsUser,
   deleteManyUser,
+  forgotPassword,
+  resetPassword,
+  updatePassword,
 };
