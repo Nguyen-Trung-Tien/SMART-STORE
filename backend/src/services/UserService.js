@@ -198,9 +198,8 @@ const resetPassword = async (token, newPassword) => {
       resetToken: token,
       resetTokenExpiry: { $gt: new Date() },
     });
-    console.log("Found user:", user);
     if (!user) {
-      return { status: "ERR", message: "Invalid or expired token" };
+      return { status: "ERR", message: "Mã hết hiệu lực!" };
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -230,13 +229,10 @@ const forgotPassword = (email) => {
       user.resetToken = resetToken;
       user.resetTokenExpiry = resetTokenExpiry;
       await user.save();
-
-      console.log("Saved resetToken to user:", resetToken);
       await sendEmailResetPassword(
         email,
         `${process.env.URL_PORT_GET_EMAIL}/reset-password/${resetToken}`
       );
-
       resolve({
         status: "OK",
         message: "Reset password link has been sent to your email",

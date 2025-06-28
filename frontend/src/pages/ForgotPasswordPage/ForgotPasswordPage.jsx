@@ -30,30 +30,42 @@ const ForgotPasswordPage = () => {
   return (
     <div
       style={{
+        minHeight: "100vh",
         display: "flex",
-        alignItems: "center",
         justifyContent: "center",
-        background: "#f4f4f4",
-        height: "100vh",
+        alignItems: "center",
+        padding: "20px",
       }}
     >
       <Loading isLoading={loading}>
         <div
           style={{
-            padding: "40px",
-            background: "#fff",
-            borderRadius: "8px",
-            boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
-            width: "400px",
-            textAlign: "center",
+            maxWidth: 480,
+            width: "100%",
+            backgroundColor: "#ffffff",
+            borderRadius: 12,
+            boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)",
+            padding: "40px 32px",
           }}
         >
-          <h2>Quên mật khẩu</h2>
+          <div
+            style={{
+              textAlign: "center",
+              marginBottom: 32,
+              color: "#222",
+              fontWeight: 700,
+              fontSize: 28,
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            }}
+          >
+            Quên mật khẩu
+          </div>
+
           <Input
-            placeholder="Nhập email..."
+            placeholder="Nhập email để khôi phục mật khẩu..."
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{ marginBottom: "20px" }}
+            style={{ marginBottom: "20px", height: "40px" }}
           />
           <Button
             type="primary"
@@ -61,7 +73,7 @@ const ForgotPasswordPage = () => {
             onClick={handleForgot}
             disabled={!email}
             style={{
-              height: 44,
+              height: 40,
               fontWeight: 600,
               fontSize: 16,
               borderRadius: 8,

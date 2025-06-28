@@ -122,8 +122,10 @@ const SignInPage = () => {
         }}
       >
         <WrapperContainerLeft>
-          <h1>Xin Chào</h1>
-          <p>Đăng nhập tài khoản!</p>
+          <div style={{ fontWeight: 800, fontSize: "40px" }}>Xin Chào</div>
+          <p style={{ fontWeight: 700, fontSize: "16px" }}>
+            Đăng nhập tài khoản!
+          </p>
           <InputForm
             style={{ marginBottom: "10px" }}
             placeholder="email"
@@ -178,14 +180,20 @@ const SignInPage = () => {
             ></ButtonComponent>
           </Loading>
           <p>
-            <WrapperTextLight onClick={handleRestore}>
+            <WrapperTextLight
+              onClick={handleRestore}
+              style={{ fontSize: "16px" }}
+            >
               Quên mật khẩu?
             </WrapperTextLight>
           </p>
-          <p>
+          <p style={{ fontSize: "16px" }}>
             Bạn chưa có tài khoản?
-            <WrapperTextLight onClick={handleNavigateSignUp}>
-              Tạo tài khoản
+            <WrapperTextLight
+              onClick={handleNavigateSignUp}
+              style={{ fontSize: "16px" }}
+            >
+              Tạo tài khoản!
             </WrapperTextLight>
           </p>
         </WrapperContainerLeft>

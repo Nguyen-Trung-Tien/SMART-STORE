@@ -31,9 +31,9 @@ const RestorePage = () => {
     }
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
+  // const onFinishFailed = (errorInfo) => {
+  //   console.log("Failed:", errorInfo);
+  // };
 
   return (
     <div
@@ -56,7 +56,7 @@ const RestorePage = () => {
             padding: "40px 32px",
           }}
         >
-          <h2
+          <div
             style={{
               textAlign: "center",
               marginBottom: 32,
@@ -67,13 +67,13 @@ const RestorePage = () => {
             }}
           >
             Khôi Phục Mật Khẩu
-          </h2>
+          </div>
 
           <Form
             name="resetPassword"
             layout="vertical"
             onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
+            // onFinishFailed={onFinishFailed}
             autoComplete="off"
           >
             <Form.Item
