@@ -47,6 +47,9 @@ const SignUpPage = () => {
   const handleOnChangePassword = (value) => {
     setPassword(value);
   };
+  const handleRestore = () => {
+    navigate("/forgot-password");
+  };
 
   const handleOnChangeConfirmPassword = (value) => {
     setConfirmPassword(value);
@@ -173,7 +176,9 @@ const SignUpPage = () => {
             )}
           </Loading>
           <p>
-            <WrapperTextLight>Quên mật khẩu</WrapperTextLight>
+            <WrapperTextLight onClick={handleRestore}>
+              Quên mật khẩu
+            </WrapperTextLight>
           </p>
           <p>
             Bạn đã có tài khoản?
