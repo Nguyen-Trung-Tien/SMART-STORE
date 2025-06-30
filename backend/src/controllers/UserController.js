@@ -177,10 +177,9 @@ const logoutUser = async (req, res) => {
 
 const updatePassword = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const { oldPassword, newPassword, confirmPassword } = req.body;
+    const { id, oldPassword, newPassword, confirmPassword } = req.body;
 
-    if (!oldPassword || !newPassword || !confirmPassword) {
+    if (!id || !oldPassword || !newPassword || !confirmPassword) {
       return res.status(200).json({
         status: "ERR",
         message: "All fields are required",
@@ -194,15 +193,18 @@ const updatePassword = async (req, res) => {
       });
     }
 
-    const response = await UserService.updatePassword(
-      userId,
+    const response = await UserService.updatePassword({
+      id,
       oldPassword,
-      newPassword
-    );
+      newPassword,
+      confirmPassword,
+    });
+
     return res.status(200).json(response);
   } catch (e) {
-    return res.status(404).json({
-      message: e,
+    return res.status(500).json({
+      status: "ERR",
+      message: e.message,
     });
   }
 };
@@ -228,8 +230,6 @@ const forgotPassword = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   try {
-    console.log("req.body token:", req.body.token); // check có token chưa
-
     const { token, newPassword, confirmPassword } = req.body;
 
     if (!token || !newPassword || !confirmPassword) {

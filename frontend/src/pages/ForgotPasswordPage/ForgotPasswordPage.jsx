@@ -72,8 +72,9 @@ const ForgotPasswordPage = () => {
             block
             onClick={handleForgot}
             disabled={!email}
+            loading={loading}
             style={{
-              height: 40,
+              height: 44,
               fontWeight: 600,
               fontSize: 16,
               borderRadius: 8,

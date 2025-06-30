@@ -24,7 +24,7 @@ const sendEmailResetPassword = async (email, resetLink) => {
           <p>Chào bạn,</p>
           <p>Bạn đã yêu cầu đặt lại mật khẩu. Nhấn vào link dưới đây để đặt lại:</p>
           <a href="${resetLink}">Đặt lại mật khẩu</a>
-          <p>Link này sẽ hết hạn sau 1 giờ.</p>
+          <p>Link này sẽ hết hạn sau 5 phút.</p>
           <p>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
           <p>-- Smart-Store --</p>
         </div>
@@ -57,7 +57,7 @@ const sendEmailCreateOrder = async (email, orderItems) => {
         <div>
           <img src="${order?.image}" style="max-width: 200px;"/>
         </div>
-        <p>với số lượng: <b>${order?.amount}</b> 
+        <p>số lượng: <b>${order?.amount}</b> 
         <b> ,giá: ${order?.price
           .toLocaleString()
           .replaceAll(",", ".")}VND</b></p>
@@ -71,7 +71,7 @@ const sendEmailCreateOrder = async (email, orderItems) => {
     const info = await transporter.sendMail({
       from: process.env.EMAIL_ACCOUNT,
       to: process.env.EMAIL_ACCOUNT,
-      subject: "Bạn đã đặt hàng thành công",
+      subject: "Đặt hàng thành công",
       text: "Shop Smart-Store.",
       html: `
         <div>

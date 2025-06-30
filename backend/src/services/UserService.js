@@ -1,6 +1,7 @@
 const User = require("../models/UserModel");
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
+
 const { generalAccessToken, generalRefreshToken } = require("./JwtService");
 const { sendEmailResetPassword } = require("../services/EmailService");
 dotenv.config();
@@ -165,29 +166,30 @@ const getDetailsUser = (id) => {
   });
 };
 
-const updatePassword = (id, oldPassword, newPassword) => {
+const updatePassword = (data) => {
+  const { id, oldPassword, newPassword, confirmPassword } = data;
   return new Promise(async (resolve, reject) => {
     try {
       const user = await User.findById(id);
-      if (!user) {
-        return resolve({ status: "ERR", message: "User not found" });
-      }
+      if (!user) return resolve({ status: "ERR", message: "User not found" });
 
       const isMatch = await bcrypt.compare(oldPassword, user.password);
-      if (!isMatch) {
+      if (!isMatch)
         return resolve({ status: "ERR", message: "Old password is incorrect" });
-      }
 
-      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-      user.password = hashedNewPassword;
+      if (newPassword !== confirmPassword)
+        return resolve({
+          status: "ERR",
+          message: "New and confirm password do not match",
+        });
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
       await user.save();
 
-      resolve({
-        status: "OK",
-        message: "Password updated successfully",
-      });
-    } catch (e) {
-      reject(e);
+      resolve({ status: "OK", message: "Password updated successfully" });
+    } catch (err) {
+      reject(err);
     }
   });
 };
@@ -199,7 +201,7 @@ const resetPassword = async (token, newPassword) => {
       resetTokenExpiry: { $gt: new Date() },
     });
     if (!user) {
-      return { status: "ERR", message: "Mã hết hiệu lực!" };
+      return { status: "ERR", message: "Mã hết hiệu lực! Vui lòng thử lại!" };
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -224,7 +226,7 @@ const forgotPassword = (email) => {
       }
 
       const resetToken = crypto.randomBytes(32).toString("hex");
-      const resetTokenExpiry = Date.now() + 3600000;
+      const resetTokenExpiry = Date.now() + 300000;
 
       user.resetToken = resetToken;
       user.resetTokenExpiry = resetTokenExpiry;

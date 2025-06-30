@@ -14,12 +14,16 @@ import { useMutationHooks } from "../../hooks/useMutationHook";
 import Loading from "../../components/LoadingComponent/Loading";
 import * as message from "../../components/Message/Message";
 import { updateUser } from "../../redux/slices/userSlice";
-import { Button } from "antd";
+import { Button, Form } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { getBase64 } from "../../utils";
+import InputComponent from "../../components/InputComponent/InputComponent";
+import ModalComponent from "../../components/ModalComponent/ModalComponent";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
+  const [isOpenModalUpdatePassword, steIsOpenModalUpdatePassword] =
+    useState(false);
   const user = useSelector((state) => state.user);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -27,6 +31,11 @@ const ProfilePage = () => {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [avatar, setAvatar] = useState("");
+  const [passwordData, setPasswordData] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
 
   const mutation = useMutationHooks((data) => {
     const { id, access_token, ...rests } = data;
@@ -34,6 +43,26 @@ const ProfilePage = () => {
   });
 
   const { data, isPending, isSuccess, isError } = mutation;
+
+  const [form] = Form.useForm();
+
+  const mutationUpdatePassword = useMutationHooks((data) =>
+    UserService.updatePassword(data, user?.access_token)
+  );
+
+  const {
+    data: dataUpdatePassword,
+    isPending: isPendingUpdatePassword,
+    isSuccess: isSuccessUpdatePassword,
+    isError: isErrorUpdatePassword,
+  } = mutationUpdatePassword;
+
+  const handleUpdatePassword = () => {
+    mutationUpdatePassword.mutate({
+      id: user?.id,
+      ...passwordData,
+    });
+  };
 
   useEffect(() => {
     setName(user?.name);
@@ -82,6 +111,20 @@ const ProfilePage = () => {
     setAvatar(file.preview);
   };
 
+  useEffect(() => {
+    if (isSuccessUpdatePassword && dataUpdatePassword?.status === "OK") {
+      message.success("Cập nhật mật khẩu thành công!");
+      steIsOpenModalUpdatePassword(false);
+      setPasswordData({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } else if (isErrorUpdatePassword || dataUpdatePassword?.status === "ERR") {
+      message.error("Mật khẩu không khớp! Vui lòng thử lại!");
+    }
+  }, [isSuccessUpdatePassword, isErrorUpdatePassword]);
+
   const handleUpdate = () => {
     mutation.mutate({
       id: user?.id,
@@ -94,16 +137,28 @@ const ProfilePage = () => {
       access_token: user?.access_token,
     });
   };
+  const handleResetPassword = () => {
+    steIsOpenModalUpdatePassword(true);
+  };
+
+  const handleCancelUpdatePassword = () => {
+    steIsOpenModalUpdatePassword(false);
+  };
+
+  const handleOnChangeDetails = (e) => {
+    const { name, value } = e.target;
+    setPasswordData({ ...passwordData, [name]: value });
+  };
 
   return (
-    <div style={{ width: "1270px ", margin: "0 auto", height: "500px" }}>
+    <div style={{ width: "1270px ", margin: "0 auto", height: "100%" }}>
       <WrapperHeader>Thông tin của bạn</WrapperHeader>
       <Loading isLoading={isPending}>
         <WrapperContentProfile>
           <WrapperInput>
             <WrapperLabel>ID</WrapperLabel>
             <InputForm
-              style={{ width: "400px", marginBottom: "15px" }}
+              style={{ width: "600px", marginBottom: "15px" }}
               value={user?.id}
               id="id"
             />
@@ -111,7 +166,7 @@ const ProfilePage = () => {
           <WrapperInput>
             <WrapperLabel htmlFor="name">Name</WrapperLabel>
             <InputForm
-              style={{ width: "400px", marginBottom: "15px" }}
+              style={{ width: "600px", marginBottom: "15px" }}
               value={name}
               id="name"
               onChange={handleOnChangeName}
@@ -120,7 +175,7 @@ const ProfilePage = () => {
           <WrapperInput>
             <WrapperLabel htmlFor="email">Email</WrapperLabel>
             <InputForm
-              style={{ width: "400px", marginBottom: "15px" }}
+              style={{ width: "600px", marginBottom: "15px" }}
               value={email}
               id="email"
               onChange={handleOnChangeEmail}
@@ -129,7 +184,7 @@ const ProfilePage = () => {
           <WrapperInput>
             <WrapperLabel htmlFor="phone">Phone(+84)</WrapperLabel>
             <InputForm
-              style={{ width: "400px", marginBottom: "15px" }}
+              style={{ width: "600px", marginBottom: "15px" }}
               value={phone}
               id="phone"
               onChange={handleOnChangePhone}
@@ -138,7 +193,7 @@ const ProfilePage = () => {
           <WrapperInput>
             <WrapperLabel htmlFor="address">Address</WrapperLabel>
             <InputForm
-              style={{ width: "400px", marginBottom: "15px" }}
+              style={{ width: "600px", marginBottom: "15px" }}
               value={address}
               id="address"
               onChange={handleOnChangeAddress}
@@ -147,7 +202,7 @@ const ProfilePage = () => {
           <WrapperInput>
             <WrapperLabel htmlFor="city">City</WrapperLabel>
             <InputForm
-              style={{ width: "400px", marginBottom: "15px" }}
+              style={{ width: "600px", marginBottom: "15px" }}
               value={city}
               id="city"
               onChange={handleOnChangeCity}
@@ -174,25 +229,114 @@ const ProfilePage = () => {
               />
             )}
           </WrapperInput>
-          <ButtonComponent
-            onClick={handleUpdate}
-            size={40}
-            styleButton={{
-              height: "40px",
-              width: "100px",
-              borderRadius: "8px",
-              border: "1px solid rgb(11, 116, 229)",
-              padding: "4px 6px",
-              marginTop: "30px",
-            }}
-            textButton={"Cập nhật"}
-            styleTextButton={{
-              color: "rgb(11, 116, 229)",
-              fontSize: "15px",
-              fontWeight: "700",
-            }}
-          />
+          <div style={{ display: "flex", gap: "20px" }}>
+            <ButtonComponent
+              onClick={handleUpdate}
+              size={40}
+              styleButton={{
+                height: "40px",
+                width: "100px",
+                borderRadius: "8px",
+                border: "1px solid rgb(11, 116, 229)",
+                padding: "4px 6px",
+                marginTop: "30px",
+              }}
+              textButton={"Cập nhật"}
+              styleTextButton={{
+                color: "rgb(11, 116, 229)",
+                fontSize: "15px",
+                fontWeight: "700",
+              }}
+            />
+            <ButtonComponent
+              onClick={handleResetPassword}
+              size={40}
+              styleButton={{
+                height: "40px",
+                width: "150px",
+                borderRadius: "8px",
+                border: "1px solid rgb(11, 116, 229)",
+                padding: "4px 6px",
+                marginTop: "30px",
+              }}
+              textButton={"Thay đổi mật khẩu"}
+              styleTextButton={{
+                color: "rgb(11, 116, 229)",
+                fontSize: "15px",
+                fontWeight: "700",
+              }}
+            />
+          </div>
         </WrapperContentProfile>
+        <ModalComponent
+          title="Thay đổi mật khẩu"
+          open={isOpenModalUpdatePassword}
+          onCancel={handleCancelUpdatePassword}
+          onOk={handleUpdatePassword}
+        >
+          <Loading isLoading={isPendingUpdatePassword}>
+            <Form
+              name="basic"
+              labelCol={{ span: 7 }}
+              wrapperCol={{ span: 20 }}
+              // onFinish={onUpdateUser}
+              autoComplete="on"
+              form={form}
+            >
+              <Form.Item
+                label="Old password"
+                name="oldPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your old password!",
+                  },
+                ]}
+              >
+                <InputComponent
+                  value={passwordData.oldPassword}
+                  onChange={handleOnChangeDetails}
+                  name="oldPassword"
+                  type="password"
+                />
+              </Form.Item>
+              <Form.Item
+                label="New password"
+                name="newPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your count new password!",
+                  },
+                ]}
+              >
+                <InputComponent
+                  value={passwordData.newPassword}
+                  onChange={handleOnChangeDetails}
+                  name="newPassword"
+                  type="password"
+                />
+              </Form.Item>
+              <Form.Item
+                label="Confirm password"
+                name="confirmPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your count confirm password!",
+                  },
+                ]}
+              >
+                <InputComponent
+                  value={passwordData.confirmPassword}
+                  onChange={handleOnChangeDetails}
+                  name="confirmPassword"
+                  type="password"
+                />
+              </Form.Item>
+            </Form>
+          </Loading>
+        </ModalComponent>
       </Loading>
     </div>
   );

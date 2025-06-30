@@ -5,7 +5,7 @@ export const WrapperHeader = styled.h1`
   color: #222;
   font-size: 24px;
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   text-align: center;
 `;
 

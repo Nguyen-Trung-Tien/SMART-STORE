@@ -34,10 +34,15 @@ export const resetPassword = async (data) => {
   return res.data;
 };
 
-export const updatePassword = async (id, data) => {
-  const res = await axiosJWT.put(
-    `${process.env.REACT_APP_API_KEY}/user/update-password/${id}`,
-    data
+export const updatePassword = async (data, access_token) => {
+  const res = await axios.post(
+    `${process.env.REACT_APP_API_KEY}/user/update-password`,
+    data,
+    {
+      headers: {
+        token: `Bearer ${access_token}`,
+      },
+    }
   );
   return res.data;
 };
