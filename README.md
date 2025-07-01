@@ -16,4 +16,4 @@ Mô tả chức năng website:
 - Thêm vào giỏ hàng.
 - Đặt hàng.
 - Thanh toán qua vnpay, paypal.
-- Xem trang thái đơn hàng (xác nhận, hủy đơn hàng).
+- Xem lịch sử, trang thái đơn hàng (xác nhận, hủy đơn hàng).
