@@ -106,6 +106,7 @@ const MyOrderPage = () => {
   const confirmMutation = useMutationHooks(async (order) => {
     await OrderService.updateOrderPaid(order._id, order.token);
     await OrderService.updateOrderDelivered(order._id, order.token);
+    return { status: "OK" };
   });
   const {
     data: dataConfirm,
@@ -121,6 +122,14 @@ const MyOrderPage = () => {
       message.error("Không thể hủy!");
     }
   }, [isSuccessCancel, isErrorCancel, dataCancel]);
+
+  useEffect(() => {
+    if (isSuccessConfirm && dataConfirm?.status === "OK") {
+      message.success("Xác nhận thành công!");
+    } else if (isErrorConfirm) {
+      message.error("Không thể xác nhận!");
+    }
+  }, [isSuccessConfirm, isErrorConfirm, dataConfirm]);
 
   const handleCancelOrder = (order) => {
     cancelMutation.mutate(
@@ -159,7 +168,7 @@ const MyOrderPage = () => {
     <WrapperContainer>
       <div style={{ width: "1270px", margin: "0 auto" }}>
         <WrapperHeader>Đơn hàng của tôi</WrapperHeader>
-        <Loading isLoading={isPending || isPendingCancel || isPendingConfirm}>
+        <Loading isLoading={isPending || isPendingConfirm || isPendingCancel}>
           <WrapperListOrder>
             {Array.isArray(data) && data.length > 0 ? (
               data?.map((order) => {
