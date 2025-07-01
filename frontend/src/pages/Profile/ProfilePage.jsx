@@ -259,7 +259,7 @@ const ProfilePage = () => {
                 padding: "4px 6px",
                 marginTop: "30px",
               }}
-              textButton={"Thay đổi mật khẩu"}
+              textButton={"Cập nhật mật khẩu"}
               styleTextButton={{
                 color: "rgb(11, 116, 229)",
                 fontSize: "15px",
@@ -269,7 +269,7 @@ const ProfilePage = () => {
           </div>
         </WrapperContentProfile>
         <ModalComponent
-          title="Thay đổi mật khẩu"
+          title="Cập nhật mật khẩu"
           open={isOpenModalUpdatePassword}
           onCancel={handleCancelUpdatePassword}
           onOk={handleUpdatePassword}

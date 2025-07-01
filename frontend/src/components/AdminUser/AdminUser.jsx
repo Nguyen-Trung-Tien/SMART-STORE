@@ -77,7 +77,6 @@ const AdminUser = () => {
             <EditOutlined style={{ color: "#1890ff", fontSize: "24px" }} />
           </ActionButton>
         </Tooltip>
-
         <Tooltip title="Xóa">
           <ActionButton
             bgcolor="#fff1f0"

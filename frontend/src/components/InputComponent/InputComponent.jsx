@@ -16,7 +16,7 @@ const InputComponent = ({
       <Input.Password
         size={size}
         placeholder={placeholder}
-        textButton={textButton}
+        // textButton={textButton}
         variant={variant}
         style={style}
         iconRender={(visible) =>
