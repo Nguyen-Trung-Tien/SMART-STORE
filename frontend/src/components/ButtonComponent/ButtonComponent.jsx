@@ -11,6 +11,7 @@ const ButtonComponent = ({
 }) => {
   return (
     <Button
+      htmlType="button"
       style={{
         ...styleButton,
         background: disabled ? "#ccc" : styleButton.background,

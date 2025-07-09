@@ -15,6 +15,7 @@ import * as ProductService from "../../services/ProductServices";
 import { useSelector } from "react-redux";
 import Loading from "../../components/LoadingComponent/Loading";
 import { useDebounce } from "../../hooks/useDebounce";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 const HomePage = () => {
   const searchProduct = useSelector((state) => state?.product?.search);
@@ -34,18 +35,19 @@ const HomePage = () => {
     }
   };
 
-  const {
-    data: products,
-    isPending,
-    isPreviousData,
-  } = useQuery({
-    queryKey: ["products", limit, searchDebounce],
-    queryFn: () => ProductService.getAllProduct(searchDebounce, limit),
-    staleTime: 5 * 60 * 1000,
-    keepPreviousData: true,
-    enabled: searchDebounce.length === 0 || searchDebounce.length >= 2,
-  });
-
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteQuery({
+      queryKey: ["products", searchDebounce],
+      queryFn: ({ pageParam = 1 }) =>
+        ProductService.getAllProduct(searchDebounce, 12, pageParam),
+      getNextPageParam: (lastPage, allPages) => {
+        const totalPage = Math.ceil(lastPage.total / 12);
+        if (allPages.length < totalPage) return allPages.length + 1;
+        return undefined;
+      },
+      staleTime: 5 * 60 * 1000,
+      enabled: searchDebounce.length === 0 || searchDebounce.length >= 2,
+    });
   useEffect(() => {
     const fetchData = async () => {
       setPending(true);
@@ -56,103 +58,106 @@ const HomePage = () => {
   }, []);
 
   return (
-    <Loading isLoading={isPending || pending}>
-      <div
-        style={{
-          borderBottom: "1px solid #efefef",
-          maxWidth: "1270px",
-          width: "100%",
-          margin: " 0 auto",
-        }}
-      >
-        <WrapperTypeProducts>
-          {typeProducts?.map((item) => {
-            return <TypeProducts name={item} key={item} />;
-          })}
-        </WrapperTypeProducts>
-      </div>
-      <div
-        className="body"
-        style={{ width: "100%", backgroundColor: "#efefef" }}
-      >
+    <>
+      <Loading isLoading={isLoading || pending}>
         <div
-          id="container"
           style={{
-            backgroundColor: "#efefef",
-            width: "1270px",
-            margin: "0 auto",
-            boxSizing: "border-box",
+            borderBottom: "1px solid #efefef",
+            maxWidth: "1270px",
+            width: "100%",
+            margin: " 0 auto",
           }}
         >
-          <SliderComponent arrImages={[image1, image2, image3]} />
-          <WrapperProducts>
-            {products?.data?.length > 0 &&
-              products?.data?.map((product) => {
-                return (
-                  <CardComponent
-                    key={product._id}
-                    countInStock={product.countInStock}
-                    description={product.description}
-                    image={product.image}
-                    name={product.name}
-                    price={product.price}
-                    rating={product.rating}
-                    type={product.type}
-                    discount={product.discount}
-                    selling={product.selling}
-                    id={product._id}
-                  />
-                );
-              })}
-          </WrapperProducts>
+          <WrapperTypeProducts>
+            {typeProducts?.map((item) => {
+              return <TypeProducts name={item} key={item} />;
+            })}
+          </WrapperTypeProducts>
+        </div>
+        <div
+          className="body"
+          style={{ width: "100%", backgroundColor: "#efefef" }}
+        >
           <div
+            id="container"
             style={{
-              display: "flex",
-              justifyContent: "center",
-              width: "100%",
-              marginTop: "10px",
+              backgroundColor: "#efefef",
+              width: "1270px",
+              margin: "0 auto",
+              boxSizing: "border-box",
             }}
           >
-            <WrapperButtonMore
-              textButton={
-                isPending || products?.data?.length >= products?.total
-                  ? "Đã tải hết sản phẩm"
-                  : isPreviousData
-                  ? "Load more"
-                  : "Xem thêm"
-              }
-              type="outline"
-              styleButton={{
-                border: "1px solid rgb(11, 116, 229)",
-                color:
-                  products?.data?.length >= products?.total
-                    ? "#f5f5fa"
-                    : "rgb(11, 116, 229)",
-                height: "38px",
-                width: "240px",
-                borderRadius: "4px",
-                fontWeight: "500",
-                fontSize: "16px",
-                marginBottom: "10px",
+            <SliderComponent arrImages={[image1, image2, image3]} />
+            <WrapperProducts>
+              {data?.pages.map((page) =>
+                page.data.map((product) => {
+                  return (
+                    <CardComponent
+                      key={product._id}
+                      countInStock={product.countInStock}
+                      description={product.description}
+                      image={product.image}
+                      name={product.name}
+                      price={product.price}
+                      rating={product.rating}
+                      type={product.type}
+                      discount={product.discount}
+                      selling={product.selling}
+                      id={product._id}
+                    />
+                  );
+                })
+              )}
+            </WrapperProducts>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+                marginTop: "10px",
               }}
-              disabled={
-                products?.data?.length >= products?.total ||
-                products?.totalPage === 1
-              }
-              styleTextButton={{
-                fontWeight: 500,
-                color: products?.data?.length >= products?.total && "#fff",
-              }}
-              onClick={() => {
-                if (products?.data?.length < products?.total) {
-                  setLimit((prev) => prev + 12);
+            >
+              <WrapperButtonMore
+                textButton={
+                  !hasNextPage
+                    ? "Đã tải hết sản phẩm"
+                    : isFetchingNextPage
+                    ? "Đang tải..."
+                    : "Xem thêm"
                 }
-              }}
-            />
+                type="outline"
+                styleButton={{
+                  border: "none",
+                  backgroundColor: !hasNextPage ? "#ccc" : "#0b74e5",
+                  color: "#fff",
+                  padding: "10px 24px",
+                  height: "42px",
+                  width: "200px",
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                  fontSize: "16px",
+                  marginBottom: "16px",
+                  boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
+                  transition: "all 0.3s ease",
+                  cursor: !hasNextPage ? "not-allowed" : "pointer",
+                }}
+                disabled={!hasNextPage}
+                styleTextButton={{
+                  fontWeight: 500,
+                  color: !hasNextPage ? "#fff" : "rgb(11, 116, 229)",
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (hasNextPage) {
+                    fetchNextPage();
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </Loading>
+      </Loading>
+    </>
   );
 };
 
