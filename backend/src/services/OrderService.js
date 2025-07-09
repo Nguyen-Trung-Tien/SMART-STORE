@@ -86,7 +86,9 @@ const createOrder = (newOrder) => {
 const getAllOrderDetails = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const order = await Order.find({ user: id });
+      const order = await Order.find({ user: id })
+        .sort({ createdAt: -1 })
+        .lean();
       if (order === null) {
         return resolve({ status: "OK", message: "The order is not defined" });
       }

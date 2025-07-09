@@ -179,7 +179,7 @@ const getAllProduct = (limit, page, sort, filter) => {
   return new Promise(async (resolve, reject) => {
     try {
       const totalProduct = await Product.countDocuments();
-      let query = Product.find();
+      let query = Product.find().sort({ createdAt: -1 }).lean();
 
       if (filter) {
         const label = filter[0];
