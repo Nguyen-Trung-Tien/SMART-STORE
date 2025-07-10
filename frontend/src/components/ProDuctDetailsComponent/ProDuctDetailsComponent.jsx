@@ -96,9 +96,9 @@ const ProductDetailsComponent = ({ idProduct }) => {
     }
   };
 
-  useEffect(() => {
-    intitFakeBookSDK();
-  });
+  // useEffect(() => {
+  //   intitFakeBookSDK();
+  // });
 
   const smallImages = productDetails?.smallImages || [productDetails?.image];
   const collapseItems = productDetails?.descriptions

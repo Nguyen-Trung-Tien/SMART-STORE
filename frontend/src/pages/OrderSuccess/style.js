@@ -25,7 +25,7 @@ export const WrapperValue = styled.div`
   border: 1px solid #c2ffff;
   padding: 10px 14px;
   border-radius: 6px;
-  margin-top: 6px;
+  margin-top: 20px;
   font-size: 14px;
   color: #333;
 `;

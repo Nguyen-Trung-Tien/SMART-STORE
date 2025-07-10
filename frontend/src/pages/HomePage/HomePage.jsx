@@ -35,7 +35,7 @@ const HomePage = () => {
     }
   };
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
     useInfiniteQuery({
       queryKey: ["products", searchDebounce],
       queryFn: ({ pageParam = 1 }) =>
@@ -59,7 +59,7 @@ const HomePage = () => {
 
   return (
     <>
-      <Loading isLoading={isLoading || pending}>
+      <Loading isLoading={isPending || pending}>
         <div
           style={{
             borderBottom: "1px solid #efefef",
