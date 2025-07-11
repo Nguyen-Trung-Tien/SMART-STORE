@@ -299,6 +299,7 @@ const OrderPage = () => {
                     cursor: "pointer",
                     fontWeight: "bold",
                     fontSize: "18px",
+                    color: "red",
                   }}
                   onClick={handleRemoveAllOrder}
                 />
@@ -416,7 +417,7 @@ const OrderPage = () => {
                         {convertPrice(order?.price * order?.amount)}
                       </span>
                       <DeleteOutlined
-                        style={{ cursor: "pointer" }}
+                        style={{ cursor: "pointer", color: "red" }}
                         onClick={() => handleDeleteOrder(order?.product)}
                       />
                     </div>

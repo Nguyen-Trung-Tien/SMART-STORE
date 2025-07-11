@@ -272,7 +272,7 @@ const PaymentPage = () => {
   }, []);
 
   return (
-    <div style={{ background: "#f5f5fa", width: "100%", height: "100%" }}>
+    <div style={{ background: "#f5f5fa", width: "100%", height: "100vh" }}>
       <Loading isLoading={isPendingAddOrder}>
         <div style={{ height: "100%", width: "1270px", margin: "0 auto" }}>
           <h3 style={{ fontSize: "24px", marginTop: "10px" }}>Thanh toán</h3>
