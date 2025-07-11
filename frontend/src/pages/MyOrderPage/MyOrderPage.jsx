@@ -103,18 +103,24 @@ const MyOrderPage = () => {
     isError: isErrorCancel,
   } = cancelMutation;
 
-  const confirmMutation = useMutationHooks(async (order) => {
-    await OrderService.updateOrderPaid(order._id, order.token);
+  const confirmDeliveryMutation = useMutationHooks(async (order) => {
     await OrderService.updateOrderDelivered(order._id, order.token);
-    return { status: "OK" };
+  });
+  const confirmPaidMutation = useMutationHooks(async (order) => {
+    await OrderService.updateOrderPaid(order._id, order.token);
   });
   const {
-    data: dataConfirm,
-    isPending: isPendingConfirm,
-    isSuccess: isSuccessConfirm,
-    isError: isErrorConfirm,
-  } = confirmMutation;
-
+    data: dataDelivery,
+    isPending: isPendingDelivery,
+    isSuccess: isSuccessDelivery,
+    isError: isErrorDelivery,
+  } = confirmDeliveryMutation;
+  const {
+    data: dataPaid,
+    isPending: isPendingPaid,
+    isSuccess: isSuccessPaid,
+    isError: isErrorPaid,
+  } = confirmPaidMutation;
   useEffect(() => {
     if (isSuccessCancel && dataCancel?.status === "OK") {
       message.success("Hủy thành công!");
@@ -124,12 +130,12 @@ const MyOrderPage = () => {
   }, [isSuccessCancel, isErrorCancel, dataCancel]);
 
   useEffect(() => {
-    if (isSuccessConfirm && dataConfirm?.status === "OK") {
+    if (isSuccessDelivery) {
       message.success("Xác nhận thành công!");
-    } else if (isErrorConfirm) {
+    } else if (isErrorDelivery) {
       message.error("Không thể xác nhận!");
     }
-  }, [isSuccessConfirm, isErrorConfirm, dataConfirm]);
+  }, [isSuccessDelivery, isErrorDelivery]);
 
   const handleCancelOrder = (order) => {
     cancelMutation.mutate(
@@ -145,8 +151,19 @@ const MyOrderPage = () => {
     );
   };
 
-  const handleConfirmOrder = (order) => {
-    confirmMutation.mutate(
+  const handleDeliveryOrder = (order) => {
+    confirmDeliveryMutation.mutate(
+      { ...order, token: state?.token },
+      {
+        onSuccess: () => {
+          queryOrder.refetch();
+        },
+      }
+    );
+  };
+
+  const handlePaidOrder = (order) => {
+    confirmPaidMutation.mutate(
       { ...order, token: state?.token },
       {
         onSuccess: () => {
@@ -168,7 +185,11 @@ const MyOrderPage = () => {
     <WrapperContainer>
       <div style={{ width: "1270px", margin: "0 auto" }}>
         <WrapperHeader>Đơn hàng của tôi</WrapperHeader>
-        <Loading isLoading={isPending || isPendingConfirm || isPendingCancel}>
+        <Loading
+          isLoading={
+            isPending || isPendingDelivery || isPendingPaid || isPendingCancel
+          }
+        >
           <WrapperListOrder>
             {Array.isArray(data) && data.length > 0 ? (
               data?.map((order) => {
@@ -240,7 +261,10 @@ const MyOrderPage = () => {
                         {!order.isDelivered && !order.isCancelled && (
                           <>
                             <ButtonComponent
-                              onClick={() => handleConfirmOrder(order)}
+                              onClick={() =>
+                                handleDeliveryOrder(order) ||
+                                handlePaidOrder(order)
+                              }
                               size={40}
                               styleButton={{
                                 height: "36px",
