@@ -31,6 +31,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   const order = useSelector((state) => state?.order);
   const [userAvatar, setUserAvatar] = useState("");
   const [pending, setPending] = useState(false);
+
   const handleNavigateLogin = () => {
     navigate("/sign-in");
   };

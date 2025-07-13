@@ -26,7 +26,7 @@ const createUser = (newUser) => {
       if (createUser) {
         resolve({
           status: "OK",
-          message: "Success",
+          message: "SUCCESS",
           data: createUser,
         });
       }
@@ -138,7 +138,7 @@ const getAllUser = () => {
       const allUser = await User.find().sort({ createdAt: -1 }).lean();
       resolve({
         status: "OK",
-        message: "Success",
+        message: "SUCCESS",
         data: allUser,
       });
     } catch (e) {
@@ -188,8 +188,8 @@ const updatePassword = (data) => {
       await user.save();
 
       resolve({ status: "OK", message: "Password updated successfully" });
-    } catch (err) {
-      reject(err);
+    } catch (e) {
+      reject(e);
     }
   });
 };
@@ -201,7 +201,7 @@ const resetPassword = async (token, newPassword) => {
       resetTokenExpiry: { $gt: new Date() },
     });
     if (!user) {
-      return { status: "ERR", message: "Mã hết hiệu lực! Vui lòng thử lại!" };
+      return { status: "ERR", message: "Code expired! Please try again!" };
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

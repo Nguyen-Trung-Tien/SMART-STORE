@@ -246,7 +246,7 @@ const PaymentPage = () => {
 
   const handleVNPayPayment = async () => {
     try {
-      const amountToPay = totalPriceMemo > 100000000 ? 50000 : totalPriceMemo;
+      const amountToPay = totalPriceMemo > 10000000 ? 50000 : totalPriceMemo;
 
       const orderDescription = `Thanh toan don hang ${Date.now()}`;
 

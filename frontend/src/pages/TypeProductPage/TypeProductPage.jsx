@@ -131,7 +131,7 @@ const TypeProductPage = () => {
               </WrapperProducts>
               <StyledPagination
                 current={paginate.page + 1}
-                total={paginate.total * paginate.limit}
+                total={paginate.total + paginate.limit}
                 onChange={onChange}
               />
             </Col>

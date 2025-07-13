@@ -203,7 +203,7 @@ const getAllOrder = () => {
       const allOrder = await Order.find().sort({ createdAt: -1 }).lean();
       resolve({
         status: "OK",
-        message: "Success",
+        message: "SUCCESS",
         data: allOrder,
       });
     } catch (e) {

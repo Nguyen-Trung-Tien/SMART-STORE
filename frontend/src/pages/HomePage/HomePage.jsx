@@ -48,6 +48,7 @@ const HomePage = () => {
       staleTime: 5 * 60 * 1000,
       enabled: searchDebounce.length === 0 || searchDebounce.length >= 2,
     });
+
   useEffect(() => {
     const fetchData = async () => {
       setPending(true);

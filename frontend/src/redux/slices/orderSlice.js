@@ -48,6 +48,7 @@ export const orderSlice = createSlice({
     resetOrder: (state) => {
       state.isSuccessOrder = false;
     },
+
     increaseAmount: (state, action) => {
       const { idProduct } = action.payload;
       const itemOrder = state.orderItems.find(
@@ -70,7 +71,7 @@ export const orderSlice = createSlice({
         (item) => item.product === idProduct
       );
 
-      if (itemOrder && itemOrder.amount > 1) itemOrder.amount--; // Hoặc tùy quy định min là 1
+      if (itemOrder && itemOrder.amount > 1) itemOrder.amount--;
       if (itemOrderSelected && itemOrderSelected.amount > 1)
         itemOrderSelected.amount--;
     },
@@ -82,6 +83,7 @@ export const orderSlice = createSlice({
       );
       state.orderItems = itemOrder;
     },
+
     removeAllOrderProduct: (state, action) => {
       const { listChecked } = action.payload;
       const itemOrders = state?.orderItems?.filter(
@@ -89,6 +91,7 @@ export const orderSlice = createSlice({
       );
       state.orderItems = itemOrders;
     },
+
     selectedOrder: (state, action) => {
       const { listChecked } = action.payload;
       const orderSelected = [];
@@ -99,6 +102,7 @@ export const orderSlice = createSlice({
       });
       state.orderItemsSelected = orderSelected;
     },
+
     setOrder: (state, action) => {
       return { ...state, ...action.payload };
     },

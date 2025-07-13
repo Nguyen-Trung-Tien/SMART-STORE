@@ -42,7 +42,6 @@ const OrderPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [listChecked, setListChecked] = useState([]);
-
   const [stateUserDetails, setStateUserDetails] = useState({
     name: "",
     phone: "",
