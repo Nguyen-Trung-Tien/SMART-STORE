@@ -1,21 +1,40 @@
+# SMART-STORE 🛒
 
-SMART-STORE là website bán các thiết bị thông minh.
-==========================================================================================================================================================================================================================================
-Hướng dẫn cấu hình:
-B1: Tải node-mudules cho 2 file backend và frontend: npm install/ yarn install
-B2: chạy dự án , chạy từng file: npm start/ yarn start
-Lưu ý: cài đặt môi trường node-js từ version 16 trở lên.
+SMART-STORE là website bán các **thiết bị thông minh**, cung cấp trải nghiệm mua sắm trực tuyến tiện lợi và nhanh chóng.
 
+---
 
-Mô tả chức năng website:
-- CROD thêm, sửa, xóa , hiển thị sản phẩm, người dùng, đơn hàng.
-- Tạo tài khoản.
-- Đăng nhập, đăng xuất tài khoản.
-- Khôi phục tài khoản.
-- Thêm vào giỏ hàng.
-- Đặt hàng.
-- Thanh toán qua vnpay, paypal.
-- Xem lịch sử, trang thái đơn hàng (xác nhận, hủy đơn hàng).
+## 🚀 Hướng dẫn cài đặt
 
-Tài khoản user: user@gmail.com, password: 12345
-Tài khoản admin: admin@gmail.com, password: 12345
+1. **Cài đặt Node Modules**  
+   Chạy lần lượt cho **backend** và **frontend**:  
+   ```bash
+   npm install
+   # hoặc
+   yarn install
+2. Chạy dự án
+Chạy từng phần backend và frontend:
+  npm start
+  # hoặc
+  yarn start
+
+  🛠 Chức năng website
++ Quản lý dữ liệu (CRUD): Thêm, sửa, xóa, hiển thị sản phẩm, người dùng, đơn hàng.
++ Người dùng
++ Tạo tài khoản.
++ Đăng nhập / đăng xuất.
++ Khôi phục tài khoản.
++ Mua sắm
++ Thêm sản phẩm vào giỏ hàng.
++ Đặt hàng.
++ Thanh toán qua VNPay hoặc PayPal.
++ Xem lịch sử và trạng thái đơn hàng:
+
+👤 Tài khoản demo
+Loại tài khoản	Email	Password
+User	user@gmail.com/12345
+Admin	admin@gmail.com/12345
+
+Xác nhận
+
+Hủy đơn hàng
