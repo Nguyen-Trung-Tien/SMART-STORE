@@ -9,70 +9,52 @@ Với giao diện trực quan và các tính năng mạnh mẽ, người dùng c
 ## 🌟 Tính Năng Nổi Bật
 
 ### 🧑‍💻 Dành cho Người dùng (User)
-- **🔐 Tài khoản & Bảo mật:** Đăng ký, đăng nhập, đăng xuất và khôi phục mật khẩu an toàn.  
-- **🛍️ Trải nghiệm Mua sắm:** Duyệt sản phẩm theo danh mục, tìm kiếm thông minh và thêm sản phẩm vào giỏ hàng dễ dàng.  
-- **💳 Thanh toán Linh hoạt:** Tích hợp các cổng thanh toán phổ biến như VNPay và PayPal.  
-- **🚚 Quản lý Đơn hàng:** Theo dõi lịch sử mua hàng và cập nhật trạng thái đơn hàng (chờ xác nhận, đang giao, đã giao).  
-- **✅ Xác nhận & Hủy đơn:** Xác nhận đã nhận hàng hoặc hủy đơn khi chưa được xử lý.  
+- 🔐 Đăng ký, đăng nhập, đăng xuất và khôi phục mật khẩu an toàn  
+- 🛍️ Duyệt sản phẩm theo danh mục, tìm kiếm thông minh và thêm vào giỏ hàng dễ dàng  
+- 💳 Thanh toán qua VNPay hoặc PayPal  
+- 🚚 Theo dõi lịch sử đơn hàng (chờ xác nhận, đang giao, đã giao)  
+- ✅ Xác nhận nhận hàng hoặc hủy đơn  
 
 ### 👨‍💼 Dành cho Quản trị viên (Admin)
-- **📊 Dashboard:** Giao diện quản trị tổng quan với số liệu thống kê về doanh thu, đơn hàng và người dùng mới.  
-- **🔧 Quản lý Dữ liệu (CRUD):** Toàn quyền quản lý sản phẩm, danh mục, người dùng, và đơn hàng.  
-- **⚙️ Xử lý Đơn hàng:** Cập nhật trạng thái và quản lý chi tiết các đơn đặt hàng từ người dùng.  
+- 📊 Dashboard hiển thị doanh thu, đơn hàng và người dùng mới  
+- 🔧 Quản lý CRUD sản phẩm, danh mục, người dùng và đơn hàng  
+- ⚙️ Cập nhật trạng thái và quản lý chi tiết đơn hàng  
 
 ---
 
 ## 🛠️ Công Nghệ Sử Dụng
-- **Backend:** Node.js, Express.js  
-- **Frontend:** React.js  
-- **Database:** MongoDB  
-- **Thanh toán:** API VNPay, PayPal  
+- Backend: Node.js, Express.js  
+- Frontend: React.js  
+- Database: MongoDB  
+- Thanh toán: VNPay, PayPal  
 
 ---
 
 ## 🚀 Hướng Dẫn Cài Đặt và Vận Hành
 
-### Yêu cầu hệ thống
-- Node.js (phiên bản 16.x trở lên)  
+### Yêu cầu
+- Node.js >=16  
 - npm hoặc yarn  
 
-### Cài đặt
-1. **Clone repository về máy:**
-```bash
+👤 Tài Khoản Demo
+```
+Loại tài khoản
+User: user@gmail.com/12345
+Admin: admin@gmail.com/12345
+```
+### Cài đặt & chạy
+```
+1. Clone project về máy:
 git clone <repository-url>
 cd smart-store
-
-2. Cài đặt dependencies Backend:
+2. Cài dependencies và chạy backend:
 cd backend
 npm install
-# hoặc
-yarn install
-3.Cài đặt dependencies Frontend:
+npm start
+# hoặc yarn install && yarn start
+3.Cài dependencies và chạy frontend:
 cd ../frontend
 npm install
-# hoặc
-yarn install
-
-Cấu hình biến môi trường:
-
-Tạo file .env trong thư mục backend và frontend.
-
-Sao chép nội dung từ .env.example và điền thông tin cần thiết (DB connection, API keys, ...).
-
-Chạy dự án
-
-Backend: Trong thư mục /backend
 npm start
-# hoặc
-yarn start
-Frontend: Trong thư mục /frontend
-npm start
-# hoặc
-yarn start
-
-👤 Tài Khoản Demo
-Loại tài khoản	Email	Mật khẩu
-User	user@gmail.com
-	12345
-Admin	admin@gmail.com
-	12345
+# hoặc yarn install && yarn start
+```
