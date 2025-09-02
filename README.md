@@ -24,39 +24,72 @@ Với giao diện trực quan và các tính năng mạnh mẽ, người dùng c
 
 🛠️ Công Nghệ Sử Dụng
 Dự án được xây dựng với các công nghệ hiện đại và mạnh mẽ để đảm bảo hiệu suất và khả năng mở rộng.
+
 Backend: Node.js, Express.js
+
 Frontend: React.js
+
 Database: MongoDB
+
 Thanh toán: Tích hợp API của VNPay, PayPal
 
 🚀 Hướng Dẫn Cài Đặt và Vận Hành
 Để chạy dự án trên máy cục bộ của bạn, hãy làm theo các bước dưới đây.
-1. Yêu cầu hệ thống
-Node.js (phiên bản 16.x trở lên)
-npm hoặc yarn
-2. Cài đặt
-Clone repository về máy của bạn:
-Cài đặt dependencies cho Backend:
-cd backend
-npm install hoặc yarn install
-Cài đặt dependencies cho Frontend:
-cd ../frontend
-npm install hoặc yarn install
-Cấu hình biến môi trường:
-Tạo file .env trong thư mục backend và frontend.
-Sao chép nội dung từ file .env.example (nếu có) và điền các thông tin cần thiết (VD: chuỗi kết nối database, API keys cho cổng thanh toán,...).
-3. Chạy dự án
-Mở hai cửa sổ terminal riêng biệt để chạy song song backend và frontend.
-Khởi động Backend Server:
-# Trong thư mục /backend
-npm start hoặc yarn start
-Khởi động Frontend App:
-# Trong thư mục /frontend
-npm start hoặc yarn start
-Sau khi hoàn tất, trang web sẽ có thể truy cập tại http://localhost:3000.
-👤 Tài Khoản Demo:
-Bạn có thể sử dụng các tài khoản dưới đây để trải nghiệm các vai trò khác nhau trên website.
-Loại tài khoản	
-+User: user@gmail.com	12345
-+Admin: admin@gmail.com	12345
 
+Yêu cầu hệ thống
+Node.js (phiên bản 16.x trở lên)
+
+npm hoặc yarn
+
+Cài đặt
+Clone repository về máy của bạn:
+
+Cài đặt dependencies cho Backend:
+
+Bash
+
+cd backend
+npm install
+# hoặc
+yarn install
+Cài đặt dependencies cho Frontend:
+
+Bash
+
+cd ../frontend
+npm install
+# hoặc
+yarn install
+Cấu hình biến môi trường:
+
+Tạo file .env trong thư mục backend và frontend.
+
+Sao chép nội dung từ file .env.example (nếu có) và điền các thông tin cần thiết (VD: chuỗi kết nối database, API keys cho cổng thanh toán,...).
+
+Chạy dự án
+Mở hai cửa sổ terminal riêng biệt để chạy song song backend và frontend.
+
+Khởi động Backend Server:
+Trong thư mục /backend
+
+Bash
+
+npm start
+# hoặc
+yarn start
+Khởi động Frontend App:
+Trong thư mục /frontend
+
+Bash
+
+npm start
+# hoặc
+yarn start
+Sau khi hoàn tất, trang web sẽ có thể truy cập tại http://localhost:3000.
+
+👤 Tài Khoản Demo
+Bạn có thể sử dụng các tài khoản dưới đây để trải nghiệm các vai trò khác nhau trên website.
+
+Loại tài khoản	Tên đăng nhập	Mật khẩu
+User	user@gmail.com	12345
+Admin	admin@gmail.com	12345
