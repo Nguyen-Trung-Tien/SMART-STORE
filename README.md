@@ -1,5 +1,3 @@
-Chắc chắn rồi! Dưới đây là phiên bản README.md được biên soạn lại một cách hoàn chỉnh và chuyên nghiệp hơn, giúp dự án của bạn trở nên nổi bật và dễ dàng tiếp cận hơn.
-
 🛒 SMART-STORE | Website Thương Mại Điện Tử Thiết Bị Thông Minh
 SMART-STORE là một dự án website thương mại điện tử hiện đại, chuyên cung cấp các thiết bị thông minh, được xây dựng nhằm mang lại trải nghiệm mua sắm trực tuyến mượt mà, tiện lợi và an toàn cho người dùng.
 
@@ -34,20 +32,16 @@ Thanh toán: Tích hợp API của VNPay, PayPal
 🚀 Hướng Dẫn Cài Đặt và Vận Hành
 Để chạy dự án trên máy cục bộ của bạn, hãy làm theo các bước dưới đây.
 1. Yêu cầu hệ thống
-Node.js (phiên bản 14.x trở lên)
+Node.js (phiên bản 16.x trở lên)
 npm hoặc yarn
 2. Cài đặt
 Clone repository về máy của bạn:
 Cài đặt dependencies cho Backend:
 cd backend
-npm install
-# hoặc
-yarn install
+npm install hoặc yarn install
 Cài đặt dependencies cho Frontend:
 cd ../frontend
-npm install
-# hoặc
-yarn install
+npm install hoặc yarn install
 Cấu hình biến môi trường:
 Tạo file .env trong thư mục backend và frontend.
 Sao chép nội dung từ file .env.example (nếu có) và điền các thông tin cần thiết (VD: chuỗi kết nối database, API keys cho cổng thanh toán,...).
@@ -55,22 +49,14 @@ Sao chép nội dung từ file .env.example (nếu có) và điền các thông 
 Mở hai cửa sổ terminal riêng biệt để chạy song song backend và frontend.
 Khởi động Backend Server:
 # Trong thư mục /backend
-npm start
-# hoặc
-yarn start
+npm start hoặc yarn start
 Khởi động Frontend App:
 # Trong thư mục /frontend
-npm start
-# hoặc
-yarn start
+npm start hoặc yarn start
 Sau khi hoàn tất, trang web sẽ có thể truy cập tại http://localhost:3000.
 👤 Tài Khoản Demo:
 Bạn có thể sử dụng các tài khoản dưới đây để trải nghiệm các vai trò khác nhau trên website.
-Loại tài khoản	Email	Mật khẩu
-User: user@gmail.com	12345
-Admin: admin@gmail.com	12345
+Loại tài khoản	
++User: user@gmail.com	12345
++Admin: admin@gmail.com	12345
 
-
-npm start
-# hoặc
-yarn start
