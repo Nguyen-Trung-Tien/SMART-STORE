@@ -42,17 +42,22 @@ Loại tài khoản
 User: user@gmail.com/12345
 Admin: admin@gmail.com/12345
 ```
+---
 ### Cài đặt & chạy
-```
 1. Clone project về máy:
+```
 git clone <repository-url>
 cd smart-store
+```
 2. Cài dependencies và chạy backend:
+```
 cd backend
 npm install
 npm start
 # hoặc yarn install && yarn start
+```
 3.Cài dependencies và chạy frontend:
+```
 cd ../frontend
 npm install
 npm start
