@@ -1,0 +1,26 @@
+# Ignore node_modules (thư viện cài bằng Yarn)
+node_modules/
+yarn.lock
+
+# Ignore log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore cache và build files
+.cache/
+dist/
+build/
+
+# Ignore hệ điều hành & editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Ignore logs
+logs/
+*.log
+log/
+.qodo
