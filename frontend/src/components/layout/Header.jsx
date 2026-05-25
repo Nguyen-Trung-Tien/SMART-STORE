@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ShoppingCart, User, Search, Menu } from "lucide-react";
+import { ShoppingCart, User, Search, Menu, Heart, ShieldCheck, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -32,101 +32,121 @@ export function Header() {
   const totalItems = cartItems.reduce((total, item) => total + item.amount, 0);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-6">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 h-[72px] flex items-center">
+      <div className="container max-w-[1320px] mx-auto flex items-center justify-between px-6">
+        {/* Logo & Mobile Menu */}
+        <div className="flex items-center gap-4 lg:gap-8">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-6 w-6" />
+              <Button variant="ghost" size="icon" className="lg:hidden h-10 w-10">
+                <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left">
-              <nav className="flex flex-col gap-4 mt-8">
-                <Link to="/" className="text-lg font-semibold">Trang chủ</Link>
-                <Link to="/products" className="text-lg font-semibold">Sản phẩm</Link>
-              </nav>
+            <SheetContent side="left" className="w-[300px]">
+              <div className="flex flex-col gap-6 mt-10">
+                <span className="text-lg font-black tracking-tighter text-primary px-2">SMART STORE</span>
+                <nav className="flex flex-col gap-2">
+                  <Link to="/" className="px-2 py-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">Trang chủ</Link>
+                  <Link to="/products" className="px-2 py-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">Sản phẩm</Link>
+                  <Link to="/collections" className="px-2 py-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">Bộ sưu tập</Link>
+                </nav>
+              </div>
             </SheetContent>
           </Sheet>
-          <Link to="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight text-primary">SMART STORE</span>
+          
+          <Link to="/" className="flex items-center gap-2 group">
+            <span className="text-xl font-black tracking-tighter text-primary group-hover:opacity-80 transition-opacity">SMART STORE</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <Link to="/" className="transition-colors hover:text-primary">Trang chủ</Link>
-            <Link to="/products" className="transition-colors hover:text-primary">Sản phẩm</Link>
+
+          <nav className="hidden lg:flex items-center gap-6 text-[13px] font-bold uppercase tracking-wider text-muted-foreground">
+            <Link to="/" className="hover:text-primary transition-colors">Trang chủ</Link>
+            <Link to="/products" className="hover:text-primary transition-colors">Sản phẩm</Link>
           </nav>
         </div>
 
-        <div className="hidden flex-1 items-center justify-center px-6 md:flex md:justify-end">
-          <div className="relative w-full max-w-[400px]">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        {/* Search Bar - Centered */}
+        <div className="hidden md:flex flex-1 items-center justify-center max-w-[480px] mx-8">
+          <div className="relative w-full group">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-primary transition-colors" />
             <Input
               type="search"
-              placeholder="Tìm kiếm sản phẩm..."
-              className="pl-8 w-full bg-muted/50 focus-visible:ring-primary"
+              placeholder="Tìm kiếm sản phẩm đỉnh cao..."
+              className="pl-10 h-10 w-full bg-muted/40 border-none rounded-full focus-visible:ring-1 focus-visible:ring-primary/20 focus-visible:bg-muted transition-all"
             />
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="md:hidden">
+        {/* Actions */}
+        <div className="flex items-center gap-1.5 lg:gap-3">
+          <Button variant="ghost" size="icon" className="md:hidden h-10 w-10">
             <Search className="h-5 w-5" />
           </Button>
-          <ModeToggle />
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/cart" className="relative">
+          
+          <div className="hidden lg:flex items-center">
+            <ModeToggle />
+          </div>
+
+          <Button variant="ghost" size="icon" className="h-10 w-10 hidden sm:flex">
+            <Heart className="h-5 w-5" />
+          </Button>
+
+          <Button variant="ghost" size="icon" asChild className="h-10 w-10 relative">
+            <Link to="/cart">
               <ShoppingCart className="h-5 w-5" />
               {totalItems > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground animate-in zoom-in">
+                <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-black text-primary-foreground shadow-lg">
                   {totalItems}
                 </span>
               )}
             </Link>
           </Button>
 
+          <div className="h-5 w-px bg-border mx-1 hidden sm:block" />
+
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
+                <Button variant="ghost" className="h-10 gap-2 px-2 hover:bg-muted/50 rounded-full">
+                  <Avatar className="h-7 w-7 border ring-1 ring-black/5">
                     <AvatarImage src={user?.avatar} alt={user?.name} />
-                    <AvatarFallback>{user?.name?.charAt(0) || "U"}</AvatarFallback>
+                    <AvatarFallback className="font-black text-[10px]">{user?.name?.charAt(0) || "U"}</AvatarFallback>
                   </Avatar>
+                  <span className="hidden lg:block text-xs font-bold">{user?.name?.split(' ').pop()}</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuContent className="w-56 rounded-2xl p-2 mt-2 shadow-2xl border-black/5" align="end">
                 <DropdownMenuGroup>
-                  <DropdownMenuLabel className="font-normal">
+                  <DropdownMenuLabel className="font-normal p-3">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user?.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                      <p className="text-sm font-black leading-none tracking-tight">{user?.name}</p>
+                      <p className="text-[10px] leading-none text-muted-foreground font-medium">{user?.email}</p>
                     </div>
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile">Hồ sơ</Link>
+                <DropdownMenuGroup className="p-1">
+                  <DropdownMenuItem asChild className="rounded-xl p-2.5 cursor-pointer">
+                    <Link to="/profile" className="flex items-center gap-2 text-xs font-bold"><User className="h-4 w-4" /> Hồ sơ</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/my-orders">Đơn hàng của tôi</Link>
+                  <DropdownMenuItem asChild className="rounded-xl p-2.5 cursor-pointer">
+                    <Link to="/my-orders" className="flex items-center gap-2 text-xs font-bold"><Check className="h-4 w-4" /> Đơn hàng</Link>
                   </DropdownMenuItem>
                   {user?.role === "admin" && (
-                    <DropdownMenuItem asChild>
-                      <Link to="/admin">Quản trị viên</Link>
+                    <DropdownMenuItem asChild className="rounded-xl p-2.5 cursor-pointer text-primary">
+                      <Link to="/admin" className="flex items-center gap-2 text-xs font-bold"><ShieldCheck className="h-4 w-4" /> Quản trị</Link>
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={clearAuth} className="text-destructive">
+                <DropdownMenuGroup className="p-1">
+                  <DropdownMenuItem onClick={clearAuth} className="rounded-xl p-2.5 cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/5 font-bold text-xs">
                     Đăng xuất
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild variant="default" size="sm">
+            <Button asChild variant="default" size="sm" className="h-9 px-5 rounded-full font-black text-xs uppercase tracking-wider shadow-lg shadow-primary/20">
               <Link to="/login">Đăng nhập</Link>
             </Button>
           )}
@@ -135,3 +155,4 @@ export function Header() {
     </header>
   );
 }
+

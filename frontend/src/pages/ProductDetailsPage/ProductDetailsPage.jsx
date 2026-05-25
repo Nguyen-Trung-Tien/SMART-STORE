@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useProductDetails } from "@/features/products/hooks/useProducts";
+import { useProductDetails, useProducts } from "@/features/products/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,51 +16,216 @@ import {
   Share2,
   Check,
   Info,
-  ArrowRight
+  ArrowRight,
+  Maximize2,
+  X,
+  CreditCard,
+  History
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogTrigger,
+  DialogTitle,
+  DialogHeader
+} from "@/components/ui/dialog";
+import { ProductCard } from "@/features/products/components/ProductCard";
 
 const cubicBezier = [0.32, 0.72, 0, 1];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
-};
-
 const fadeUpVariants = {
-  hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
+  hidden: { opacity: 0, y: 15 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: {
-      duration: 0.8,
+      duration: 0.5,
       ease: cubicBezier
     }
   }
 };
 
+// --- Sub-components ---
+
+function ProductGallery({ product }) {
+  const [selectedImage, setSelectedImage] = useState(product.image);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
+  const [isZooming, setIsZooming] = useState(false);
+
+  const allImages = useMemo(() => {
+    const images = [product.image];
+    if (product.images && product.images.length > 0) {
+      product.images.forEach(img => {
+        if (img !== product.image) images.push(img);
+      });
+    }
+    return images;
+  }, [product.image, product.images]);
+
+  useEffect(() => {
+    setSelectedImage(product.image);
+  }, [product.image]);
+
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.pageX - left - window.scrollX) / width) * 100;
+    const y = ((e.pageY - top - window.scrollY) / height) * 100;
+    setZoomPos({ x, y });
+  };
+
+  return (
+    <div className="flex flex-col-reverse md:flex-row gap-4">
+      {/* Thumbnails */}
+      <div className="flex md:flex-col gap-2 overflow-auto scrollbar-hide no-scrollbar max-h-[450px]">
+        {allImages.map((img, index) => (
+          <button
+            key={index}
+            onClick={() => setSelectedImage(img)}
+            className={cn(
+              "relative min-w-[60px] w-14 h-14 md:w-16 md:h-16 rounded-lg overflow-hidden bg-white dark:bg-neutral-900 ring-1 transition-all duration-300",
+              selectedImage === img ? "ring-primary shadow-sm" : "ring-black/5 dark:ring-white/10 opacity-60 hover:opacity-100"
+            )}
+          >
+            <img src={img} alt={`${product.name} ${index}`} className="w-full h-full object-contain p-1" />
+          </button>
+        ))}
+      </div>
+
+      {/* Main Image */}
+      <div className="flex-1">
+        <motion.div 
+          className="group relative rounded-2xl bg-white dark:bg-neutral-950 ring-1 ring-black/5 dark:ring-white/10 shadow-lg overflow-hidden cursor-zoom-in"
+          onMouseEnter={() => setIsZooming(true)}
+          onMouseLeave={() => setIsZooming(false)}
+          onMouseMove={handleMouseMove}
+          onClick={() => setIsModalOpen(true)}
+        >
+          <div className="relative aspect-square flex items-center justify-center p-4 md:p-8 overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.img 
+                key={selectedImage}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                src={selectedImage} 
+                className={cn(
+                  "h-full w-full object-contain transition-transform duration-500",
+                  isZooming ? "scale-150" : "scale-100"
+                )}
+                style={isZooming ? {
+                  transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
+                } : {}}
+              />
+            </AnimatePresence>
+
+            <div className="absolute top-3 left-3">
+              {product.discount > 0 && (
+                <Badge className="bg-primary text-[10px] font-bold py-0.5 px-2 rounded-md shadow-sm border-none">
+                  -{product.discount}%
+                </Badge>
+              )}
+            </div>
+
+            <div className="absolute bottom-3 right-3 h-8 w-8 rounded-full bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
+               <Maximize2 className="h-4 w-4 text-muted-foreground" />
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-4xl border-none bg-white/95 dark:bg-neutral-950/95 backdrop-blur-2xl p-0 overflow-hidden rounded-2xl">
+          <DialogHeader className="sr-only">
+             <DialogTitle>Thư viện ảnh</DialogTitle>
+          </DialogHeader>
+          <div className="relative w-full aspect-square flex items-center justify-center p-4">
+             <button 
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-4 right-4 h-8 w-8 rounded-full bg-muted flex items-center justify-center hover:bg-destructive hover:text-white transition-colors z-50"
+             >
+                <X className="h-4 w-4" />
+             </button>
+             <img src={selectedImage} alt={product.name} className="max-w-full max-h-full object-contain" />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function VariantSelector({ variations, onSelect }) {
+  const [selections, setSelections] = useState({});
+
+  if (!variations || variations.length === 0) return null;
+
+  const handleSelect = (type, option) => {
+    const newSelections = { ...selections, [type]: option };
+    setSelections(newSelections);
+    onSelect(newSelections);
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      {variations.map((v) => (
+        <div key={v.type} className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{v.type}</h3>
+            {selections[v.type] && (
+              <span className="text-[11px] font-medium text-primary">Đã chọn: {selections[v.type]}</span>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {v.options.map((opt) => {
+              const isSelected = selections[v.type] === opt;
+              return (
+                <button
+                  key={opt}
+                  onClick={() => handleSelect(v.type, opt)}
+                  className={cn(
+                    "min-w-[40px] px-3 py-1.5 rounded-lg text-xs font-bold transition-all ring-1",
+                    isSelected 
+                      ? "bg-primary text-primary-foreground ring-primary shadow-sm" 
+                      : "bg-background text-muted-foreground ring-border hover:ring-primary/40"
+                  )}
+                >
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// --- Main Page ---
+
 export default function ProductDetailsPage() {
   const { id } = useParams();
   const { data: productData, isLoading } = useProductDetails(id);
+  const { data: allProductsData } = useProducts("", 8);
   const [quantity, setQuantity] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
+  const [selectedVariants, setSelectedVariants] = useState({});
   const { addToCart } = useCartStore();
   const { user } = useAuthStore();
 
   const product = productData?.data;
+
+  const relatedProducts = useMemo(() => {
+    if (!product || !allProductsData?.data) return [];
+    return allProductsData.data.filter(p => p._id !== product._id).slice(0, 4);
+  }, [product, allProductsData]);
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -71,12 +236,13 @@ export default function ProductDetailsPage() {
       price: product.price,
       amount: quantity,
       discount: product.discount,
+      variants: selectedVariants
     };
     addToCart(cartItem, user?._id);
     toast.success(`Đã thêm vào giỏ hàng`, {
       description: product.name,
-      icon: <div className="bg-emerald-500 rounded-full p-1"><Check className="h-3 w-3 text-white" /></div>,
-      className: "rounded-2xl border-none shadow-2xl"
+      icon: <Check className="h-4 w-4 text-emerald-500" />,
+      className: "rounded-xl"
     });
   };
 
@@ -84,20 +250,14 @@ export default function ProductDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-6 py-24">
-        <div className="grid gap-20 lg:grid-cols-2">
-           <Skeleton className="aspect-square w-full rounded-[3rem]" />
-           <div className="space-y-10">
-              <div className="space-y-4">
-                 <Skeleton className="h-6 w-20 rounded-full" />
-                 <Skeleton className="h-14 w-full" />
-                 <Skeleton className="h-6 w-1/4" />
-              </div>
-              <Skeleton className="h-24 w-full rounded-3xl" />
-              <div className="flex gap-4">
-                 <Skeleton className="h-14 flex-1 rounded-2xl" />
-                 <Skeleton className="h-14 flex-1 rounded-2xl" />
-              </div>
+      <div className="container max-w-6xl mx-auto px-4 py-12">
+        <div className="grid gap-8 md:grid-cols-2">
+           <Skeleton className="aspect-square w-full rounded-2xl" />
+           <div className="space-y-6">
+              <Skeleton className="h-4 w-24 rounded-full" />
+              <Skeleton className="h-10 w-full rounded-lg" />
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <Skeleton className="h-12 w-full rounded-lg" />
            </div>
         </div>
       </div>
@@ -106,189 +266,126 @@ export default function ProductDetailsPage() {
 
   if (!product) {
     return (
-      <div className="container mx-auto flex min-h-[70vh] flex-col items-center justify-center px-6 text-center">
-        <div className="rounded-[3rem] bg-muted/30 p-12 mb-8">
-          <Info className="h-20 w-20 text-muted-foreground/50" />
-        </div>
-        <h2 className="text-4xl font-black tracking-tight mb-4">Tuyệt bản rồi!</h2>
-        <p className="text-muted-foreground max-w-sm mb-10 text-lg">Sản phẩm này hiện không còn trong kho báu của chúng tôi.</p>
-        <Button asChild size="lg" className="rounded-full px-12 h-14 font-bold shadow-xl shadow-primary/20 transition-transform active:scale-95">
-          <Link to="/products">Khám phá sản phẩm khác <ArrowRight className="ml-2 h-5 w-5" /></Link>
+      <div className="container max-w-6xl mx-auto flex min-h-[50vh] flex-col items-center justify-center px-4">
+        <Info className="h-12 w-12 text-muted-foreground/30 mb-4" />
+        <h2 className="text-xl font-bold mb-2">Sản phẩm không tồn tại</h2>
+        <Button asChild variant="outline" className="rounded-full">
+          <Link to="/products">Về cửa hàng</Link>
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-screen bg-[#FAFAFA] dark:bg-[#050505]">
-      {/* Background Decor */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
-      
-      <div className="container relative z-10 mx-auto px-6 py-8 md:py-16">
+    <div className="min-h-screen bg-background">
+      <div className="container max-w-6xl mx-auto px-4 py-6 md:py-10">
         {/* Breadcrumbs */}
-        <motion.nav 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-12"
-        >
-          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
-          <div className="h-1 w-1 rounded-full bg-muted-foreground/40" />
-          <Link to="/products" className="hover:text-primary transition-colors">Shop</Link>
-          <div className="h-1 w-1 rounded-full bg-muted-foreground/40" />
-          <span className="text-foreground truncate max-w-[200px]">{product.name}</span>
-        </motion.nav>
+        <nav className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60 mb-6">
+          <Link to="/" className="hover:text-primary">Trang chủ</Link>
+          <ChevronRight className="h-2.5 w-2.5" />
+          <Link to="/products" className="hover:text-primary">Sản phẩm</Link>
+          <ChevronRight className="h-2.5 w-2.5" />
+          <span className="text-foreground truncate max-w-[100px]">{product.name}</span>
+        </nav>
 
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid gap-16 lg:grid-cols-2 items-start"
-        >
-          {/* Product Gallery (The Double-Bezel) */}
-          <motion.div variants={fadeUpVariants} className="lg:sticky lg:top-32">
-            <div className="group relative rounded-[3.5rem] bg-black/5 dark:bg-white/5 p-2 ring-1 ring-black/5 dark:ring-white/10 transition-all duration-700 hover:ring-primary/20 shadow-2xl shadow-black/5">
-              <div className="relative aspect-square overflow-hidden rounded-[calc(3.5rem-0.5rem)] bg-white dark:bg-neutral-950 flex items-center justify-center p-12 md:p-20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
-                <motion.img 
-                  layoutId={`product-image-${product._id}`}
-                  src={product.image} 
-                  alt={product.name} 
-                  className="h-full w-full object-contain transition-transform duration-1000 group-hover:scale-110"
-                />
-                
-                {/* Floating Actions */}
-                <div className="absolute right-8 top-8 flex flex-col gap-4">
-                  <Button 
-                    variant="secondary" 
-                    size="icon" 
-                    className={cn("h-12 w-12 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl shadow-2xl transition-all hover:scale-110 active:scale-90", isLiked && "text-destructive")}
-                    onClick={() => setIsLiked(!isLiked)}
-                  >
-                    <Heart className={cn("h-5 w-5", isLiked && "fill-current")} />
-                  </Button>
-                  <Button 
-                    variant="secondary" 
-                    size="icon" 
-                    className="h-12 w-12 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl shadow-2xl transition-all hover:scale-110 active:scale-90"
-                  >
-                    <Share2 className="h-5 w-5" />
-                  </Button>
-                </div>
+        <div className="grid gap-10 md:grid-cols-12 items-start">
+          {/* Gallery - 7 cols */}
+          <div className="md:col-span-7">
+            <ProductGallery product={product} />
+          </div>
 
-                {product.discount > 0 && (
-                  <div className="absolute left-0 top-12 rounded-r-3xl bg-primary px-8 py-3 text-lg font-black text-primary-foreground shadow-2xl shadow-primary/20">
-                    -{product.discount}%
-                  </div>
-                )}
-                
-                {product.countInStock === 0 && (
-                   <div className="absolute inset-0 flex items-center justify-center bg-background/40 backdrop-blur-md">
-                      <span className="rounded-full bg-neutral-900 px-10 py-4 text-xl font-black uppercase tracking-widest text-white ring-8 ring-white/10">Sold Out</span>
-                   </div>
-                )}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Product Details (The Editorial Split) */}
-          <motion.div variants={fadeUpVariants} className="flex flex-col gap-12">
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center gap-3">
-                <Badge variant="secondary" className="rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 border-none">
+          {/* Info - 5 cols */}
+          <motion.div 
+            initial="hidden" animate="visible" variants={fadeUpVariants}
+            className="md:col-span-5 flex flex-col gap-6"
+          >
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-[9px] font-bold px-2 py-0.5 rounded-md uppercase">
                   {product.type}
                 </Badge>
-                {product.countInStock > 0 && (
-                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-black uppercase tracking-widest border border-emerald-500/20">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    In Stock
-                  </div>
+                <span className={cn(
+                  "text-[9px] font-bold uppercase tracking-wider",
+                  product.countInStock > 0 ? "text-emerald-600" : "text-destructive"
+                )}>
+                  {product.countInStock > 0 ? `Còn hàng (${product.countInStock})` : "Hết hàng"}
+                </span>
+              </div>
+
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight leading-tight">{product.name}</h1>
+              
+              <div className="flex items-center gap-4 text-xs">
+                <div className="flex items-center gap-1 text-yellow-500">
+                  <Star className="h-3.5 w-3.5 fill-current" />
+                  <span className="font-bold text-foreground">{product.rating}</span>
+                </div>
+                <div className="w-px h-3 bg-border" />
+                <span className="text-muted-foreground">48 đánh giá</span>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-baseline gap-3">
+                <span className="text-3xl font-bold text-primary">
+                  {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(finalPrice)}
+                </span>
+                {product.discount > 0 && (
+                  <span className="text-lg text-muted-foreground/40 line-through font-medium">
+                    {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(product.price)}
+                  </span>
                 )}
               </div>
-
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.05] text-balance">{product.name}</h1>
-              
-              <div className="flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-muted-foreground/60">
-                <div className="flex items-center gap-2 text-yellow-500">
-                  <div className="flex">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={cn("h-3.5 w-3.5", i < product.rating ? "fill-current" : "opacity-20")} />
-                    ))}
-                  </div>
-                  <span className="text-foreground">{product.rating}</span>
-                </div>
-                <div className="h-4 w-px bg-muted-foreground/20" />
-                <span className="hover:text-primary transition-colors cursor-pointer">48 Reviews</span>
-                <div className="h-4 w-px bg-muted-foreground/20" />
-                <span>1.2k+ Sold</span>
-              </div>
+              <p className="text-[10px] text-muted-foreground flex items-center gap-1.5">
+                <ShieldCheck className="h-3 w-3" /> Bảo hành chính hãng 24 tháng
+              </p>
             </div>
 
-            {/* Price Architecture */}
-            <div className="relative rounded-[2.5rem] bg-white dark:bg-neutral-900 p-10 ring-1 ring-black/5 dark:ring-white/10 shadow-2xl shadow-black/5 overflow-hidden group">
-              <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-40 h-40 bg-primary/5 rounded-full blur-[80px] group-hover:bg-primary/10 transition-colors duration-1000" />
-              
-              <div className="relative z-10 flex flex-col gap-2">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50">Current Price</span>
-                <div className="flex items-baseline gap-4">
-                  <span className="text-5xl font-black text-primary tracking-tighter">
-                    {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(finalPrice)}
-                  </span>
-                  {product.discount > 0 && (
-                    <span className="text-2xl text-muted-foreground/40 line-through font-bold">
-                      {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(product.price)}
-                    </span>
-                  )}
-                </div>
-                <div className="mt-4 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold w-fit">
-                   <ShieldCheck className="h-3.5 w-3.5" /> Price includes global warranty & insurance
-                </div>
-              </div>
-            </div>
+            <VariantSelector variations={product.variations} onSelect={setSelectedVariants} />
 
-            {/* Selection & CTA */}
-            <div className="flex flex-col gap-10">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                   <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground">Quantity</h3>
-                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-muted text-muted-foreground">{product.countInStock} available</span>
+            <div className="flex flex-col gap-4 pt-4 border-t">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center rounded-lg border bg-muted/30 p-1">
+                  <Button 
+                    variant="ghost" size="icon" className="h-8 w-8"
+                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                    disabled={quantity <= 1}
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <span className="w-8 text-center text-sm font-bold">{quantity}</span>
+                  <Button 
+                    variant="ghost" size="icon" className="h-8 w-8"
+                    onClick={() => setQuantity(q => Math.min(product.countInStock, q + 1))}
+                    disabled={quantity >= product.countInStock}
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
                 </div>
                 
-                <div className="flex items-center gap-6">
-                  <div className="flex items-center rounded-2xl border-2 border-black/5 dark:border-white/5 bg-background p-1.5 shadow-inner">
-                    <Button 
-                      variant="ghost" size="icon" 
-                      className="h-10 w-10 rounded-xl hover:bg-muted transition-transform active:scale-75" 
-                      onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                      disabled={quantity <= 1}
-                    >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <span className="w-16 text-center text-xl font-black tabular-nums">{quantity}</span>
-                    <Button 
-                      variant="ghost" size="icon" 
-                      className="h-10 w-10 rounded-xl hover:bg-muted transition-transform active:scale-75" 
-                      onClick={() => setQuantity(q => Math.min(product.countInStock, q + 1))}
-                      disabled={quantity >= product.countInStock}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
+                <div className="flex gap-2">
+                   <Button 
+                    variant="outline" size="icon" 
+                    className={cn("h-10 w-10 rounded-lg", isLiked && "text-destructive fill-destructive")}
+                    onClick={() => setIsLiked(!isLiked)}
+                  >
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="icon" className="h-10 w-10 rounded-lg">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-5">
+              <div className="grid grid-cols-2 gap-3">
                 <Button 
-                  size="lg" 
-                  className="group h-16 flex-[1.5] gap-4 text-lg font-black rounded-2xl shadow-2xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden" 
-                  onClick={handleAddToCart} 
+                  className="h-12 font-bold rounded-lg shadow-sm" 
+                  onClick={handleAddToCart}
                   disabled={product.countInStock === 0}
                 >
-                  <ShoppingCart className="h-5 w-5 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" /> 
-                  Thêm vào giỏ
-                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ShoppingCart className="mr-2 h-4 w-4" /> Thêm vào giỏ
                 </Button>
                 <Button 
-                  size="lg" variant="outline" 
-                  className="h-16 flex-1 border-2 border-black/10 dark:border-white/10 text-lg font-black rounded-2xl transition-all hover:border-primary hover:text-primary active:scale-[0.98]" 
+                  variant="secondary" className="h-12 font-bold rounded-lg"
                   asChild disabled={product.countInStock === 0}
                 >
                   <Link to="/checkout">Mua ngay</Link>
@@ -296,149 +393,116 @@ export default function ProductDetailsPage() {
               </div>
             </div>
 
-            {/* Trust Matrix */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-black/5 dark:border-white/5 pt-10">
-              {[
-                { icon: ShieldCheck, label: "Bảo hành", sub: "24 tháng", color: "text-primary bg-primary/10" },
-                { icon: Truck, label: "Miễn phí", sub: "Vận chuyển", color: "text-blue-500 bg-blue-500/10" },
-                { icon: RotateCcw, label: "Đổi trả", sub: "7 ngày", color: "text-orange-500 bg-orange-500/10" }
-              ].map((badge, i) => (
-                <div key={i} className="flex flex-col items-center text-center gap-3 p-6 rounded-[2rem] bg-white dark:bg-neutral-900/50 ring-1 ring-black/5 dark:ring-white/5 transition-transform hover:-translate-y-1">
-                  <div className={cn("rounded-2xl p-3 shadow-inner", badge.color)}>
-                    <badge.icon className="h-5 w-5" />
-                  </div>
-                  <div className="space-y-0.5">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em]">{badge.label}</h4>
-                    <p className="text-[11px] font-bold text-muted-foreground">{badge.sub}</p>
-                  </div>
-                </div>
-              ))}
+            <div className="grid grid-cols-2 gap-2 mt-2">
+               {[
+                 { icon: Truck, label: "Giao hàng", val: "Miễn phí" },
+                 { icon: RotateCcw, label: "Đổi trả", val: "7 ngày" }
+               ].map((item, i) => (
+                 <div key={i} className="flex items-center gap-3 p-3 rounded-xl border bg-muted/10">
+                    <item.icon className="h-4 w-4 text-primary" />
+                    <div className="flex flex-col">
+                       <span className="text-[9px] font-bold text-muted-foreground uppercase">{item.label}</span>
+                       <span className="text-[11px] font-medium">{item.val}</span>
+                    </div>
+                 </div>
+               ))}
             </div>
           </motion.div>
-        </motion.div>
+        </div>
 
-        {/* The Specification Grid (Fix for the Table issue) */}
-        <motion.div 
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1, ease: cubicBezier }}
-          className="mt-32"
-        >
-          <Tabs defaultValue="description" className="w-full">
-            <div className="flex justify-center mb-16">
-              <TabsList className="bg-black/5 dark:bg-white/5 h-auto p-1.5 rounded-[2rem] gap-2 ring-1 ring-black/5 dark:ring-white/10">
-                {["description", "specifications", "reviews"].map((tab) => (
-                  <TabsTrigger 
-                    key={tab}
-                    value={tab} 
-                    className="rounded-full px-8 py-3 data-[state=active]:bg-white dark:data-[state=active]:bg-neutral-900 data-[state=active]:text-primary data-[state=active]:shadow-2xl font-black uppercase tracking-[0.15em] text-[10px] text-muted-foreground/60 transition-all"
-                  >
-                    {tab === "description" && "Mô tả"}
-                    {tab === "specifications" && "Thông số"}
-                    {tab === "reviews" && "Đánh giá"}
-                  </TabsTrigger>
-                ))}
+        {/* Details & Reviews */}
+        <div className="mt-16 md:mt-24 border-t pt-10">
+          <Tabs defaultValue="description">
+            <div className="flex justify-center mb-10">
+              <TabsList className="bg-muted/50 p-1 rounded-lg">
+                <TabsTrigger value="description" className="text-xs font-bold px-6">Mô tả</TabsTrigger>
+                <TabsTrigger value="specs" className="text-xs font-bold px-6">Thông số</TabsTrigger>
+                <TabsTrigger value="reviews" className="text-xs font-bold px-6">Đánh giá</TabsTrigger>
               </TabsList>
             </div>
-            
-            <AnimatePresence mode="wait">
-              <TabsContent value="description" className="focus-visible:outline-none outline-none">
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  className="max-w-4xl mx-auto prose dark:prose-invert prose-lg md:prose-xl"
-                >
-                  <p className="text-muted-foreground leading-[1.8] whitespace-pre-line text-balance text-center md:text-left first-letter:text-5xl first-letter:font-black first-letter:text-primary first-letter:mr-3 first-letter:float-left first-letter:mt-2">
-                    {product.description || "Chúng tôi đang cập nhật những thông tin tinh hoa nhất cho sản phẩm này. Trải nghiệm đỉnh cao đang chờ đợi bạn khám phá."}
-                  </p>
-                </motion.div>
-              </TabsContent>
-              
-              <TabsContent value="specifications" className="focus-visible:outline-none outline-none">
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="max-w-3xl mx-auto"
-                >
-                  <div className="rounded-[3rem] bg-white dark:bg-neutral-900 p-2 ring-1 ring-black/5 dark:ring-white/10 shadow-2xl">
-                    <div className="overflow-hidden rounded-[calc(3rem-0.5rem)] border border-black/5 dark:border-white/5">
-                      <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-black/5 dark:divide-white/5">
-                        {[
-                          { label: "Thương hiệu", value: product.type },
-                          { label: "Model", value: product.name.split(' ').slice(-2).join(' ') },
-                          { label: "Bảo hành", value: "24 Tháng tận nơi" },
-                          { label: "Tình trạng", value: "Fullbox / Seal" },
-                          { label: "Vận chuyển", value: "Toàn quốc 0đ" },
-                          { label: "Chất lượng", value: "Chính hãng 100%" }
-                        ].map((row, i) => (
-                          <div key={i} className={cn("flex flex-col gap-1 px-10 py-8 transition-colors hover:bg-primary/5 group")}>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground group-hover:text-primary transition-colors">{row.label}</span>
-                            <span className="text-lg font-bold tracking-tight">{row.value}</span>
-                          </div>
-                        ))}
-                      </div>
+
+            <TabsContent value="description" className="max-w-3xl mx-auto space-y-6">
+              <p className="text-base text-muted-foreground leading-relaxed">
+                {product.description || "Thông tin đang được cập nhật."}
+              </p>
+              <div className="grid md:grid-cols-2 gap-6 text-sm">
+                 <div className="space-y-2">
+                    <h4 className="font-bold">Đặc điểm nổi bật</h4>
+                    <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                       <li>Thiết kế hiện đại, tinh tế</li>
+                       <li>Vật liệu cao cấp, bền bỉ</li>
+                       <li>Hiệu năng vượt trội trong tầm giá</li>
+                    </ul>
+                 </div>
+                 <div className="space-y-2">
+                    <h4 className="font-bold">Cam kết từ Smart Store</h4>
+                    <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                       <li>Hàng chính hãng 100%</li>
+                       <li>Hỗ trợ kỹ thuật 24/7</li>
+                       <li>Bảo mật thông tin khách hàng</li>
+                    </ul>
+                 </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="specs" className="max-w-2xl mx-auto">
+               <div className="rounded-xl border overflow-hidden">
+                  {[
+                    { l: "Thương hiệu", v: product.type },
+                    { l: "Mã sản phẩm", v: "SKU-"+product._id.slice(-6).toUpperCase() },
+                    { l: "Chất liệu", v: "Hợp kim cao cấp" },
+                    { l: "Kết nối", v: "Không dây / Có dây" },
+                    { l: "Bảo hành", v: "24 tháng" }
+                  ].map((s, i) => (
+                    <div key={i} className="flex justify-between p-4 border-b last:border-0 bg-background hover:bg-muted/20 transition-colors">
+                       <span className="text-xs font-bold text-muted-foreground">{s.l}</span>
+                       <span className="text-xs font-medium">{s.v}</span>
                     </div>
+                  ))}
+               </div>
+            </TabsContent>
+
+            <TabsContent value="reviews" className="max-w-4xl mx-auto text-center space-y-6">
+               <div className="flex flex-col items-center gap-2">
+                  <span className="text-5xl font-bold">{product.rating}</span>
+                  <div className="flex text-yellow-500">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className={cn("h-4 w-4", i < product.rating ? "fill-current" : "opacity-20")} />
+                    ))}
                   </div>
-                </motion.div>
-              </TabsContent>
-              
-              <TabsContent value="reviews" className="focus-visible:outline-none outline-none">
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="max-w-5xl mx-auto grid gap-12 lg:grid-cols-3 items-center"
-                >
-                   <div className="lg:col-span-1 rounded-[3rem] bg-white dark:bg-neutral-900 p-12 ring-1 ring-black/5 dark:ring-white/10 shadow-2xl flex flex-col items-center justify-center text-center">
-                      <span className="text-8xl font-black text-primary tracking-tighter">{product.rating}</span>
-                      <div className="flex my-6 text-yellow-500 scale-125">
-                         {Array.from({ length: 5 }).map((_, i) => (
-                           <Star key={i} className={cn("h-6 w-6", i < product.rating ? "fill-current" : "opacity-20")} />
-                         ))}
-                      </div>
-                      <p className="text-[11px] font-black text-muted-foreground uppercase tracking-[0.2em]">Based on 1.2k experiences</p>
-                   </div>
-                   <div className="lg:col-span-2 flex flex-col items-center justify-center py-20 px-12 text-center border-4 border-dashed border-black/5 dark:border-white/5 rounded-[3.5rem] bg-muted/5 transition-colors hover:border-primary/20">
-                      <div className="rounded-full bg-white dark:bg-neutral-900 p-6 shadow-2xl mb-6 ring-1 ring-black/5 dark:ring-white/10">
-                         <Star className="h-10 w-10 text-yellow-400 animate-pulse" />
-                      </div>
-                      <h3 className="text-2xl font-black tracking-tight mb-3">Be the voice of authority</h3>
-                      <p className="text-muted-foreground max-w-sm text-lg font-medium leading-relaxed">Your perspective defines our standard. Share your experience with the community.</p>
-                      <Button variant="outline" className="mt-10 rounded-full px-12 h-14 font-black border-2 border-black/10 dark:border-white/10 hover:border-primary hover:text-primary transition-all active:scale-95 uppercase tracking-widest text-[10px]">
-                        Write a review
-                      </Button>
-                   </div>
-                </motion.div>
-              </TabsContent>
-            </AnimatePresence>
+                  <p className="text-xs text-muted-foreground">Dựa trên 48 đánh giá thực tế</p>
+                  <Button variant="outline" size="sm" className="mt-4 rounded-full font-bold text-[10px] uppercase">Viết đánh giá</Button>
+               </div>
+            </TabsContent>
           </Tabs>
-        </motion.div>
+        </div>
+
+        {/* Related */}
+        <section className="mt-20 space-y-8">
+          <div className="flex items-center justify-between border-b pb-4">
+             <h2 className="text-xl font-bold tracking-tight">Sản phẩm liên quan</h2>
+             <Link to="/products" className="text-[10px] font-bold uppercase hover:text-primary transition-colors">Xem tất cả</Link>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {relatedProducts.map(p => <ProductCard key={p._id} product={p} />)}
+          </div>
+        </section>
       </div>
 
-      {/* Floating Sticky Mobile Bar (Haptic Design) */}
-      <AnimatePresence>
-        <motion.div 
-          initial={{ y: 100 }}
-          animate={{ y: 0 }}
-          className="fixed bottom-6 left-6 right-6 z-40 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-2xl ring-1 ring-black/5 dark:ring-white/10 p-3 rounded-[2rem] flex items-center justify-between gap-4 md:hidden shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
-        >
-          <div className="pl-4 flex flex-col">
-            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-60">Price</span>
-            <span className="text-xl font-black text-primary tracking-tighter">
+      {/* Subtle Mobile Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-t p-3 md:hidden flex items-center justify-between shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+         <div className="flex flex-col">
+            <span className="text-[8px] font-bold text-muted-foreground uppercase">Giá tiền</span>
+            <span className="text-lg font-bold text-primary">
               {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(finalPrice)}
             </span>
-          </div>
-          <div className="flex gap-2">
-            <Button size="icon" variant="outline" className="h-12 w-12 rounded-2xl border-2 border-black/5 dark:border-white/5" onClick={handleAddToCart}>
-               <ShoppingCart className="h-5 w-5" />
-            </Button>
-            <Button className="h-12 px-8 font-black rounded-2xl shadow-xl shadow-primary/20 active:scale-95" asChild>
-               <Link to="/checkout">Buy Now</Link>
-            </Button>
-          </div>
-        </motion.div>
-      </AnimatePresence>
+         </div>
+         <Button className="h-10 px-6 font-bold text-xs" onClick={handleAddToCart}>
+            Mua ngay
+         </Button>
+      </div>
+      
+      <div className="h-16 md:hidden" />
     </div>
   );
 }

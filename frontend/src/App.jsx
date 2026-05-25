@@ -10,6 +10,7 @@ import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import CartPage from "./pages/CartPage/CartPage";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 import OrderSuccessPage from "./pages/OrderSuccess/OrderSuccessPage";
+import MyOrdersPage from "./pages/ProfilePage/MyOrdersPage";
 import { AdminLayout } from "./components/layout/AdminLayout";
 import DashboardPage from "./pages/Admin/Dashboard/DashboardPage";
 import AdminProductsPage from "./pages/Admin/Products/AdminProductsPage";
@@ -57,6 +58,7 @@ function App() {
           <Route path="cart" element={<CartPage />} />
           <Route path="checkout" element={<CheckoutPage />} />
           <Route path="order-success" element={<OrderSuccessPage />} />
+          <Route path="my-orders" element={<MyOrdersPage />} />
         </Route>
 
         <Route path="/admin" element={<AdminLayout />}>

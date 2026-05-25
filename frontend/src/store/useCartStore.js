@@ -4,7 +4,25 @@ import { api } from "@/lib/api";
 export const useCartStore = create(
   (set, get) => ({
     cartItems: [],
+    selectedItems: [], // New state to track selected items for checkout
     isLoading: false,
+
+    toggleSelectItem: (productId) => {
+      const { selectedItems } = get();
+      if (selectedItems.includes(productId)) {
+        set({ selectedItems: selectedItems.filter(id => id !== productId) });
+      } else {
+        set({ selectedItems: [...selectedItems, productId] });
+      }
+    },
+
+    toggleSelectAll: (isSelected) => {
+      if (isSelected) {
+        set({ selectedItems: get().cartItems.map(item => item.product) });
+      } else {
+        set({ selectedItems: [] });
+      }
+    },
 
     addToCart: async (item, userId) => {
       const { cartItems } = get();
@@ -106,6 +124,22 @@ export const useCartStore = create(
       }
     },
 
-    clearCart: () => set({ cartItems: [] }),
+    clearCart: () => set({ cartItems: [], selectedItems: [] }),
+
+    removeSelectedItems: async (userId) => {
+      const { cartItems, selectedItems } = get();
+      const remainingItems = cartItems.filter(item => !selectedItems.includes(item.product));
+      
+      set({ cartItems: remainingItems, selectedItems: [] });
+
+      if (userId) {
+        try {
+          // Sync the entire remaining cart to the server
+          await api.post(`/cart/sync/${userId}`, { cartItems: remainingItems });
+        } catch (error) {
+          console.error("Failed to sync cart after clearing selected items", error);
+        }
+      }
+    },
   })
 );

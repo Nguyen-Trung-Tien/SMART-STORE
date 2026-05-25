@@ -27,6 +27,9 @@ api.interceptors.response.use(
     return response.data;
   },
   (error) => {
+    if (error.response?.status === 401) {
+      useAuthStore.getState().clearAuth();
+    }
     const message = error.response?.data?.message || error.message || "Đã có lỗi xảy ra";
     return Promise.reject(new Error(message));
   }

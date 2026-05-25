@@ -27,7 +27,7 @@ export function ProductCard({ product }) {
       discount,
     };
     addToCart(cartItem, user?._id);
-    toast.success(`Added to collection`, {
+    toast.success(`Đã thêm vào bộ sưu tập`, {
       description: name,
       duration: 2000,
       className: "rounded-2xl border-none shadow-2xl bg-white dark:bg-neutral-900"
@@ -70,7 +70,7 @@ export function ProductCard({ product }) {
 
               {countInStock === 0 && (
                 <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/40 backdrop-blur-[2px]">
-                  <span className="rounded-full bg-neutral-900 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-white">Sold Out</span>
+                  <span className="rounded-full bg-neutral-900 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-white">Hết hàng</span>
                 </div>
               )}
             </div>
@@ -83,7 +83,7 @@ export function ProductCard({ product }) {
                 <span className="text-[10px] font-black">{rating}</span>
               </div>
               <div className="h-1 w-1 rounded-full bg-muted-foreground/30" />
-              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Premium</span>
+              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Cao cấp</span>
             </div>
 
             <h3 className="line-clamp-2 flex-1 text-sm font-bold leading-tight tracking-tight text-neutral-800 dark:text-neutral-200 transition-colors group-hover:text-primary">
@@ -110,7 +110,7 @@ export function ProductCard({ product }) {
             disabled={countInStock === 0}
             className="w-full h-10 gap-2 rounded-[calc(2rem-1rem)] bg-neutral-900 dark:bg-white dark:text-neutral-900 text-white font-black uppercase tracking-[0.15em] text-[9px] transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-black/10"
           >
-            <Plus className="h-3 w-3" /> Add to bag
+            <Plus className="h-3 w-3" /> Thêm vào giỏ
           </Button>
         </CardFooter>
       </Card>
