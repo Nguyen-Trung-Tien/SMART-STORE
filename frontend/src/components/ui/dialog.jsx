@@ -16,7 +16,15 @@ function DialogTrigger({
   ...props
 }) {
   if (asChild) {
-    return <DialogPrimitive.Trigger data-slot="dialog-trigger" render={props.children} {...props} children={undefined} />;
+    return (
+      <DialogPrimitive.Trigger
+        data-slot="dialog-trigger"
+        render={props.children}
+        nativeButton={false}
+        {...props}
+        children={undefined}
+      />
+    );
   }
   return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
 }
@@ -32,7 +40,15 @@ function DialogClose({
   ...props
 }) {
   if (asChild) {
-    return <DialogPrimitive.Close data-slot="dialog-close" render={props.children} {...props} children={undefined} />;
+    return (
+      <DialogPrimitive.Close
+        data-slot="dialog-close"
+        render={props.children}
+        nativeButton={false}
+        {...props}
+        children={undefined}
+      />
+    );
   }
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
