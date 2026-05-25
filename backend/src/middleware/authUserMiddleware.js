@@ -1,27 +1,32 @@
-const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 dotenv.config();
+
 const authUserMiddleware = (req, res, next) => {
-  const token = req.headers.token.split(" ")[1];
+  const token = req.headers.token?.split(" ")[1];
   const userId = req.params.id;
+  if (!token) {
+    return res.status(401).json({
+      message: "The token is required",
+      status: "ERROR",
+    });
+  }
   jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
     if (err) {
       return res.status(401).json({
-        message: "The authentication",
+        message: "The authemtication",
         status: "ERROR",
       });
     }
     if (user?.isAdmin || user?.id === userId) {
       next();
     } else {
-      return res.status(404).json({
-        message: "The authentication",
+      return res.status(401).json({
+        message: "The authemtication",
         status: "ERROR",
       });
     }
   });
 };
 
-module.exports = {
-  authUserMiddleware,
-};
+export { authUserMiddleware };

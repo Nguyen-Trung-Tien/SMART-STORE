@@ -1,89 +1,38 @@
-const nodemailer = require("nodemailer");
-const dotenv = require("dotenv");
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 dotenv.config();
 
-const sendEmailResetPassword = async (email, resetLink) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL_ACCOUNT,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL_ACCOUNT,
-      to: email,
-      subject: "Yêu cầu đặt lại mật khẩu",
-      text: "Smart-Store Password Reset",
-      html: `
-        <div>
-          <p>Chào bạn,</p>
-          <p>Bạn đã yêu cầu đặt lại mật khẩu. Nhấn vào link dưới đây để đặt lại:</p>
-          <a href="${resetLink}">Đặt lại mật khẩu</a>
-          <p>Link này sẽ hết hạn sau 5 phút.</p>
-          <p>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
-          <p>-- Smart-Store --</p>
-        </div>
-      `,
-    });
-  } catch (error) {
-    console.error("Error sending reset password email:", error);
-    throw new Error("Failed to send reset password email");
-  }
-};
-
 const sendEmailCreateOrder = async (email, orderItems) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL_ACCOUNT,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: process.env.MAIL_ACCOUNT, // generated ethereal user
+      pass: process.env.MAIL_PASSWORD, // generated ethereal password
+    },
+  });
 
-    let listItem = "";
-    const attachImage = [];
-    orderItems?.forEach((order) => {
-      listItem += `
-      <div>
-        <p>Bạn đã đặt sản phẩm: <b>${order?.name}</b></p>
-        <div>
-          <img src="${order?.image}" style="max-width: 200px;"/>
-        </div>
-        <p>số lượng: <b>${order?.amount}</b> 
-        <b> ,giá: ${order?.price
-          .toLocaleString()
-          .replaceAll(",", ".")}VND</b></p>
-      </div>`;
-      attachImage.push({
-        filename: order?.name,
-        path: order?.image,
-      });
-    });
+  let listItem = "";
+  orderItems.forEach((order) => {
+    listItem += `<div>
+    <div>
+      Bạn đã đặt sản phẩm <b>${order.name}</b> với số lượng: <b>${order.amount}</b> và giá là: <b>${order.price} VND</b></div>
+      <div>Bên dưới là hình ảnh của sản phẩm</div>
+      <div><img src=${order.image} alt="product" width="100px" height="100px"/></div>
+    </div>`;
+  });
 
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL_ACCOUNT,
-      to: process.env.EMAIL_ACCOUNT,
-      subject: "Đặt hàng thành công",
-      text: "Shop Smart-Store.",
-      html: `
-        <div>
-          <b>Bạn đã đặt hàng thành công từ shop Smart-Store</b>
-        </div>
-        ${listItem}`,
-      attachments: attachImage,
-    });
-  } catch (error) {
-    console.error("Error sending email:", error);
-    throw new Error("Failed to send email");
-  }
+  // send mail with defined transport object
+  let info = await transporter.sendMail({
+    from: process.env.MAIL_ACCOUNT, // sender address
+    to: email, // list of receivers
+    subject: "Bạn đã đặt hàng tại SMART STORE", // Subject line
+    text: "Hello world?", // plain text body
+    html: `<div><b>Bạn đã đặt hàng thành công tại SMART STORE</b></div>${listItem}`, // html body
+  });
 };
 
-module.exports = { sendEmailCreateOrder, sendEmailResetPassword };
+export default {
+  sendEmailCreateOrder,
+};

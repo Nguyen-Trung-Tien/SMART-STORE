@@ -1,6 +1,6 @@
-const Order = require("../models/OrderProduct");
-const Product = require("../models/ProductModel");
-const EmailService = require("../services/EmailService");
+import Order from "../models/OrderProduct.js";
+import Product from "../models/ProductModel.js";
+import EmailService from "./EmailService.js";
 
 const createOrder = (newOrder) => {
   return new Promise(async (resolve, reject) => {
@@ -15,8 +15,8 @@ const createOrder = (newOrder) => {
       city,
       phone,
       user,
-      paidAt,
       isPaid,
+      paidAt,
       email,
     } = newOrder;
     try {
@@ -26,7 +26,12 @@ const createOrder = (newOrder) => {
             _id: order.product,
             countInStock: { $gte: order.amount },
           },
-          { $inc: { countInStock: -order.amount, selling: +order.amount } },
+          {
+            $inc: {
+              countInStock: -order.amount,
+              selled: +order.amount,
+            },
+          },
           { new: true }
         );
         if (productData) {
@@ -36,7 +41,7 @@ const createOrder = (newOrder) => {
           };
         } else {
           return {
-            status: "OK",
+            status: "ERR",
             message: "ERR",
             id: order.product,
           };
@@ -51,29 +56,30 @@ const createOrder = (newOrder) => {
         });
         resolve({
           status: "ERR",
-          message: `Hang voi id  ${arrId.join(",")} da het hang`,
+          message: `San pham voi id: ${arrId.join(",")} khong du hang`,
         });
       } else {
-        const createOrder = await Order.create({
+        const createdOrder = await Order.create({
           orderItems,
-          shippingAddress: { fullName, address, city, phone },
+          shippingAddress: {
+            fullName,
+            address,
+            city,
+            phone,
+          },
           paymentMethod,
           itemsPrice,
           shippingPrice,
           totalPrice,
           user: user,
-          paidAt,
           isPaid,
+          paidAt,
         });
-        if (createOrder) {
-          try {
-            await EmailService.sendEmailCreateOrder(email, orderItems);
-          } catch (error) {
-            console.error("Email gửi thất bại:", error.message);
-          }
+        if (createdOrder) {
+          await EmailService.sendEmailCreateOrder(email, orderItems);
           resolve({
             status: "OK",
-            message: "SUCCESS",
+            message: "success",
           });
         }
       }
@@ -86,15 +92,19 @@ const createOrder = (newOrder) => {
 const getAllOrderDetails = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const order = await Order.find({ user: id })
-        .sort({ createdAt: -1 })
-        .lean();
+      const order = await Order.find({
+        user: id,
+      }).sort({ createdAt: -1, updatedAt: -1 });
       if (order === null) {
-        return resolve({ status: "OK", message: "The order is not defined" });
+        resolve({
+          status: "ERR",
+          message: "The order is not defined",
+        });
       }
+
       resolve({
         status: "OK",
-        message: "SUCCESS",
+        message: "SUCESS",
         data: order,
       });
     } catch (e) {
@@ -102,16 +112,23 @@ const getAllOrderDetails = (id) => {
     }
   });
 };
-const getDetailsOrder = (id) => {
+
+const getOrderDetails = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const order = await Order.findById({ _id: id });
+      const order = await Order.findById({
+        _id: id,
+      });
       if (order === null) {
-        return resolve({ status: "OK", message: "The order is not defined" });
+        resolve({
+          status: "ERR",
+          message: "The order is not defined",
+        });
       }
+
       resolve({
         status: "OK",
-        message: "SUCCESS",
+        message: "SUCESS",
         data: order,
       });
     } catch (e) {
@@ -124,71 +141,47 @@ const cancelOrderDetails = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
       let order = [];
-      const promises = data.map(async (orders) => {
+      const promises = data.map(async (order) => {
         const productData = await Product.findOneAndUpdate(
           {
-            _id: orders.product,
-            selling: { $gte: orders.amount },
+            _id: order.product,
+            selled: { $gte: order.amount },
           },
-          { $inc: { countInStock: +orders.amount, selling: -orders.amount } },
+          {
+            $inc: {
+              countInStock: +order.amount,
+              selled: -order.amount,
+            },
+          },
           { new: true }
         );
         if (productData) {
-          orders = await Order.findByIdAndDelete(id);
-          if (orders === null) {
-            resolve({ status: "ERR", message: "The order is not defined" });
+          order = await Order.findByIdAndDelete(id);
+          if (order === null) {
+            resolve({
+              status: "ERR",
+              message: "The order is not defined",
+            });
           }
         } else {
           return {
-            status: "OK",
+            status: "ERR",
             message: "ERR",
-            id: orders.product,
+            id: order.product,
           };
         }
       });
       const results = await Promise.all(promises);
-      const newData = results && results.filter((item) => item);
+      const newData = results && results.filter((item) => !!item);
       if (newData.length) {
         resolve({
           status: "ERR",
-          message: `Hang voi id  ${newData.join(",")} khong ton tai`,
+          message: `San pham voi id: ${newData[0].id} khong ton tai`,
         });
       }
       resolve({
         status: "OK",
-        message: "SUCCESS",
-        data: order,
-      });
-    } catch (e) {
-      reject(e);
-    }
-  });
-};
-
-const confirmOrderDetails = (id) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const order = await Order.findById(id);
-      if (!order) {
-        return resolve({
-          status: "ERR",
-          message: "The order is not found",
-        });
-      }
-
-      if (order.status === "confirmed") {
-        return resolve({
-          status: "ERR",
-          message: "The order has already been confirmed",
-        });
-      }
-
-      order.status = "confirmed";
-      await order.save();
-
-      resolve({
-        status: "OK",
-        message: "Order confirmed successfully",
+        message: "success",
         data: order,
       });
     } catch (e) {
@@ -200,10 +193,10 @@ const confirmOrderDetails = (id) => {
 const getAllOrder = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const allOrder = await Order.find().sort({ createdAt: -1 }).lean();
+      const allOrder = await Order.find().sort({ createdAt: -1, updatedAt: -1 });
       resolve({
         status: "OK",
-        message: "SUCCESS",
+        message: "Success",
         data: allOrder,
       });
     } catch (e) {
@@ -212,71 +205,10 @@ const getAllOrder = () => {
   });
 };
 
-const updateOrderPaid = async (id) => {
-  try {
-    const order = await Order.findById(id);
-    if (!order) {
-      return {
-        status: "ERR",
-        message: "Không tìm thấy đơn hàng",
-      };
-    }
-    if (order.isPaid) {
-      return {
-        status: "ERR",
-        message: "Đơn hàng đã được thanh toán trước đó",
-      };
-    }
-    order.isPaid = true;
-    order.paidAt = new Date();
-
-    const updatedOrder = await order.save();
-    return {
-      status: "OK",
-      message: "Đã cập nhật trạng thái thanh toán",
-      data: updatedOrder,
-    };
-  } catch (error) {
-    return {
-      status: "ERR",
-      message: error.message || "Có lỗi xảy ra khi cập nhật thanh toán",
-    };
-  }
-};
-
-const updateOrderDelivered = async (id) => {
-  try {
-    const order = await Order.findById(id);
-    if (!order) {
-      return {
-        status: "ERR",
-        message: "Không tìm thấy đơn hàng",
-      };
-    }
-    order.isDelivered = true;
-    order.deliveredAt = new Date();
-
-    const updatedOrder = await order.save();
-    return {
-      status: "OK",
-      message: "Đã cập nhật trạng thái giao hàng",
-      data: updatedOrder,
-    };
-  } catch (error) {
-    return {
-      status: "ERR",
-      message: error.message || "Có lỗi xảy ra khi cập nhật giao hàng",
-    };
-  }
-};
-
-module.exports = {
+export default {
   createOrder,
   getAllOrderDetails,
-  getDetailsOrder,
+  getOrderDetails,
   cancelOrderDetails,
   getAllOrder,
-  confirmOrderDetails,
-  updateOrderDelivered,
-  updateOrderPaid,
 };

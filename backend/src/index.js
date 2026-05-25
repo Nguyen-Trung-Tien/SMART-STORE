@@ -1,13 +1,20 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const mongoose = require("mongoose");
-const routes = require("./routes");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
+import express from "express";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import routes from "./routes/index.js";
+import cors from "cors";
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
+import errorMiddleware from "./middleware/errorMiddleware.js";
+import { initSocket } from "./config/socket.js";
+import http from "http";
+
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
+initSocket(server);
+
 const port = process.env.PORT || 3001;
 
 app.use(cors());
@@ -17,14 +24,18 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 routes(app);
+
+app.use(errorMiddleware);
+
 mongoose
   .connect(`${process.env.MONGO_DB}`)
   .then(() => {
     console.log("Kết nối với Mongoose thành công!");
   })
-  .catch(() => {
-    console.log("Không thể kết nối với Mongoose! Vui lòng kiểm tra kết nối!");
+  .catch((err) => {
+    console.error("Không thể kết nối với Mongoose!", err);
   });
-app.listen(port, () => {
+
+server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

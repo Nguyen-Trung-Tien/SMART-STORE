@@ -1,165 +1,55 @@
-import React, { useEffect, useState } from "react";
-import {
-  WrapperButtonMore,
-  WrapperProducts,
-  WrapperTypeProducts,
-} from "./style";
-import SliderComponent from "../../components/SliderComponent/SliderComponent";
-import image1 from "../../assets/images/image-1.png";
-import image2 from "../../assets/images/image-2.png";
-import image3 from "../../assets/images/img-3.png";
-import CardComponent from "../../components/CardComponent/CardComponent";
-import TypeProducts from "../../components/TypeProducts/TypeProducts";
-import { useQuery } from "@tanstack/react-query";
-import * as ProductService from "../../services/ProductServices";
-import { useSelector } from "react-redux";
-import Loading from "../../components/LoadingComponent/Loading";
-import { useDebounce } from "../../hooks/useDebounce";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, ShoppingBag, ShieldCheck, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const HomePage = () => {
-  const searchProduct = useSelector((state) => state?.product?.search);
-  const searchDebounce = useDebounce(searchProduct, 500);
-  const [pending, setPending] = useState(false);
-  const [limit, setLimit] = useState(12);
-  const [typeProducts, setTypeProducts] = useState([]);
-
-  const fetchAllTypeProduct = async () => {
-    try {
-      const res = await ProductService.getAllTypeProduct();
-      if (res?.status === "OK") {
-        setTypeProducts(res?.data);
-      }
-    } catch (err) {
-      console.error("Fetch type error:", err);
-    }
-  };
-
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
-    useInfiniteQuery({
-      queryKey: ["products", searchDebounce],
-      queryFn: ({ pageParam = 1 }) =>
-        ProductService.getAllProduct(searchDebounce, 12, pageParam),
-      getNextPageParam: (lastPage, allPages) => {
-        const totalPage = Math.ceil(lastPage.total / 12);
-        if (allPages.length < totalPage) return allPages.length + 1;
-        return undefined;
-      },
-      staleTime: 5 * 60 * 1000,
-      enabled: searchDebounce.length === 0 || searchDebounce.length >= 2,
-    });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setPending(true);
-      await fetchAllTypeProduct();
-      setPending(false);
-    };
-    fetchData();
-  }, []);
-
+export default function HomePage() {
   return (
-    <>
-      <Loading isLoading={isPending || pending}>
-        <div
-          style={{
-            borderBottom: "1px solid #efefef",
-            maxWidth: "1270px",
-            width: "100%",
-            margin: " 0 auto",
-          }}
-        >
-          <WrapperTypeProducts>
-            {typeProducts?.map((item) => {
-              return <TypeProducts name={item} key={item} />;
-            })}
-          </WrapperTypeProducts>
-        </div>
-        <div
-          className="body"
-          style={{ width: "100%", backgroundColor: "#efefef" }}
-        >
-          <div
-            id="container"
-            style={{
-              backgroundColor: "#efefef",
-              width: "1270px",
-              margin: "0 auto",
-              boxSizing: "border-box",
-            }}
-          >
-            <SliderComponent arrImages={[image1, image2, image3]} />
-            <WrapperProducts>
-              {data?.pages.map((page) =>
-                page.data.map((product) => {
-                  return (
-                    <CardComponent
-                      key={product._id}
-                      countInStock={product.countInStock}
-                      description={product.description}
-                      image={product.image}
-                      name={product.name}
-                      price={product.price}
-                      rating={product.rating}
-                      type={product.type}
-                      discount={product.discount}
-                      selling={product.selling}
-                      id={product._id}
-                    />
-                  );
-                })
-              )}
-            </WrapperProducts>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                width: "100%",
-                marginTop: "10px",
-              }}
-            >
-              <WrapperButtonMore
-                textButton={
-                  !hasNextPage
-                    ? "Đã tải hết sản phẩm"
-                    : isFetchingNextPage
-                    ? "Đang tải..."
-                    : "Xem thêm"
-                }
-                type="outline"
-                styleButton={{
-                  border: "none",
-                  backgroundColor: !hasNextPage ? "#ccc" : "#0b74e5",
-                  color: "#fff",
-                  padding: "10px 24px",
-                  height: "42px",
-                  width: "200px",
-                  borderRadius: "8px",
-                  fontWeight: "600",
-                  fontSize: "16px",
-                  marginBottom: "16px",
-                  boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
-                  transition: "all 0.3s ease",
-                  cursor: !hasNextPage ? "not-allowed" : "pointer",
-                }}
-                disabled={!hasNextPage}
-                styleTextButton={{
-                  fontWeight: 500,
-                  color: !hasNextPage ? "#fff" : "rgb(11, 116, 229)",
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (hasNextPage) {
-                    fetchNextPage();
-                  }
-                }}
-              />
+    <div className="flex flex-col gap-16 pb-20">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-primary py-24 text-primary-foreground">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center gap-6 text-center">
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl">
+              Trải nghiệm Công nghệ <span className="text-accent">Thông minh</span>
+            </h1>
+            <p className="max-w-[600px] text-lg text-primary-foreground/80">
+              Khám phá bộ sưu tập thiết bị gia dụng và phụ kiện công nghệ hàng đầu, nâng tầm cuộc sống của bạn.
+            </p>
+            <div className="flex gap-4">
+              <Button size="lg" variant="secondary" asChild>
+                <Link to="/products">Mua ngay <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              </Button>
             </div>
           </div>
         </div>
-      </Loading>
-    </>
-  );
-};
+      </section>
 
-export default HomePage;
+      {/* Features Section */}
+      <section className="container mx-auto px-4">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Zap className="h-6 w-6" />
+            </div>
+            <h3 className="text-xl font-bold">Giao hàng cực nhanh</h3>
+            <p className="text-sm text-muted-foreground">Nhận hàng trong vòng 24h đối với khu vực nội thành.</p>
+          </div>
+          <div className="flex flex-col items-center gap-3 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <ShieldCheck className="h-6 w-6" />
+            </div>
+            <h3 className="text-xl font-bold">Bảo hành chính hãng</h3>
+            <p className="text-sm text-muted-foreground">Cam kết sản phẩm 100% chính hãng, bảo hành lên tới 24 tháng.</p>
+          </div>
+          <div className="flex flex-col items-center gap-3 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <ShoppingBag className="h-6 w-6" />
+            </div>
+            <h3 className="text-xl font-bold">Đổi trả dễ dàng</h3>
+            <p className="text-sm text-muted-foreground">Hỗ trợ đổi trả miễn phí trong vòng 7 ngày nếu có lỗi.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

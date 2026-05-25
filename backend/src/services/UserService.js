@@ -1,33 +1,34 @@
-const User = require("../models/UserModel");
-const dotenv = require("dotenv");
-const bcrypt = require("bcrypt");
-
-const { generalAccessToken, generalRefreshToken } = require("./JwtService");
-const { sendEmailResetPassword } = require("../services/EmailService");
-dotenv.config();
-
-const crypto = require("crypto");
+import User from "../models/UserModel.js";
+import bcrypt from "bcrypt";
+import JwtService from "./JwtService.js";
+import nodemailer from "nodemailer";
+import crypto from "crypto";
 
 const createUser = (newUser) => {
   return new Promise(async (resolve, reject) => {
     const { name, email, password, confirmPassword, phone } = newUser;
     try {
-      const checkUser = await User.findOne({ email: email });
+      const checkUser = await User.findOne({
+        email: email,
+      });
       if (checkUser !== null) {
-        return resolve({ status: "ERR", message: "The email is already" });
+        resolve({
+          status: "ERR",
+          message: "The email is already",
+        });
       }
-      const hash = await bcrypt.hash(password, 10);
-      const createUser = await User.create({
+      const hash = bcrypt.hashSync(password, 10);
+      const createdUser = await User.create({
         name,
         email,
         password: hash,
         phone,
       });
-      if (createUser) {
+      if (createdUser) {
         resolve({
           status: "OK",
           message: "SUCCESS",
-          data: createUser,
+          data: createdUser,
         });
       }
     } catch (e) {
@@ -40,29 +41,29 @@ const loginUser = (userLogin) => {
   return new Promise(async (resolve, reject) => {
     const { email, password } = userLogin;
     try {
-      const checkUser = await User.findOne({ email: email });
+      const checkUser = await User.findOne({
+        email: email,
+      });
       if (checkUser === null) {
-        return resolve({ status: "ERR", message: "The user is not defined" });
+        resolve({
+          status: "ERR",
+          message: "The user is not defined",
+        });
       }
-
-      const comparePassword = await bcrypt.compareSync(
-        password,
-        checkUser.password
-      );
+      const comparePassword = bcrypt.compareSync(password, checkUser.password);
 
       if (!comparePassword) {
-        return resolve({
+        resolve({
           status: "ERR",
           message: "The password or user is incorrect",
         });
       }
-
-      const access_token = await generalAccessToken({
+      const access_token = await JwtService.genneralAccessToken({
         id: checkUser.id,
         isAdmin: checkUser.isAdmin,
       });
 
-      const refresh_token = await generalRefreshToken({
+      const refresh_token = await JwtService.genneralRefreshToken({
         id: checkUser.id,
         isAdmin: checkUser.isAdmin,
       });
@@ -72,6 +73,7 @@ const loginUser = (userLogin) => {
         message: "SUCCESS",
         access_token,
         refresh_token,
+        data: checkUser,
       });
     } catch (e) {
       reject(e);
@@ -82,9 +84,14 @@ const loginUser = (userLogin) => {
 const updateUser = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const checkUser = await User.findOne({ _id: id });
+      const checkUser = await User.findOne({
+        _id: id,
+      });
       if (checkUser === null) {
-        resolve({ status: "OK", message: "The user is not defined" });
+        resolve({
+          status: "ERR",
+          message: "The user is not defined",
+        });
       }
 
       const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
@@ -102,9 +109,14 @@ const updateUser = (id, data) => {
 const deleteUser = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const checkUser = await User.findOne({ _id: id });
+      const checkUser = await User.findOne({
+        _id: id,
+      });
       if (checkUser === null) {
-        resolve({ status: "OK", message: "The user is not defined" });
+        resolve({
+          status: "ERR",
+          message: "The user is not defined",
+        });
       }
 
       await User.findByIdAndDelete(id);
@@ -135,10 +147,10 @@ const deleteManyUser = (ids) => {
 const getAllUser = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const allUser = await User.find().sort({ createdAt: -1 }).lean();
+      const allUser = await User.find().sort({ createdAt: -1, updatedAt: -1 });
       resolve({
         status: "OK",
-        message: "SUCCESS",
+        message: "Success",
         data: allUser,
       });
     } catch (e) {
@@ -150,14 +162,18 @@ const getAllUser = () => {
 const getDetailsUser = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const user = await User.findOne({ _id: id });
+      const user = await User.findOne({
+        _id: id,
+      });
       if (user === null) {
-        return resolve({ status: "OK", message: "The user is not defined" });
+        resolve({
+          status: "ERR",
+          message: "The user is not defined",
+        });
       }
-
       resolve({
         status: "OK",
-        message: "SUCCESS",
+        message: "SUCESS",
         data: user,
       });
     } catch (e) {
@@ -166,27 +182,21 @@ const getDetailsUser = (id) => {
   });
 };
 
-const updatePassword = (data) => {
-  const { id, oldPassword, newPassword, confirmPassword } = data;
+const updatePassword = (userId, oldPassword, newPassword) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const user = await User.findById(id);
-      if (!user) return resolve({ status: "ERR", message: "User not found" });
+      const user = await User.findById(userId);
+      if (!user) {
+        return resolve({ status: "ERR", message: "User not found" });
+      }
 
-      const isMatch = await bcrypt.compare(oldPassword, user.password);
-      if (!isMatch)
+      const isMatch = bcrypt.compareSync(oldPassword, user.password);
+      if (!isMatch) {
         return resolve({ status: "ERR", message: "Old password is incorrect" });
+      }
 
-      if (newPassword !== confirmPassword)
-        return resolve({
-          status: "ERR",
-          message: "New and confirm password do not match",
-        });
-
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      user.password = hashedPassword;
+      user.password = bcrypt.hashSync(newPassword, 10);
       await user.save();
-
       resolve({ status: "OK", message: "Password updated successfully" });
     } catch (e) {
       reject(e);
@@ -194,59 +204,65 @@ const updatePassword = (data) => {
   });
 };
 
-const resetPassword = async (token, newPassword) => {
-  try {
-    const user = await User.findOne({
-      resetToken: token,
-      resetTokenExpiry: { $gt: new Date() },
-    });
-    if (!user) {
-      return { status: "ERR", message: "Code expired! Please try again!" };
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    user.resetToken = undefined;
-    user.resetTokenExpiry = undefined;
-    await user.save();
-
-    return { status: "OK", message: "Password reset successfully" };
-  } catch (err) {
-    console.error(err);
-    return { status: "ERR", message: err.message };
-  }
-};
-
 const forgotPassword = (email) => {
   return new Promise(async (resolve, reject) => {
     try {
       const user = await User.findOne({ email });
       if (!user) {
-        return resolve({ status: "ERR", message: "Email not found" });
+        return resolve({ status: "ERR", message: "User not found" });
       }
 
-      const resetToken = crypto.randomBytes(32).toString("hex");
-      const resetTokenExpiry = Date.now() + 300000;
-
-      user.resetToken = resetToken;
-      user.resetTokenExpiry = resetTokenExpiry;
+      const token = crypto.randomBytes(20).toString("hex");
+      user.resetToken = token;
+      user.resetTokenExpiry = Date.now() + 3600000; // 1 hour
       await user.save();
-      await sendEmailResetPassword(
-        email,
-        `${process.env.URL_PORT_GET_EMAIL}/reset-password/${resetToken}`
-      );
-      resolve({
-        status: "OK",
-        message: "Reset password link has been sent to your email",
-        resetToken,
+
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
       });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Reset Password",
+        text: `Click the link to reset your password: ${process.env.CLIENT_URL}/reset-password/${token}`,
+      };
+
+      await transporter.sendMail(mailOptions);
+      resolve({ status: "OK", message: "Reset link sent to your email" });
     } catch (e) {
       reject(e);
     }
   });
 };
 
-module.exports = {
+const resetPassword = (token, newPassword) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await User.findOne({
+        resetToken: token,
+        resetTokenExpiry: { $gt: Date.now() },
+      });
+      if (!user) {
+        return resolve({ status: "ERR", message: "Token is invalid or expired" });
+      }
+
+      user.password = bcrypt.hashSync(newPassword, 10);
+      user.resetToken = undefined;
+      user.resetTokenExpiry = undefined;
+      await user.save();
+      resolve({ status: "OK", message: "Password has been reset" });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+export default {
   createUser,
   loginUser,
   updateUser,
@@ -254,7 +270,7 @@ module.exports = {
   getAllUser,
   getDetailsUser,
   deleteManyUser,
+  updatePassword,
   forgotPassword,
   resetPassword,
-  updatePassword,
 };
