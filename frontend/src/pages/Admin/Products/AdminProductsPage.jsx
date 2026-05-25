@@ -119,76 +119,78 @@ export default function AdminProductsPage() {
       </div>
 
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-        <Table>
-          <TableHeader className="bg-muted/50">
-            <TableRow>
-              <TableHead className="w-[80px]">Ảnh</TableHead>
-              <TableHead>Tên sản phẩm</TableHead>
-              <TableHead>Loại</TableHead>
-              <TableHead>Giá</TableHead>
-              <TableHead>Tồn kho</TableHead>
-              <TableHead>Trạng thái</TableHead>
-              <TableHead className="text-right">Hành động</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-muted/50">
               <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" /> Đang tải...
-                  </div>
-                </TableCell>
+                <TableHead className="w-[80px]">Ảnh</TableHead>
+                <TableHead>Tên sản phẩm</TableHead>
+                <TableHead>Loại</TableHead>
+                <TableHead>Giá</TableHead>
+                <TableHead>Tồn kho</TableHead>
+                <TableHead>Trạng thái</TableHead>
+                <TableHead className="text-right">Hành động</TableHead>
               </TableRow>
-            ) : products.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center">
-                  Không tìm thấy sản phẩm nào.
-                </TableCell>
-              </TableRow>
-            ) : (
-              products.map((product) => (
-                <TableRow key={product._id} className="hover:bg-muted/50 transition-colors">
-                  <TableCell>
-                    <div className="h-12 w-12 rounded-lg border bg-white p-1">
-                      <img src={product.image} alt={product.name} className="h-full w-full object-contain" />
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-24 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Đang tải...
                     </div>
                   </TableCell>
-                  <TableCell className="font-semibold max-w-[200px] truncate">{product.name}</TableCell>
-                  <TableCell><Badge variant="secondary" className="capitalize">{product.type}</Badge></TableCell>
-                  <TableCell>{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(product.price)}</TableCell>
-                  <TableCell>{product.countInStock}</TableCell>
-                  <TableCell>
-                    {product.countInStock > 0 ? (
-                      <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">Còn hàng</Badge>
-                    ) : (
-                      <Badge variant="destructive">Hết hàng</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-                        <DropdownMenuItem className="gap-2" onClick={() => setEditingProduct(product)}>
-                          <Edit className="h-4 w-4" /> Chỉnh sửa
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="gap-2 text-destructive" onClick={() => handleDelete(product._id)}>
-                          <Trash2 className="h-4 w-4" /> Xóa
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                </TableRow>
+              ) : products.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-24 text-center">
+                    Không tìm thấy sản phẩm nào.
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : (
+                products.map((product) => (
+                  <TableRow key={product._id} className="hover:bg-muted/50 transition-colors">
+                    <TableCell>
+                      <div className="h-12 w-12 rounded-lg border bg-white p-1">
+                        <img src={product.image} alt={product.name} className="h-full w-full object-contain" />
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-semibold max-w-[200px] truncate">{product.name}</TableCell>
+                    <TableCell><Badge variant="secondary" className="capitalize">{product.type}</Badge></TableCell>
+                    <TableCell>{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(product.price)}</TableCell>
+                    <TableCell>{product.countInStock}</TableCell>
+                    <TableCell>
+                      {product.countInStock > 0 ? (
+                        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">Còn hàng</Badge>
+                      ) : (
+                        <Badge variant="destructive">Hết hàng</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Hành động</DropdownMenuLabel>
+                          <DropdownMenuItem className="gap-2" onClick={() => setEditingProduct(product)}>
+                            <Edit className="h-4 w-4" /> Chỉnh sửa
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="gap-2 text-destructive" onClick={() => handleDelete(product._id)}>
+                            <Trash2 className="h-4 w-4" /> Xóa
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       {/* Edit Dialog */}

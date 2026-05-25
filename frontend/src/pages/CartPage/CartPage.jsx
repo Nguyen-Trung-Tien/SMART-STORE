@@ -52,8 +52,8 @@ const CartPage = () => {
           <div className="space-y-3">
             {cartItems.map((item) => (
               <Card key={item.product} className="group overflow-hidden border-primary/5 hover:border-primary/20 transition-all hover:shadow-sm">
-                <CardContent className="flex items-center gap-4 p-4">
-                  <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border bg-white p-1">
+                <CardContent className="flex flex-col sm:flex-row items-center gap-4 p-4">
+                  <div className="h-24 w-24 sm:h-20 sm:w-20 flex-shrink-0 overflow-hidden rounded-xl border bg-white p-1">
                     <img
                       src={item.image}
                       alt={item.name}
@@ -61,11 +61,11 @@ const CartPage = () => {
                     />
                   </div>
                   
-                  <div className="flex flex-1 flex-col min-w-0">
+                  <div className="flex flex-1 flex-col min-w-0 text-center sm:text-left">
                     <Link to={`/product-details/${item.product}`} className="hover:text-primary transition-colors">
-                      <h3 className="font-bold text-base leading-tight line-clamp-1">{item.name}</h3>
+                      <h3 className="font-bold text-base leading-tight line-clamp-2 sm:line-clamp-1">{item.name}</h3>
                     </Link>
-                    <div className="mt-1 flex items-center gap-2">
+                    <div className="mt-1 flex items-center justify-center sm:justify-start gap-2">
                       <span className="text-lg font-black text-primary">
                         {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(item.price * (1 - item.discount/100))}
                       </span>
@@ -77,22 +77,22 @@ const CartPage = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-between w-full sm:w-auto gap-4 mt-2 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0">
                     <div className="flex items-center rounded-lg border bg-background p-0.5 shadow-xs">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 rounded-md"
+                        className="h-8 w-8 sm:h-7 sm:w-7 rounded-md"
                         onClick={() => updateQuantity(item.product, item.amount - 1, user?._id)}
                         disabled={item.amount <= 1}
                       >
                         <Minus className="h-3 w-3" />
                       </Button>
-                      <span className="w-8 text-center text-sm font-bold">{item.amount}</span>
+                      <span className="w-10 sm:w-8 text-center text-sm font-bold">{item.amount}</span>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 rounded-md"
+                        className="h-8 w-8 sm:h-7 sm:w-7 rounded-md"
                         onClick={() => updateQuantity(item.product, item.amount + 1, user?._id)}
                       >
                         <Plus className="h-3 w-3" />
@@ -102,7 +102,7 @@ const CartPage = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      className="h-9 w-9 sm:h-8 sm:w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
                       onClick={() => removeFromCart(item.product, user?._id)}
                     >
                       <Trash2 className="h-4 w-4" />

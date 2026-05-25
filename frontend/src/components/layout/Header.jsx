@@ -16,10 +16,18 @@ import { useCartStore } from "@/store/useCartStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ModeToggle } from "../mode-toggle";
+import { useEffect } from "react";
 
 export function Header() {
   const { user, isAuthenticated, clearAuth } = useAuthStore();
-  const { cartItems } = useCartStore();
+  const { cartItems, fetchCart, syncCart } = useCartStore();
+
+  useEffect(() => {
+    if (isAuthenticated && user?._id) {
+      syncCart(user._id);
+      fetchCart(user._id);
+    }
+  }, [isAuthenticated, user?._id, fetchCart, syncCart]);
 
   const totalItems = cartItems.reduce((total, item) => total + item.amount, 0);
 
@@ -49,7 +57,7 @@ export function Header() {
           </nav>
         </div>
 
-        <div className="flex flex-1 items-center justify-center px-6 md:justify-end">
+        <div className="hidden flex-1 items-center justify-center px-6 md:flex md:justify-end">
           <div className="relative w-full max-w-[400px]">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -61,6 +69,9 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" className="md:hidden">
+            <Search className="h-5 w-5" />
+          </Button>
           <ModeToggle />
           <Button variant="ghost" size="icon" asChild>
             <Link to="/cart" className="relative">

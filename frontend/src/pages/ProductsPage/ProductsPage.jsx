@@ -151,15 +151,15 @@ export default function ProductsPage() {
           </div>
         ) : (
           <div className={view === "grid" 
-            ? "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
+            ? "grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6" 
             : "flex flex-col gap-4"
           }>
             {isLoading ? (
-              Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="flex flex-col gap-4">
-                  <Skeleton className="aspect-square w-full rounded-xl" />
-                  <Skeleton className="h-4 w-2/3" />
-                  <Skeleton className="h-4 w-1/3" />
+              Array.from({ length: 10 }).map((_, i) => (
+                <div key={i} className="flex flex-col gap-3">
+                  <Skeleton className="aspect-[4/5] w-full rounded-xl" />
+                  <Skeleton className="h-3 w-2/3" />
+                  <Skeleton className="h-3 w-1/3" />
                 </div>
               ))
             ) : (

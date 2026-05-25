@@ -8,8 +8,8 @@ const sendEmailCreateOrder = async (email, orderItems) => {
     port: 465,
     secure: true, // true for 465, false for other ports
     auth: {
-      user: process.env.MAIL_ACCOUNT, // generated ethereal user
-      pass: process.env.MAIL_PASSWORD, // generated ethereal password
+      user: process.env.EMAIL_ACCOUNT, // generated ethereal user
+      pass: process.env.EMAIL_PASSWORD, // generated ethereal password
     },
   });
 
@@ -25,7 +25,7 @@ const sendEmailCreateOrder = async (email, orderItems) => {
 
   // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: process.env.MAIL_ACCOUNT, // sender address
+    from: process.env.EMAIL_ACCOUNT, // sender address
     to: email, // list of receivers
     subject: "Bạn đã đặt hàng tại SMART STORE", // Subject line
     text: "Hello world?", // plain text body
