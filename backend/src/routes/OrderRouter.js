@@ -9,6 +9,8 @@ router.post("/create/:id", authUserMiddleware, orderController.createOrder);
 router.get("/get-all-order/:id", authUserMiddleware, orderController.getAllOrderDetails);
 router.get("/get-details-order/:id", orderController.getDetailsOrder);
 router.delete("/cancel-order/:id", authUserMiddleware, orderController.cancelOrderDetails);
-router.get("/get-all", authMiddleware, orderController.getAllOrder);
+router.get("/get-all-order", authMiddleware, orderController.getAllOrder);
+router.patch("/update-order-status/:id", authMiddleware, orderController.updateOrderStatus);
+router.get("/download-invoice/:id", orderController.downloadInvoice);
 
 export default router;

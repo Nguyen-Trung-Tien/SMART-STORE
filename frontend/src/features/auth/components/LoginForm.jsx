@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useCartStore } from "@/store/useCartStore";
 import { authService } from "../services/authService";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -21,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 export function LoginForm() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
+  const { syncCart, fetchCart } = useCartStore();
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -32,8 +34,14 @@ export function LoginForm() {
 
   const mutation = useMutation({
     mutationFn: authService.login,
-    onSuccess: (data) => {
-      setAuth(data.data, data.access_token);
+    onSuccess: async (data) => {
+      const user = data.data;
+      setAuth(user, data.access_token);
+      
+      // Sync guest cart with backend and fetch updated cart
+      await syncCart(user._id);
+      await fetchCart(user._id);
+      
       toast.success("Đăng nhập thành công!");
       navigate("/");
     },

@@ -12,8 +12,12 @@ function Dialog({
 }
 
 function DialogTrigger({
+  asChild = false,
   ...props
 }) {
+  if (asChild) {
+    return <DialogPrimitive.Trigger data-slot="dialog-trigger" render={props.children} {...props} children={undefined} />;
+  }
   return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
 }
 
@@ -24,8 +28,12 @@ function DialogPortal({
 }
 
 function DialogClose({
+  asChild = false,
   ...props
 }) {
+  if (asChild) {
+    return <DialogPrimitive.Close data-slot="dialog-close" render={props.children} {...props} children={undefined} />;
+  }
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 

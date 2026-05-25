@@ -1,15 +1,24 @@
 import ProductService from "../services/ProductService.js";
+import cloudinary from "../config/cloudinary.js";
 
 const createProduct = async (req, res, next) => {
   try {
-    const { name, image, type, price, countInStock, rating, description, discount } = req.body;
+    let { name, image, type, price, countInStock, rating, description, discount } = req.body;
     if (!name || !image || !type || !price || !countInStock || !rating) {
       return res.status(400).json({
         status: "ERR",
         message: "The input is required",
       });
     }
-    const response = await ProductService.createProduct(req.body);
+
+    if (image && image.startsWith("data:image")) {
+      const uploadResponse = await cloudinary.uploader.upload(image, {
+        folder: "products",
+      });
+      image = uploadResponse.secure_url;
+    }
+
+    const response = await ProductService.createProduct({ ...req.body, image });
     return res.status(200).json(response);
   } catch (e) {
     next(e);
@@ -19,13 +28,21 @@ const createProduct = async (req, res, next) => {
 const updateProduct = async (req, res, next) => {
   try {
     const productId = req.params.id;
-    const data = req.body;
+    let data = req.body;
     if (!productId) {
       return res.status(400).json({
         status: "ERR",
         message: "The productId is required",
       });
     }
+
+    if (data.image && data.image.startsWith("data:image")) {
+      const uploadResponse = await cloudinary.uploader.upload(data.image, {
+        folder: "products",
+      });
+      data = { ...data, image: uploadResponse.secure_url };
+    }
+
     const response = await ProductService.updateProduct(productId, data);
     return res.status(200).json(response);
   } catch (e) {

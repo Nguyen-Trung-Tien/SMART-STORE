@@ -12,14 +12,22 @@ function Sheet({
 }
 
 function SheetTrigger({
+  asChild = false,
   ...props
 }) {
+  if (asChild) {
+    return <SheetPrimitive.Trigger data-slot="sheet-trigger" render={props.children} {...props} children={undefined} />;
+  }
   return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />;
 }
 
 function SheetClose({
+  asChild = false,
   ...props
 }) {
+  if (asChild) {
+    return <SheetPrimitive.Close data-slot="sheet-close" render={props.children} {...props} children={undefined} />;
+  }
   return <SheetPrimitive.Close data-slot="sheet-close" {...props} />;
 }
 

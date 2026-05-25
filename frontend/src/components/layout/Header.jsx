@@ -5,18 +5,23 @@ import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useCartStore } from "@/store/useCartStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ModeToggle } from "../mode-toggle";
 
 export function Header() {
   const { user, isAuthenticated, clearAuth } = useAuthStore();
+  const { cartItems } = useCartStore();
+
+  const totalItems = cartItems.reduce((total, item) => total + item.amount, 0);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -60,9 +65,11 @@ export function Header() {
           <Button variant="ghost" size="icon" asChild>
             <Link to="/cart" className="relative">
               <ShoppingCart className="h-5 w-5" />
-              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                0
-              </span>
+              {totalItems > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground animate-in zoom-in">
+                  {totalItems}
+                </span>
+              )}
             </Link>
           </Button>
 
@@ -77,28 +84,34 @@ export function Header() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user?.name}</p>
-                    <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
-                  </div>
-                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user?.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/profile">Hồ sơ</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/my-orders">Đơn hàng của tôi</Link>
-                </DropdownMenuItem>
-                {user?.role === "admin" && (
+                <DropdownMenuGroup>
                   <DropdownMenuItem asChild>
-                    <Link to="/admin">Quản trị viên</Link>
+                    <Link to="/profile">Hồ sơ</Link>
                   </DropdownMenuItem>
-                )}
+                  <DropdownMenuItem asChild>
+                    <Link to="/my-orders">Đơn hàng của tôi</Link>
+                  </DropdownMenuItem>
+                  {user?.role === "admin" && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin">Quản trị viên</Link>
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={clearAuth} className="text-destructive">
-                  Đăng xuất
-                </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={clearAuth} className="text-destructive">
+                    Đăng xuất
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (

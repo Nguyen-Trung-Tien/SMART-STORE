@@ -1,10 +1,14 @@
 import User from "../models/UserModel.js";
 import JwtService from "../services/JwtService.js";
 import UserService from "../services/UserService.js";
+import cloudinary from "../config/cloudinary.js";
 
 const createUser = async (req, res, next) => {
   try {
     const response = await UserService.createUser(req.body);
+    if (response.status === "ERR") {
+      return res.status(400).json(response);
+    }
     return res.status(200).json(response);
   } catch (e) {
     next(e);
@@ -14,6 +18,9 @@ const createUser = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
   try {
     const response = await UserService.loginUser(req.body);
+    if (response.status === "ERR") {
+      return res.status(400).json(response);
+    }
     const { refresh_token, ...data } = response;
     res.cookie("refresh_token", refresh_token, {
       httpOnly: true,
@@ -42,14 +49,25 @@ const logoutUser = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
   try {
     const userId = req.params.id;
-    const data = req.body;
+    let data = req.body;
     if (!userId) {
       return res.status(400).json({
         status: "ERR",
         message: "The userId is required",
       });
     }
+
+    if (data.avatar && data.avatar.startsWith("data:image")) {
+      const uploadResponse = await cloudinary.uploader.upload(data.avatar, {
+        folder: "avatars",
+      });
+      data = { ...data, avatar: uploadResponse.secure_url };
+    }
+
     const response = await UserService.updateUser(userId, data);
+    if (response.status === "ERR") {
+      return res.status(400).json(response);
+    }
     return res.status(200).json(response);
   } catch (e) {
     next(e);
@@ -66,6 +84,9 @@ const deleteUser = async (req, res, next) => {
       });
     }
     const response = await UserService.deleteUser(userId);
+    if (response.status === "ERR") {
+      return res.status(400).json(response);
+    }
     return res.status(200).json(response);
   } catch (e) {
     next(e);
@@ -82,6 +103,9 @@ const deleteManyUser = async (req, res, next) => {
       });
     }
     const response = await UserService.deleteManyUser(ids);
+    if (response.status === "ERR") {
+      return res.status(400).json(response);
+    }
     return res.status(200).json(response);
   } catch (e) {
     next(e);
@@ -91,6 +115,9 @@ const deleteManyUser = async (req, res, next) => {
 const getAllUser = async (req, res, next) => {
   try {
     const response = await UserService.getAllUser();
+    if (response.status === "ERR") {
+      return res.status(400).json(response);
+    }
     return res.status(200).json(response);
   } catch (e) {
     next(e);
@@ -107,6 +134,9 @@ const getDetailsUser = async (req, res, next) => {
       });
     }
     const response = await UserService.getDetailsUser(userId);
+    if (response.status === "ERR") {
+      return res.status(400).json(response);
+    }
     return res.status(200).json(response);
   } catch (e) {
     next(e);
@@ -123,7 +153,17 @@ const refreshToken = async (req, res, next) => {
       });
     }
     const response = await JwtService.refreshTokenJwtService(token);
-    return res.status(200).json(response);
+    if (response.status === "ERR") {
+      return res.status(401).json(response);
+    }
+    const { refresh_token, ...data } = response;
+    res.cookie("refresh_token", refresh_token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      path: "/",
+    });
+    return res.status(200).json(data);
   } catch (e) {
     next(e);
   }
@@ -133,6 +173,9 @@ const updatePassword = async (req, res, next) => {
   try {
     const { userId, oldPassword, newPassword } = req.body;
     const response = await UserService.updatePassword(userId, oldPassword, newPassword);
+    if (response.status === "ERR") {
+      return res.status(400).json(response);
+    }
     return res.status(200).json(response);
   } catch (e) {
     next(e);
@@ -143,6 +186,9 @@ const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
     const response = await UserService.forgotPassword(email);
+    if (response.status === "ERR") {
+      return res.status(400).json(response);
+    }
     return res.status(200).json(response);
   } catch (e) {
     next(e);
@@ -153,6 +199,9 @@ const resetPassword = async (req, res, next) => {
   try {
     const { token, newPassword } = req.body;
     const response = await UserService.resetPassword(token, newPassword);
+    if (response.status === "ERR") {
+      return res.status(400).json(response);
+    }
     return res.status(200).json(response);
   } catch (e) {
     next(e);

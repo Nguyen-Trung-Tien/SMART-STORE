@@ -1,5 +1,6 @@
 import Order from "../models/OrderProduct.js";
 import Product from "../models/ProductModel.js";
+import Cart from "../models/CartModel.js";
 import EmailService from "./EmailService.js";
 
 const createOrder = (newOrder) => {
@@ -76,6 +77,9 @@ const createOrder = (newOrder) => {
           paidAt,
         });
         if (createdOrder) {
+          // Clear cart after successful order
+          await Cart.findOneAndUpdate({ user: user }, { cartItems: [] });
+          
           await EmailService.sendEmailCreateOrder(email, orderItems);
           resolve({
             status: "OK",
@@ -205,10 +209,32 @@ const getAllOrder = () => {
   });
 };
 
+const updateOrderStatus = (id, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const updatedOrder = await Order.findByIdAndUpdate(id, data, { new: true });
+      if (updatedOrder === null) {
+        resolve({
+          status: "ERR",
+          message: "The order is not defined",
+        });
+      }
+      resolve({
+        status: "OK",
+        message: "SUCCESS",
+        data: updatedOrder,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 export default {
   createOrder,
   getAllOrderDetails,
   getOrderDetails,
   cancelOrderDetails,
   getAllOrder,
+  updateOrderStatus,
 };

@@ -129,7 +129,11 @@ const getAllProduct = (limit, page, sort, filter) => {
       let allProduct = [];
       if (filter) {
         const label = filter[0];
-        const allObjectFilter = await Product.find({ [label]: { $regex: filter[1], $options: 'i' } }).limit(limit).skip(page * limit).sort({ createdAt: -1, updatedAt: -1 });
+        let query = { [label]: { $regex: filter[1], $options: 'i' } };
+        if (label === 'name') {
+          query = { $text: { $search: filter[1] } };
+        }
+        const allObjectFilter = await Product.find(query).limit(limit).skip(page * limit).sort({ createdAt: -1, updatedAt: -1 });
         resolve({
           status: "OK",
           message: "Success",
