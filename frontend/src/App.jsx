@@ -1,109 +1,35 @@
-import { useEffect, useState } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-import { routes } from "./routes";
-import { isJsonString } from "./utils";
-import { jwtDecode } from "jwt-decode";
-import * as UserService from "./services/UserServices";
-import { useDispatch, useSelector } from "react-redux";
-import { resetUser, updateUser } from "./redux/slices/userSlice";
-import Loading from "./components/LoadingComponent/Loading";
-import LayoutComponent from "./components/LayoutFooter/LayoutFooter";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { MainLayout } from "./components/layout/MainLayout";
+import HomePage from "./pages/HomePage/HomePage";
+import LoginPage from "./pages/LoginPage/LoginPage";
+import RegisterPage from "./pages/RegisterPage/RegisterPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import { AdminLayout } from "./components/layout/AdminLayout";
+import DashboardPage from "./pages/Admin/Dashboard/DashboardPage";
+import AdminProductsPage from "./pages/Admin/Products/AdminProductsPage";
 
 function App() {
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
-  const [isPending, setIsPending] = useState(false);
-
-  useEffect(() => {
-    setIsPending(true);
-    const { storageData, decoded } = handleDecoded();
-    if (decoded?.id) {
-      handleGetDetailsUser(decoded?.id, storageData);
-    }
-    setIsPending(false);
-  }, []);
-
-  const handleDecoded = () => {
-    let storageData =
-      user?.access_token || localStorage.getItem("access_token");
-    let decoded = {};
-    if (storageData && isJsonString(storageData) && !user?.access_token) {
-      storageData = JSON.parse(storageData);
-      decoded = jwtDecode(storageData);
-    }
-    return { decoded, storageData };
-  };
-
-  UserService.axiosJWT.interceptors.request.use(
-    async (config) => {
-      const currentTime = new Date();
-      const { decoded } = handleDecoded();
-      let storageRefreshToken = localStorage.getItem("refresh_token");
-      const refreshToken = JSON.parse(storageRefreshToken);
-      const decodedRefreshToken = jwtDecode(refreshToken);
-      if (decoded?.exp < currentTime.getTime() / 1000) {
-        if (decodedRefreshToken?.exp > currentTime.getTime() / 1000) {
-          const data = await UserService.refreshToken(refreshToken);
-          config.headers["token"] = `Bearer ${data?.access_token}`;
-        } else {
-          dispatch(resetUser());
-        }
-      }
-      return config;
-    },
-    (err) => {
-      return Promise.reject(err);
-    }
-  );
-
-  const handleGetDetailsUser = async (id, token) => {
-    let storageRefreshToken = localStorage.getItem("refresh_token");
-    const refreshToken = JSON.parse(storageRefreshToken);
-    const res = await UserService.getDetailsUser(id, token);
-    dispatch(
-      updateUser({
-        ...res?.data,
-        access_token: token,
-        refreshToken: refreshToken,
-      })
-    );
-  };
-
   return (
-    <div style={{ height: "100%", width: "100%" }}>
-      <Loading isLoading={isPending}>
-        <Router>
-          <LayoutComponent>
-            <Routes>
-              {routes.map((route) => {
-                const Page = route.page;
-                const isCheckAuth = !route.isPrivate || user.isAdmin;
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path="products" element={<div className="container mx-auto py-10 px-4 text-center"><h1 className="text-3xl font-bold">Danh sách Sản phẩm (Đang phát triển)</h1></div>} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+        </Route>
 
-                return (
-                  <Route
-                    key={route.path}
-                    path={isCheckAuth ? route.path : undefined}
-                    element={
-                      <LayoutComponent
-                        isShowFooter={route.isShowFooter}
-                        isShowHeader={route.isShowHeader}
-                      >
-                        <Page />
-                      </LayoutComponent>
-                    }
-                  />
-                );
-              })}
-            </Routes>
-          </LayoutComponent>
-        </Router>
-      </Loading>
-    </div>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="products" element={<AdminProductsPage />} />
+          <Route path="users" element={<div>Quản lý người dùng (Đang phát triển)</div>} />
+          <Route path="vouchers" element={<div>Quản lý voucher (Đang phát triển)</div>} />
+          <Route path="support" element={<div>Hỗ trợ trực tuyến (Đang phát triển)</div>} />
+          <Route path="settings" element={<div>Cài đặt (Đang phát triển)</div>} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 

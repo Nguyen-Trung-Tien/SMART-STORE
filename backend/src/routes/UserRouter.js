@@ -1,12 +1,15 @@
-const express = require("express");
+import express from "express";
+import userController from "../controllers/UserController.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
+import validate from "../middleware/validate.js";
+import { registerSchema, loginSchema } from "../validations/authValidation.js";
+import delay from "../middleware/delay.js";
+
 const router = express.Router();
-const userController = require("../controllers/UserController");
-const { authMiddleware } = require("../middleware/authMiddleware");
-const delay = require("../middleware/delay");
 
 router.all("*", delay);
-router.post("/sign-up", userController.createUser);
-router.post("/sign-in", userController.loginUser);
+router.post("/sign-up", validate(registerSchema), userController.createUser);
+router.post("/sign-in", validate(loginSchema), userController.loginUser);
 router.post("/log-out", userController.logoutUser);
 router.put("/update-user/:id", userController.updateUser);
 router.delete("/delete-user/:id", authMiddleware, userController.deleteUser);
@@ -17,4 +20,5 @@ router.post("/delete-many", authMiddleware, userController.deleteManyUser);
 router.post("/update-password", userController.updatePassword);
 router.post("/forgot-password", userController.forgotPassword);
 router.post("/reset-password", userController.resetPassword);
-module.exports = router;
+
+export default router;

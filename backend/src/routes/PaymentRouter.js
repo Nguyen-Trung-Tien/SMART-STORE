@@ -1,12 +1,12 @@
-const express = require("express");
+import express from "express";
+
 const router = express.Router();
-const dotenv = require("dotenv");
-dotenv.config();
+
 router.get("/config", (req, res) => {
   return res.status(200).json({
     status: "OK",
-    data: process.env.CLIENT_ID,
+    data: process.env.PAYPAL_CLIENT_ID,
   });
 });
 
-module.exports = router;
+export default router;

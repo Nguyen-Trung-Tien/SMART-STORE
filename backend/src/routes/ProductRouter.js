@@ -1,18 +1,15 @@
-const express = require("express");
+import express from "express";
+import productController from "../controllers/ProductController.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
+
 const router = express.Router();
-const ProductController = require("../controllers/ProductController");
-const { authMiddleware } = require("../middleware/authMiddleware");
 
-router.post("/create", ProductController.createProduct);
-router.put("/update/:id", authMiddleware, ProductController.updateProduct);
-router.get("/get-details/:id", ProductController.getDetailsProduct);
-router.get("/get-all-type", ProductController.getAllType);
-router.delete("/delete/:id", authMiddleware, ProductController.deleteProduct);
-router.get("/get-all", ProductController.getAllProduct);
-router.post(
-  "/delete-many",
-  authMiddleware,
-  ProductController.deleteManyProduct
-);
+router.post("/create", productController.createProduct);
+router.put("/update/:id", authMiddleware, productController.updateProduct);
+router.get("/get-details/:id", productController.getDetailsProduct);
+router.delete("/delete/:id", authMiddleware, productController.deleteProduct);
+router.get("/get-all", productController.getAllProduct);
+router.post("/delete-many", authMiddleware, productController.deleteManyProduct);
+router.get("/get-all-type", productController.getAllType);
 
-module.exports = router;
+export default router;
