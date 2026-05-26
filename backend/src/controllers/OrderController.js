@@ -5,8 +5,31 @@ import fs from "fs";
 
 const createOrder = async (req, res, next) => {
   try {
-    const { paymentMethod, itemsPrice, shippingPrice, totalPrice, fullName, address, city, phone } = req.body;
-    if (!paymentMethod || !itemsPrice || !totalPrice || !fullName || !address || !city || !phone) {
+    const {
+      paymentMethod,
+      itemsPrice,
+      shippingPrice,
+      totalPrice,
+      fullName,
+      address,
+      city,
+      phone,
+      email,
+      orderItems,
+    } = req.body;
+    if (
+      !paymentMethod ||
+      !itemsPrice ||
+      !totalPrice ||
+      !fullName ||
+      !address ||
+      !city ||
+      !phone ||
+      !email ||
+      !orderItems ||
+      !Array.isArray(orderItems) ||
+      orderItems.length === 0
+    ) {
       return res.status(400).json({
         status: "ERR",
         message: "The input is required",
@@ -109,21 +132,21 @@ const downloadInvoice = async (req, res, next) => {
     }
 
     const invoiceName = `invoice-${orderId}.pdf`;
-    const invoicePath = path.join('invoices', invoiceName);
+    const invoicePath = path.join("invoices", invoiceName);
 
-    if (!fs.existsSync('invoices')) {
-      fs.mkdirSync('invoices');
+    if (!fs.existsSync("invoices")) {
+      fs.mkdirSync("invoices");
     }
 
     await PdfService.generateInvoice(order.data, invoicePath);
 
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=${invoiceName}`);
-    
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=${invoiceName}`);
+
     const fileStream = fs.createReadStream(invoicePath);
     fileStream.pipe(res);
 
-    fileStream.on('end', () => {
+    fileStream.on("end", () => {
       // Optionally delete the file after sending
       // fs.unlinkSync(invoicePath);
     });

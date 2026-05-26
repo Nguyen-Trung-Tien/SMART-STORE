@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useCartStore } from "./useCartStore";
 
 export const useAuthStore = create(
   persist(
@@ -7,14 +8,20 @@ export const useAuthStore = create(
       user: null,
       accessToken: null,
       isAuthenticated: false,
-      setAuth: (user, accessToken) => 
+      setAuth: (user, accessToken) =>
         set({ user, accessToken, isAuthenticated: true }),
-      clearAuth: () => 
-        set({ user: null, accessToken: null, isAuthenticated: false }),
-      updateUser: (user) => 
+      clearAuth: () => {
+        set({ user: null, accessToken: null, isAuthenticated: false });
+        if (typeof window !== "undefined") {
+          window.localStorage.removeItem("auth-storage");
+          window.localStorage.removeItem("cart-storage");
+        }
+        useCartStore.getState().clearCart?.();
+      },
+      updateUser: (user) =>
         set((state) => {
           const newUser = { ...state.user, ...user };
-          // If avatar is base64, we don't want to persist it if possible, 
+          // If avatar is base64, we don't want to persist it if possible,
           // but since it's used for preview, we might need it.
           // However, for storage quota, it's better to prune it if it's too large
           // or just let the backend update handle it (which now returns a URL).
@@ -26,11 +33,15 @@ export const useAuthStore = create(
       partialize: (state) => ({
         accessToken: state.accessToken,
         isAuthenticated: state.isAuthenticated,
-        user: state.user ? {
-          ...state.user,
-          avatar: state.user.avatar?.startsWith("data:image") ? null : state.user.avatar
-        } : null,
+        user: state.user
+          ? {
+              ...state.user,
+              avatar: state.user.avatar?.startsWith("data:image")
+                ? null
+                : state.user.avatar,
+            }
+          : null,
       }),
-    }
-  )
+    },
+  ),
 );

@@ -1,5 +1,13 @@
-import { Link } from "react-router-dom";
-import { ShoppingCart, User, Search, Menu, Heart, ShieldCheck, Check } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  ShoppingCart,
+  User,
+  Search,
+  Menu,
+  Heart,
+  ShieldCheck,
+  Check,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,8 +27,14 @@ import { ModeToggle } from "../mode-toggle";
 import { useEffect } from "react";
 
 export function Header() {
+  const navigate = useNavigate();
   const { user, isAuthenticated, clearAuth } = useAuthStore();
   const { cartItems, fetchCart, syncCart } = useCartStore();
+
+  const handleLogout = () => {
+    clearAuth();
+    navigate("/");
+  };
 
   useEffect(() => {
     if (isAuthenticated && user?._id) {
@@ -38,29 +52,78 @@ export function Header() {
         <div className="flex items-center gap-4 lg:gap-8">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden h-10 w-10">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden h-10 w-10"
+              >
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px]">
               <div className="flex flex-col gap-6 mt-10">
-                <span className="text-lg font-black tracking-tighter text-primary px-2">SMART STORE</span>
+                <span className="text-lg font-black tracking-tighter text-primary px-2">
+                  SMART STORE
+                </span>
                 <nav className="flex flex-col gap-2">
-                  <Link to="/" className="px-2 py-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">Trang chủ</Link>
-                  <Link to="/products" className="px-2 py-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">Sản phẩm</Link>
-                  <Link to="/collections" className="px-2 py-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors">Bộ sưu tập</Link>
+                  <Link
+                    to="/"
+                    className="px-2 py-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors"
+                  >
+                    Trang chủ
+                  </Link>
+                  <Link
+                    to="/products"
+                    className="px-2 py-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors"
+                  >
+                    Sản phẩm
+                  </Link>
+                  <Link
+                    to="/collections"
+                    className="px-2 py-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors"
+                  >
+                    Bộ sưu tập
+                  </Link>
+                  {isAuthenticated &&
+                    (user?.isAdmin ||
+                      user?.role?.toLowerCase() === "admin") && (
+                      <Link
+                        to="/admin"
+                        className="px-2 py-3 text-sm font-bold hover:bg-muted rounded-xl transition-colors text-primary"
+                      >
+                        Quản trị
+                      </Link>
+                    )}
                 </nav>
               </div>
             </SheetContent>
           </Sheet>
-          
+
           <Link to="/" className="flex items-center gap-2 group">
-            <span className="text-xl font-black tracking-tighter text-primary group-hover:opacity-80 transition-opacity">SMART STORE</span>
+            <span className="text-xl font-black tracking-tighter text-primary group-hover:opacity-80 transition-opacity">
+              SMART STORE
+            </span>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-6 text-[13px] font-bold uppercase tracking-wider text-muted-foreground">
-            <Link to="/" className="hover:text-primary transition-colors">Trang chủ</Link>
-            <Link to="/products" className="hover:text-primary transition-colors">Sản phẩm</Link>
+            <Link to="/" className="hover:text-primary transition-colors">
+              Trang chủ
+            </Link>
+            <Link
+              to="/products"
+              className="hover:text-primary transition-colors"
+            >
+              Sản phẩm
+            </Link>
+            {isAuthenticated &&
+              (user?.isAdmin || user?.role?.toLowerCase() === "admin") && (
+                <Link
+                  to="/admin"
+                  className="hover:text-primary transition-colors text-primary"
+                >
+                  Quản trị
+                </Link>
+              )}
           </nav>
         </div>
 
@@ -81,16 +144,25 @@ export function Header() {
           <Button variant="ghost" size="icon" className="md:hidden h-10 w-10">
             <Search className="h-5 w-5" />
           </Button>
-          
+
           <div className="hidden lg:flex items-center">
             <ModeToggle />
           </div>
 
-          <Button variant="ghost" size="icon" className="h-10 w-10 hidden sm:flex">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 hidden sm:flex"
+          >
             <Heart className="h-5 w-5" />
           </Button>
 
-          <Button variant="ghost" size="icon" asChild className="h-10 w-10 relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className="h-10 w-10 relative"
+          >
             <Link to="/cart">
               <ShoppingCart className="h-5 w-5" />
               {totalItems > 0 && (
@@ -106,47 +178,93 @@ export function Header() {
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-10 gap-2 px-2 hover:bg-muted/50 rounded-full">
+                <Button
+                  variant="ghost"
+                  className="h-10 gap-2 px-2 hover:bg-muted/50 rounded-full"
+                >
                   <Avatar className="h-7 w-7 border ring-1 ring-black/5">
                     <AvatarImage src={user?.avatar} alt={user?.name} />
-                    <AvatarFallback className="font-black text-[10px]">{user?.name?.charAt(0) || "U"}</AvatarFallback>
+                    <AvatarFallback className="font-black text-[10px]">
+                      {user?.name?.charAt(0) || "U"}
+                    </AvatarFallback>
                   </Avatar>
-                  <span className="hidden lg:block text-xs font-bold">{user?.name?.split(' ').pop()}</span>
+                  <span className="hidden lg:block text-xs font-bold">
+                    {user?.name?.split(" ").pop()}
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 rounded-2xl p-2 mt-2 shadow-2xl border-black/5" align="end">
+              <DropdownMenuContent
+                className="w-56 rounded-2xl p-2 mt-2 shadow-2xl border-black/5"
+                align="end"
+              >
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="font-normal p-3">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-black leading-none tracking-tight">{user?.name}</p>
-                      <p className="text-[10px] leading-none text-muted-foreground font-medium">{user?.email}</p>
+                      <p className="text-sm font-black leading-none tracking-tight">
+                        {user?.name}
+                      </p>
+                      <p className="text-[10px] leading-none text-muted-foreground font-medium">
+                        {user?.email}
+                      </p>
                     </div>
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup className="p-1">
-                  <DropdownMenuItem asChild className="rounded-xl p-2.5 cursor-pointer">
-                    <Link to="/profile" className="flex items-center gap-2 text-xs font-bold"><User className="h-4 w-4" /> Hồ sơ</Link>
+                  <DropdownMenuItem
+                    asChild
+                    className="rounded-xl p-2.5 cursor-pointer"
+                  >
+                    <Link
+                      to="/profile"
+                      className="flex items-center gap-2 text-xs font-bold"
+                    >
+                      <User className="h-4 w-4" /> Hồ sơ
+                    </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl p-2.5 cursor-pointer">
-                    <Link to="/my-orders" className="flex items-center gap-2 text-xs font-bold"><Check className="h-4 w-4" /> Đơn hàng</Link>
+                  <DropdownMenuItem
+                    asChild
+                    className="rounded-xl p-2.5 cursor-pointer"
+                  >
+                    <Link
+                      to="/my-orders"
+                      className="flex items-center gap-2 text-xs font-bold"
+                    >
+                      <Check className="h-4 w-4" /> Đơn hàng
+                    </Link>
                   </DropdownMenuItem>
-                  {user?.role === "admin" && (
-                    <DropdownMenuItem asChild className="rounded-xl p-2.5 cursor-pointer text-primary">
-                      <Link to="/admin" className="flex items-center gap-2 text-xs font-bold"><ShieldCheck className="h-4 w-4" /> Quản trị</Link>
+                  {(user?.isAdmin || user?.role?.toLowerCase() === "admin") && (
+                    <DropdownMenuItem
+                      asChild
+                      className="rounded-xl p-2.5 cursor-pointer text-primary"
+                    >
+                      <Link
+                        to="/admin"
+                        className="flex items-center gap-2 text-xs font-bold"
+                      >
+                        <ShieldCheck className="h-4 w-4" /> Quản trị
+                      </Link>
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup className="p-1">
-                  <DropdownMenuItem onClick={clearAuth} className="rounded-xl p-2.5 cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/5 font-bold text-xs">
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="rounded-xl p-2.5 cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/5 font-bold text-xs"
+                  >
                     Đăng xuất
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild variant="default" size="sm" className="h-9 px-5 rounded-full font-black text-xs uppercase tracking-wider shadow-lg shadow-primary/20">
+            <Button
+              asChild
+              variant="default"
+              size="sm"
+              className="h-9 px-5 rounded-full font-black text-xs uppercase tracking-wider shadow-lg shadow-primary/20"
+            >
               <Link to="/login">Đăng nhập</Link>
             </Button>
           )}
@@ -155,4 +273,3 @@ export function Header() {
     </header>
   );
 }
-

@@ -9,10 +9,18 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, MoreHorizontal, Edit, Trash2, Search, Loader2 } from "lucide-react";
+import {
+  Plus,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  Search,
+  Loader2,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -38,7 +46,7 @@ export default function AdminProductsPage() {
   const [page, setPage] = useState(0);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  
+
   const queryClient = useQueryClient();
   const { data: productsData, isLoading } = useProducts(search, 10, page);
   const products = productsData?.data || [];
@@ -73,7 +81,8 @@ export default function AdminProductsPage() {
   });
 
   const handleCreate = (data) => createMutation.mutate(data);
-  const handleUpdate = (data) => updateMutation.mutate({ id: editingProduct._id, data });
+  const handleUpdate = (data) =>
+    updateMutation.mutate({ id: editingProduct._id, data });
   const handleDelete = (id) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
       deleteMutation.mutate(id);
@@ -84,10 +93,14 @@ export default function AdminProductsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Quản lý sản phẩm</h2>
-          <p className="text-muted-foreground">Xem và quản lý danh sách sản phẩm của bạn</p>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Quản lý sản phẩm
+          </h2>
+          <p className="text-muted-foreground">
+            Xem và quản lý danh sách sản phẩm của bạn
+          </p>
         </div>
-        
+
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
             <Button className="gap-2">
@@ -101,7 +114,10 @@ export default function AdminProductsPage() {
                 Nhập thông tin sản phẩm để thêm vào kho hàng.
               </DialogDescription>
             </DialogHeader>
-            <ProductForm onSubmit={handleCreate} isLoading={createMutation.isPending} />
+            <ProductForm
+              onSubmit={handleCreate}
+              isLoading={createMutation.isPending}
+            />
           </DialogContent>
         </Dialog>
       </div>
@@ -109,9 +125,9 @@ export default function AdminProductsPage() {
       <div className="flex items-center gap-2">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input 
-            placeholder="Tìm sản phẩm..." 
-            className="pl-10" 
+          <Input
+            placeholder="Tìm sản phẩm..."
+            className="pl-10"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -149,19 +165,42 @@ export default function AdminProductsPage() {
                 </TableRow>
               ) : (
                 products.map((product) => (
-                  <TableRow key={product._id} className="hover:bg-muted/50 transition-colors">
+                  <TableRow
+                    key={product._id}
+                    className="hover:bg-muted/50 transition-colors"
+                  >
                     <TableCell>
                       <div className="h-12 w-12 rounded-lg border bg-white p-1">
-                        <img src={product.image} alt={product.name} className="h-full w-full object-contain" />
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="h-full w-full object-contain"
+                        />
                       </div>
                     </TableCell>
-                    <TableCell className="font-semibold max-w-[200px] truncate">{product.name}</TableCell>
-                    <TableCell><Badge variant="secondary" className="capitalize">{product.type}</Badge></TableCell>
-                    <TableCell>{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(product.price)}</TableCell>
+                    <TableCell className="font-semibold max-w-[200px] truncate">
+                      {product.name}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="capitalize">
+                        {product.type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(product.price)}
+                    </TableCell>
                     <TableCell>{product.countInStock}</TableCell>
                     <TableCell>
                       {product.countInStock > 0 ? (
-                        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">Còn hàng</Badge>
+                        <Badge
+                          variant="outline"
+                          className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                        >
+                          Còn hàng
+                        </Badge>
                       ) : (
                         <Badge variant="destructive">Hết hàng</Badge>
                       )}
@@ -174,12 +213,20 @@ export default function AdminProductsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-                          <DropdownMenuItem className="gap-2" onClick={() => setEditingProduct(product)}>
+                          <DropdownMenuGroup>
+                            <DropdownMenuLabel>Hành động</DropdownMenuLabel>
+                          </DropdownMenuGroup>
+                          <DropdownMenuItem
+                            className="gap-2"
+                            onClick={() => setEditingProduct(product)}
+                          >
                             <Edit className="h-4 w-4" /> Chỉnh sửa
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="gap-2 text-destructive" onClick={() => handleDelete(product._id)}>
+                          <DropdownMenuItem
+                            className="gap-2 text-destructive"
+                            onClick={() => handleDelete(product._id)}
+                          >
                             <Trash2 className="h-4 w-4" /> Xóa
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -194,7 +241,10 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Edit Dialog */}
-      <Dialog open={!!editingProduct} onOpenChange={() => setEditingProduct(null)}>
+      <Dialog
+        open={!!editingProduct}
+        onOpenChange={() => setEditingProduct(null)}
+      >
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Chỉnh sửa sản phẩm</DialogTitle>
@@ -203,10 +253,10 @@ export default function AdminProductsPage() {
             </DialogDescription>
           </DialogHeader>
           {editingProduct && (
-            <ProductForm 
-              initialData={editingProduct} 
-              onSubmit={handleUpdate} 
-              isLoading={updateMutation.isPending} 
+            <ProductForm
+              initialData={editingProduct}
+              onSubmit={handleUpdate}
+              isLoading={updateMutation.isPending}
             />
           )}
         </DialogContent>
