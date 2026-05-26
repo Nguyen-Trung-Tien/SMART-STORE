@@ -8,6 +8,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useWishlist, useToggleWishlist } from "@/features/wishlist/hooks/useWishlist";
 
 const cubicBezier = [0.32, 0.72, 0, 1];
 
@@ -15,6 +16,10 @@ export function ProductCard({ product }) {
   const { _id, name, image, price, rating, discount, countInStock } = product;
   const { addToCart } = useCartStore();
   const { user } = useAuthStore();
+  const { data: wishlistData } = useWishlist();
+  const toggleWishlistMutation = useToggleWishlist();
+
+  const isLiked = wishlistData?.data?.some(p => p._id === _id) || false;
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -27,11 +32,16 @@ export function ProductCard({ product }) {
       discount,
     };
     addToCart(cartItem, user?._id);
-    toast.success(`Đã thêm vào bộ sưu tập`, {
+    toast.success(`Đã thêm vào giỏ hàng`, {
       description: name,
       duration: 2000,
       className: "rounded-2xl border-none shadow-2xl bg-white dark:bg-neutral-900"
     });
+  };
+
+  const handleToggleWishlist = (e) => {
+    e.preventDefault();
+    toggleWishlistMutation.mutate(_id);
   };
 
   const finalPrice = price * (1 - discount / 100);
@@ -57,8 +67,16 @@ export function ProductCard({ product }) {
               
               {/* Overlay Actions */}
               <div className="absolute right-3 top-3 flex flex-col gap-2 translate-x-4 opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:opacity-100">
-                <Button size="icon" variant="secondary" className="h-9 w-9 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl shadow-xl hover:scale-110 transition-transform">
-                  <Heart className="h-4 w-4" />
+                <Button 
+                  size="icon" 
+                  variant="secondary" 
+                  onClick={handleToggleWishlist}
+                  className={cn(
+                    "h-9 w-9 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl shadow-xl hover:scale-110 transition-transform",
+                    isLiked && "text-destructive"
+                  )}
+                >
+                  <Heart className={cn("h-4 w-4", isLiked && "fill-current")} />
                 </Button>
               </div>
 

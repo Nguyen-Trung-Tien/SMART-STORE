@@ -37,7 +37,7 @@ export default function ProductsPage() {
   const [view, setView] = useState("grid");
   const limit = 12;
 
-  const { data: productsData, isLoading } = useProducts(debouncedSearch, limit, page);
+  const { data: productsData, isLoading } = useProducts(debouncedSearch, limit, page, typeParam);
   const { data: typesData } = useProductTypes();
 
   const products = productsData?.data || [];

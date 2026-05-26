@@ -20,7 +20,8 @@ import {
   Maximize2,
   X,
   CreditCard,
-  History
+  History,
+  MessageSquare
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { useCartStore } from "@/store/useCartStore";
@@ -37,6 +38,9 @@ import {
   DialogHeader
 } from "@/components/ui/dialog";
 import { ProductCard } from "@/features/products/components/ProductCard";
+import { useWishlist, useToggleWishlist } from "@/features/wishlist/hooks/useWishlist";
+import { useReviews, useCreateReview } from "@/features/products/hooks/useReviews";
+import { Textarea } from "@/components/ui/textarea";
 
 const cubicBezier = [0.32, 0.72, 0, 1];
 
@@ -208,6 +212,108 @@ function VariantSelector({ variations, onSelect }) {
   );
 }
 
+function ReviewSection({ productId, productRating }) {
+  const { data: reviewsData, isLoading } = useReviews(productId);
+  const createReviewMutation = useCreateReview(productId);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  
+  const reviews = reviewsData?.data || [];
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!comment.trim()) return;
+    createReviewMutation.mutate({ rating, comment }, {
+      onSuccess: () => {
+        setRating(5);
+        setComment("");
+      }
+    });
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-10">
+       <div className="flex flex-col md:flex-row items-center justify-between bg-muted/30 p-8 rounded-[2rem] border gap-8">
+          <div className="flex flex-col items-center gap-2 text-center md:text-left md:items-start">
+             <span className="text-5xl font-black">{productRating || 0}</span>
+             <div className="flex text-yellow-500">
+               {Array.from({ length: 5 }).map((_, i) => (
+                 <Star key={i} className={cn("h-4 w-4", i < Math.round(productRating || 0) ? "fill-current" : "opacity-20")} />
+               ))}
+             </div>
+             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{reviews.length} đánh giá</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="flex-1 w-full space-y-4">
+             <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Đánh giá của bạn</label>
+                <div className="flex text-yellow-500 gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <button type="button" key={i} onClick={() => setRating(i + 1)}>
+                      <Star className={cn("h-6 w-6 transition-all hover:scale-110", i < rating ? "fill-current" : "opacity-20")} />
+                    </button>
+                  ))}
+                </div>
+             </div>
+             <div className="flex gap-2">
+                <Textarea 
+                  placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..." 
+                  className="min-h-[80px] bg-white dark:bg-neutral-900 border-none ring-1 ring-black/5"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
+             </div>
+             <div className="flex justify-end">
+                <Button type="submit" disabled={createReviewMutation.isPending || !comment.trim()} className="font-black text-[10px] uppercase tracking-widest px-8 rounded-xl h-10 shadow-lg shadow-primary/20">
+                   {createReviewMutation.isPending ? "Đang gửi..." : "Gửi đánh giá"}
+                </Button>
+             </div>
+          </form>
+       </div>
+
+       <div className="space-y-4">
+          <h3 className="text-lg font-black tracking-tight italic">Tất cả đánh giá</h3>
+          {isLoading ? (
+             <div className="space-y-4">
+                <Skeleton className="h-24 w-full rounded-2xl" />
+                <Skeleton className="h-24 w-full rounded-2xl" />
+             </div>
+          ) : reviews.length > 0 ? (
+             <div className="grid gap-4">
+                {reviews.map(review => (
+                   <div key={review._id} className="p-6 rounded-2xl border bg-white dark:bg-neutral-900 space-y-3">
+                      <div className="flex justify-between items-start">
+                         <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                               {review.user?.avatar ? <img src={review.user.avatar} alt={review.user.name} /> : <span className="font-bold text-muted-foreground">{review.user?.name?.charAt(0) || 'U'}</span>}
+                            </div>
+                            <div className="flex flex-col">
+                               <span className="text-xs font-bold">{review.user?.name || "Khách hàng"}</span>
+                               <span className="text-[10px] text-muted-foreground">{new Date(review.createdAt).toLocaleDateString("vi-VN")}</span>
+                            </div>
+                         </div>
+                         <div className="flex text-yellow-500">
+                           {Array.from({ length: 5 }).map((_, i) => (
+                             <Star key={i} className={cn("h-3 w-3", i < review.rating ? "fill-current" : "opacity-20")} />
+                           ))}
+                         </div>
+                      </div>
+                      <p className="text-sm font-medium">{review.comment}</p>
+                   </div>
+                ))}
+             </div>
+          ) : (
+             <div className="py-12 flex flex-col items-center justify-center text-center gap-2 border border-dashed rounded-[2rem]">
+                <MessageSquare className="h-8 w-8 text-muted-foreground/30" />
+                <p className="text-sm text-muted-foreground font-medium">Chưa có đánh giá nào cho sản phẩm này.</p>
+                <p className="text-xs text-muted-foreground/60">Hãy là người đầu tiên chia sẻ cảm nhận của bạn!</p>
+             </div>
+          )}
+       </div>
+    </div>
+  );
+}
+
 // --- Main Page ---
 
 export default function ProductDetailsPage() {
@@ -215,12 +321,15 @@ export default function ProductDetailsPage() {
   const { data: productData, isLoading } = useProductDetails(id);
   const { data: allProductsData } = useProducts("", 8);
   const [quantity, setQuantity] = useState(1);
-  const [isLiked, setIsLiked] = useState(false);
   const [selectedVariants, setSelectedVariants] = useState({});
   const { addToCart } = useCartStore();
   const { user } = useAuthStore();
+  
+  const { data: wishlistData } = useWishlist();
+  const toggleWishlistMutation = useToggleWishlist();
 
   const product = productData?.data;
+  const isLiked = wishlistData?.data?.some(p => p._id === id) || false;
 
   const relatedProducts = useMemo(() => {
     if (!product || !allProductsData?.data) return [];
@@ -244,6 +353,10 @@ export default function ProductDetailsPage() {
       icon: <Check className="h-4 w-4 text-emerald-500" />,
       className: "rounded-xl"
     });
+  };
+
+  const handleToggleWishlist = () => {
+    toggleWishlistMutation.mutate(id);
   };
 
   const finalPrice = product ? product.price * (1 - product.discount / 100) : 0;
@@ -319,8 +432,6 @@ export default function ProductDetailsPage() {
                   <Star className="h-3.5 w-3.5 fill-current" />
                   <span className="font-bold text-foreground">{product.rating}</span>
                 </div>
-                <div className="w-px h-3 bg-border" />
-                <span className="text-muted-foreground">48 đánh giá</span>
               </div>
             </div>
 
@@ -366,7 +477,7 @@ export default function ProductDetailsPage() {
                    <Button 
                     variant="outline" size="icon" 
                     className={cn("h-10 w-10 rounded-lg", isLiked && "text-destructive fill-destructive")}
-                    onClick={() => setIsLiked(!isLiked)}
+                    onClick={handleToggleWishlist}
                   >
                     <Heart className="h-4 w-4" />
                   </Button>
@@ -462,17 +573,8 @@ export default function ProductDetailsPage() {
                </div>
             </TabsContent>
 
-            <TabsContent value="reviews" className="max-w-4xl mx-auto text-center space-y-6">
-               <div className="flex flex-col items-center gap-2">
-                  <span className="text-5xl font-bold">{product.rating}</span>
-                  <div className="flex text-yellow-500">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={cn("h-4 w-4", i < product.rating ? "fill-current" : "opacity-20")} />
-                    ))}
-                  </div>
-                  <p className="text-xs text-muted-foreground">Dựa trên 48 đánh giá thực tế</p>
-                  <Button variant="outline" size="sm" className="mt-4 rounded-full font-bold text-[10px] uppercase">Viết đánh giá</Button>
-               </div>
+            <TabsContent value="reviews">
+               <ReviewSection productId={id} productRating={product.rating} />
             </TabsContent>
           </Tabs>
         </div>

@@ -17,7 +17,8 @@ import {
   CreditCard,
   CheckCircle2,
   RotateCcw,
-  Check
+  Check,
+  ArrowLeft
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +30,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useMemo, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useApplyVoucher } from "@/features/checkout/hooks/useVoucher";
 
 const cubicBezier = [0.32, 0.72, 0, 1];
 
@@ -165,17 +167,41 @@ const CartPage = () => {
   const { user } = useAuthStore();
   const { data: recommendedData, isLoading: recLoading } = useProducts("", 4);
 
+  const [voucherCode, setVoucherCode] = useState("");
+  const [appliedVoucher, setAppliedVoucher] = useState(null);
+  const applyVoucherMutation = useApplyVoucher();
+
   const selectedCartItems = useMemo(() => 
     cartItems.filter(item => selectedItems.includes(item.product)), 
     [cartItems, selectedItems]
   );
 
   const subtotal = useMemo(() => selectedCartItems.reduce((total, item) => total + item.price * item.amount, 0), [selectedCartItems]);
-  const totalDiscount = useMemo(() => selectedCartItems.reduce((total, item) => total + (item.price * item.discount / 100) * item.amount, 0), [selectedCartItems]);
-  const currentTotal = subtotal - totalDiscount;
+  const productDiscount = useMemo(() => selectedCartItems.reduce((total, item) => total + (item.price * item.discount / 100) * item.amount, 0), [selectedCartItems]);
+  const orderValueForVoucher = subtotal - productDiscount;
+  const currentTotal = subtotal - productDiscount;
   const shippingPrice = currentTotal > 0 && currentTotal < 500000 ? 30000 : 0;
+  
+  const voucherDiscount = appliedVoucher ? appliedVoucher.discountAmount : 0;
+  const finalTotal = Math.max(0, currentTotal - voucherDiscount + shippingPrice);
 
   const isAllSelected = cartItems.length > 0 && selectedItems.length === cartItems.length;
+
+  const handleApplyVoucher = () => {
+    if (!voucherCode) return;
+    applyVoucherMutation.mutate({ code: voucherCode, orderValue: orderValueForVoucher }, {
+      onSuccess: (res) => {
+        if (res.status === "OK") {
+          setAppliedVoucher(res.data);
+        }
+      }
+    });
+  };
+
+  const handleRemoveVoucher = () => {
+    setAppliedVoucher(null);
+    setVoucherCode("");
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -279,10 +305,18 @@ const CartPage = () => {
                     <span>Tạm tính ({selectedItems.length} sản phẩm)</span>
                     <span className="text-foreground font-bold">{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(subtotal)}</span>
                   </div>
-                  <div className="flex justify-between text-sm font-medium text-muted-foreground">
-                    <span>Ưu đãi sản phẩm</span>
-                    <span className="text-destructive font-bold">-{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(totalDiscount)}</span>
-                  </div>
+                  {productDiscount > 0 && (
+                     <div className="flex justify-between text-sm font-medium text-muted-foreground">
+                       <span>Ưu đãi sản phẩm</span>
+                       <span className="text-destructive font-bold">-{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(productDiscount)}</span>
+                     </div>
+                  )}
+                  {voucherDiscount > 0 && (
+                     <div className="flex justify-between text-sm font-medium text-muted-foreground">
+                       <span>Giảm giá (Voucher)</span>
+                       <span className="text-emerald-500 font-bold">-{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(voucherDiscount)}</span>
+                     </div>
+                  )}
                   <div className="flex justify-between text-sm font-medium text-muted-foreground">
                     <span>Vận chuyển</span>
                     <span className="text-foreground font-bold">
@@ -294,13 +328,37 @@ const CartPage = () => {
                 <div className="space-y-4">
                    <div className="flex flex-col gap-2.5">
                       <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Mã ưu đãi</label>
-                      <div className="flex gap-2">
-                         <div className="relative flex-1">
-                            <Tag className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-                            <Input placeholder="NHAP-MA-GIAM-GIA" className="h-11 pl-9 rounded-xl text-xs font-bold bg-muted/30 border-none outline-none focus-visible:ring-1 focus-visible:ring-primary/20" />
+                      {appliedVoucher ? (
+                         <div className="flex items-center justify-between bg-primary/10 text-primary px-4 py-2 rounded-xl border border-primary/20">
+                           <span className="text-xs font-bold">{appliedVoucher.code}</span>
+                           <div className="flex items-center gap-2">
+                             <span className="text-xs">-{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(appliedVoucher.discountAmount)}</span>
+                             <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-primary/20" onClick={handleRemoveVoucher}>
+                               <ArrowLeft className="h-3 w-3 rotate-180" />
+                             </Button>
+                           </div>
                          </div>
-                         <Button variant="outline" className="h-11 rounded-xl border-2 font-black text-[10px] uppercase px-6">Áp dụng</Button>
-                      </div>
+                      ) : (
+                         <div className="flex gap-2">
+                            <div className="relative flex-1">
+                               <Tag className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                               <Input 
+                                 placeholder="Nhập mã..." 
+                                 className="h-11 pl-9 rounded-xl text-xs font-bold bg-muted/30 border-none outline-none focus-visible:ring-1 focus-visible:ring-primary/20"
+                                 value={voucherCode}
+                                 onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                               />
+                            </div>
+                            <Button 
+                              variant="outline" 
+                              className="h-11 rounded-xl border-2 font-black text-[10px] uppercase px-6"
+                              onClick={handleApplyVoucher}
+                              disabled={!voucherCode || applyVoucherMutation.isPending}
+                            >
+                              Áp dụng
+                            </Button>
+                         </div>
+                      )}
                    </div>
                 </div>
 
@@ -311,7 +369,7 @@ const CartPage = () => {
                        <p className="text-[9px] text-muted-foreground font-bold italic opacity-60">*Đã bao gồm VAT 8%</p>
                     </div>
                     <span className="text-3xl font-black text-primary tracking-tighter">
-                      {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(currentTotal + shippingPrice)}
+                      {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(finalTotal)}
                     </span>
                   </div>
 
@@ -377,7 +435,7 @@ const CartPage = () => {
           <div className="pl-6 flex flex-col">
             <span className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.2em] opacity-60 mb-0.5">Tổng cộng ({selectedItems.length})</span>
             <span className="text-2xl font-black text-primary tracking-tighter leading-none">
-              {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(currentTotal + shippingPrice)}
+              {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(finalTotal)}
             </span>
           </div>
           <Button 

@@ -37,7 +37,8 @@ import {
   Settings2,
   Trash2,
   Check,
-  Star
+  Star,
+  ShoppingBag
 } from "lucide-react";
 import { useUserOrders } from "@/features/orders/hooks/useOrders";
 import { Badge } from "@/components/ui/badge";
@@ -49,6 +50,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import { useWishlist } from "@/features/wishlist/hooks/useWishlist";
+import { ProductCard } from "@/features/products/components/ProductCard";
 
 const cubicBezier = [0.32, 0.72, 0, 1];
 
@@ -167,22 +170,28 @@ function ProfileInfo({ user, profileForm, profileMutation, onProfileSubmit, hand
 }
 
 function AddressesSection() {
-  const addresses = [
-    { id: 1, type: "Nhà riêng", name: "Nguyễn Văn A", phone: "0901234567", address: "123 Đường ABC, Phường 4, Quận 5, TP. Hồ Chí Minh", isDefault: true },
-    { id: 2, type: "Văn phòng", name: "Nguyễn Văn A", phone: "0901234567", address: "Tòa nhà Landmark 81, Bình Thạnh, TP. Hồ Chí Minh", isDefault: false }
-  ];
+  const { user } = useAuthStore();
+  const addressList = [];
+
+  if (user?.address) {
+    addressList.push({
+      id: user._id,
+      type: "Mặc định",
+      name: user.name,
+      phone: user.phone,
+      address: `${user.address}${user.city ? `, ${user.city}` : ""}`,
+      isDefault: true
+    });
+  }
 
   return (
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
       <div className="flex items-end justify-between">
         <SectionHeader title="Địa chỉ đã lưu" subtitle="Quản lý các địa điểm nhận hàng của bạn." />
-        <Button size="sm" className="mb-8 rounded-full font-black text-[9px] uppercase tracking-widest gap-2">
-           <Plus className="h-3 w-3" /> Thêm địa chỉ mới
-        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {addresses.map((addr) => (
+        {addressList.length > 0 ? addressList.map((addr) => (
           <Card key={addr.id} className={cn(
             "group relative overflow-hidden bg-white dark:bg-neutral-900 border-black/5 dark:border-white/5 ring-1 transition-all hover:shadow-md rounded-2xl",
             addr.isDefault ? "ring-primary/40 shadow-sm" : "ring-black/5"
@@ -192,10 +201,6 @@ function AddressesSection() {
                   <Badge variant={addr.isDefault ? "default" : "outline"} className="rounded-md text-[8px] font-black uppercase tracking-widest px-2 py-0">
                      {addr.type}
                   </Badge>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted text-muted-foreground"><Settings2 className="h-3.5 w-3.5" /></Button>
-                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-destructive/5 text-destructive/60"><Trash2 className="h-3.5 w-3.5" /></Button>
-                  </div>
                </div>
                <div className="space-y-1">
                   <h4 className="text-sm font-black tracking-tight">{addr.name}</h4>
@@ -204,12 +209,160 @@ function AddressesSection() {
                </div>
                {addr.isDefault && (
                  <div className="flex items-center gap-1.5 text-[9px] font-black text-primary uppercase tracking-widest">
-                    <CheckCircle2 className="h-3 w-3" /> Mặc định
+                    <CheckCircle2 className="h-3 w-3" /> Địa chỉ chính
                  </div>
                )}
             </CardContent>
           </Card>
+        )) : (
+          <div className="col-span-full p-12 rounded-[2.5rem] bg-white dark:bg-neutral-900 border-2 border-dashed border-black/5 flex flex-col items-center text-center gap-4">
+            <MapPin className="h-10 w-10 text-muted-foreground/30" />
+            <p className="text-sm font-medium text-muted-foreground">Bạn chưa thiết lập địa chỉ nào. Cập nhật trong Thông tin cá nhân.</p>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+function WishlistSection() {
+  const { data: wishlistData, isLoading } = useWishlist();
+  const products = wishlistData?.data || [];
+
+  return (
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
+      <SectionHeader title="Danh sách yêu thích" subtitle="Những sản phẩm bạn đang quan tâm." />
+
+      {isLoading ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="flex flex-col gap-3">
+              <Skeleton className="aspect-[4/5] w-full rounded-xl" />
+              <Skeleton className="h-3 w-2/3" />
+            </div>
+          ))}
+        </div>
+      ) : products.length > 0 ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {products.map((product) => (
+            <ProductCard key={product._id} product={product} />
+          ))}
+        </div>
+      ) : (
+        <div className="p-12 rounded-[2.5rem] bg-white dark:bg-neutral-900 border-2 border-dashed border-black/5 flex flex-col items-center text-center gap-4">
+          <Heart className="h-10 w-10 text-muted-foreground/30" />
+          <p className="text-sm font-medium text-muted-foreground">Danh sách yêu thích của bạn đang trống.</p>
+          <Button asChild className="rounded-full font-black text-[10px] uppercase mt-2">
+            <Link to="/products">Khám phá sản phẩm</Link>
+          </Button>
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+function NotificationsSection() {
+  const notifications = [
+    { id: 1, type: "order", title: "Đơn hàng đang giao", message: "Đơn hàng #123456 của bạn đang được giao. Vui lòng chú ý điện thoại.", time: "2 giờ trước", isRead: false },
+    { id: 2, type: "promo", title: "Khuyến mãi cuối tuần", message: "Giảm 20% cho tất cả các sản phẩm Apple. Số lượng có hạn!", time: "1 ngày trước", isRead: true },
+    { id: 3, type: "system", title: "Cập nhật hệ thống", message: "Hệ thống sẽ bảo trì từ 2h-4h sáng ngày mai. Mong bạn thông cảm.", time: "2 ngày trước", isRead: true },
+  ];
+
+  return (
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
+      <SectionHeader title="Thông báo" subtitle="Cập nhật mới nhất về đơn hàng và ưu đãi dành cho bạn." />
+
+      <div className="space-y-4">
+        {notifications.map((notif) => (
+          <div key={notif.id} className={cn(
+            "p-5 rounded-2xl border flex gap-4 transition-colors",
+            !notif.isRead ? "bg-primary/5 border-primary/20" : "bg-white dark:bg-neutral-900 border-black/5"
+          )}>
+            <div className={cn(
+              "h-10 w-10 rounded-full flex items-center justify-center shrink-0",
+              notif.type === "order" ? "bg-blue-500/10 text-blue-500" :
+              notif.type === "promo" ? "bg-emerald-500/10 text-emerald-500" :
+              "bg-muted text-muted-foreground"
+            )}>
+               <Bell className="h-5 w-5" />
+            </div>
+            <div className="flex flex-col gap-1">
+               <div className="flex justify-between items-start">
+                  <h4 className={cn("text-sm font-bold", !notif.isRead && "text-primary")}>{notif.title}</h4>
+                  <span className="text-[10px] text-muted-foreground whitespace-nowrap ml-4">{notif.time}</span>
+               </div>
+               <p className="text-xs text-muted-foreground leading-relaxed">{notif.message}</p>
+            </div>
+          </div>
         ))}
+      </div>
+    </motion.div>
+  );
+}
+
+function PaymentSection() {
+  return (
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
+      <div className="flex items-end justify-between">
+        <SectionHeader title="Phương thức thanh toán" subtitle="Quản lý thẻ và các tài khoản thanh toán của bạn." />
+        <Button size="sm" className="mb-8 rounded-full font-black text-[9px] uppercase tracking-widest gap-2">
+           <Plus className="h-3 w-3" /> Thêm thẻ mới
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="group relative overflow-hidden bg-white dark:bg-neutral-900 border-black/5 dark:border-white/5 ring-1 ring-primary/40 shadow-sm rounded-2xl transition-all">
+          <CardContent className="p-6 space-y-4">
+             <div className="flex justify-between items-start">
+                <div className="h-8 w-12 bg-[#1434CB] rounded flex items-center justify-center">
+                   <span className="text-white text-xs font-black italic">VISA</span>
+                </div>
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                   <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-destructive/5 text-destructive/60"><Trash2 className="h-3.5 w-3.5" /></Button>
+                </div>
+             </div>
+             <div className="space-y-1">
+                <h4 className="text-lg font-black tracking-widest">**** **** **** 4242</h4>
+                <div className="flex justify-between text-xs text-muted-foreground pt-2">
+                   <span className="uppercase tracking-widest">Nguyen Van A</span>
+                   <span>12/28</span>
+                </div>
+             </div>
+             <div className="flex items-center gap-1.5 text-[9px] font-black text-primary uppercase tracking-widest pt-2">
+                <CheckCircle2 className="h-3 w-3" /> Mặc định
+             </div>
+          </CardContent>
+        </Card>
+      </div>
+    </motion.div>
+  );
+}
+
+function SecuritySection() {
+  return (
+    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
+      <SectionHeader title="Bảo mật & Đăng nhập" subtitle="Bảo vệ tài khoản của bạn với các lớp bảo mật bổ sung." />
+
+      <div className="space-y-4">
+        <Card className="bg-white dark:bg-neutral-900 border-black/5 dark:border-white/5 ring-1 ring-black/5 rounded-2xl">
+          <CardContent className="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h4 className="text-sm font-bold">Đổi mật khẩu</h4>
+              <p className="text-xs text-muted-foreground">Bạn nên đổi mật khẩu định kỳ để bảo vệ tài khoản.</p>
+            </div>
+            <Button variant="outline" className="text-xs font-bold shrink-0">Cập nhật</Button>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-white dark:bg-neutral-900 border-black/5 dark:border-white/5 ring-1 ring-black/5 rounded-2xl">
+          <CardContent className="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h4 className="text-sm font-bold">Xác thực hai yếu tố (2FA)</h4>
+              <p className="text-xs text-muted-foreground">Thêm một lớp bảo mật khi đăng nhập vào tài khoản của bạn.</p>
+            </div>
+            <Button className="text-xs font-bold shrink-0">Thiết lập</Button>
+          </CardContent>
+        </Card>
       </div>
     </motion.div>
   );
@@ -314,6 +467,10 @@ export default function ProfilePage() {
                    />
                 )}
                 {activeSection === "address" && <AddressesSection key="address" />}
+                {activeSection === "wishlist" && <WishlistSection key="wishlist" />}
+                {activeSection === "notifications" && <NotificationsSection key="notifications" />}
+                {activeSection === "payment" && <PaymentSection key="payment" />}
+                {activeSection === "security" && <SecuritySection key="security" />}
                 {activeSection === "orders" && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                      <SectionHeader title="Lịch sử mua sắm" subtitle="Xem lại các đơn hàng bạn đã thực hiện." />
@@ -324,7 +481,7 @@ export default function ProfilePage() {
                   </motion.div>
                 )}
                 {/* Other sections can be added here with similar patterns */}
-                {!["profile", "address", "orders"].includes(activeSection) && (
+                {!["profile", "address", "wishlist", "orders", "notifications"].includes(activeSection) && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-20 flex flex-col items-center justify-center text-center gap-4 bg-white dark:bg-neutral-900 rounded-[2rem] border ring-1 ring-black/5">
                      <Settings2 className="h-10 w-10 text-muted-foreground/20 animate-spin-slow" />
                      <h3 className="text-lg font-black tracking-tight">Tính năng đang phát triển</h3>

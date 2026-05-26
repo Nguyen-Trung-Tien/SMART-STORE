@@ -37,6 +37,7 @@ import {
 import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
 import { checkoutService } from "@/features/checkout/services/checkoutService";
+import { useApplyVoucher } from "@/features/checkout/hooks/useVoucher";
 import { useMutation } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -122,6 +123,10 @@ export default function CheckoutPage() {
   const { user } = useAuthStore();
   const [step, setStep] = useState(1); 
 
+  const [voucherCode, setVoucherCode] = useState("");
+  const [appliedVoucher, setAppliedVoucher] = useState(null);
+  const applyVoucherMutation = useApplyVoucher();
+
   // Filter only selected items for this checkout session
   const activeCheckoutItems = useMemo(() => 
     cartItems.filter(item => selectedItems.includes(item.product)),
@@ -129,7 +134,7 @@ export default function CheckoutPage() {
   );
 
   const subtotal = useMemo(() => activeCheckoutItems.reduce((total, item) => total + item.price * item.amount, 0), [activeCheckoutItems]);
-  const totalDiscount = useMemo(() => activeCheckoutItems.reduce((total, item) => total + (item.price * item.discount / 100) * item.amount, 0), [activeCheckoutItems]);
+  const productDiscount = useMemo(() => activeCheckoutItems.reduce((total, item) => total + (item.price * item.discount / 100) * item.amount, 0), [activeCheckoutItems]);
   
   const form = useForm({
     resolver: zodResolver(checkoutSchema),
@@ -151,7 +156,26 @@ export default function CheckoutPage() {
     return subtotal > 500000 ? 0 : 30000;
   }, [selectedShipping, subtotal]);
 
-  const totalPrice = subtotal - totalDiscount + shippingPrice;
+  const orderValueForVoucher = subtotal - productDiscount;
+  const voucherDiscount = appliedVoucher ? appliedVoucher.discountAmount : 0;
+  const totalDiscount = productDiscount + voucherDiscount;
+  const totalPrice = Math.max(0, subtotal - totalDiscount + shippingPrice);
+
+  const handleApplyVoucher = () => {
+    if (!voucherCode) return;
+    applyVoucherMutation.mutate({ code: voucherCode, orderValue: orderValueForVoucher }, {
+      onSuccess: (res) => {
+        if (res.status === "OK") {
+          setAppliedVoucher(res.data);
+        }
+      }
+    });
+  };
+
+  const handleRemoveVoucher = () => {
+    setAppliedVoucher(null);
+    setVoucherCode("");
+  };
 
   const mutation = useMutation({
     mutationFn: (data) => checkoutService.createOrder(data, user?._id),
@@ -476,13 +500,37 @@ export default function CheckoutPage() {
                   <div className="space-y-4 pt-4">
                      <div className="flex flex-col gap-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Mã ưu đãi</label>
-                        <div className="flex gap-2">
-                           <div className="relative flex-1">
-                              <Tag className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-                              <Input placeholder="SMART2026" className="h-11 pl-9 rounded-xl text-xs font-bold bg-muted/30 border-none outline-none focus-visible:ring-1 focus-visible:ring-primary/20" />
-                           </div>
-                           <Button variant="outline" className="h-11 rounded-xl border-2 font-black text-[10px] uppercase px-4">Áp dụng</Button>
-                        </div>
+                        {appliedVoucher ? (
+                          <div className="flex items-center justify-between bg-primary/10 text-primary px-4 py-2 rounded-xl border border-primary/20">
+                            <span className="text-xs font-bold">{appliedVoucher.code}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs">-{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(appliedVoucher.discountAmount)}</span>
+                              <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-primary/20" onClick={handleRemoveVoucher}>
+                                <ArrowLeft className="h-3 w-3 rotate-180" />
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex gap-2">
+                             <div className="relative flex-1">
+                                <Tag className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                                <Input 
+                                  placeholder="Nhập mã..." 
+                                  className="h-11 pl-9 rounded-xl text-xs font-bold bg-muted/30 border-none outline-none focus-visible:ring-1 focus-visible:ring-primary/20"
+                                  value={voucherCode}
+                                  onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                                />
+                             </div>
+                             <Button 
+                               variant="outline" 
+                               className="h-11 rounded-xl border-2 font-black text-[10px] uppercase px-4"
+                               onClick={handleApplyVoucher}
+                               disabled={!voucherCode || applyVoucherMutation.isPending}
+                             >
+                               Áp dụng
+                             </Button>
+                          </div>
+                        )}
                      </div>
                   </div>
 
@@ -491,10 +539,18 @@ export default function CheckoutPage() {
                         <span>Tạm tính</span>
                         <span className="text-foreground font-bold">{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(subtotal)}</span>
                      </div>
-                     <div className="flex justify-between text-xs font-medium text-muted-foreground">
-                        <span>Ưu đãi sản phẩm</span>
-                        <span className="text-destructive font-bold">-{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(totalDiscount)}</span>
-                     </div>
+                     {productDiscount > 0 && (
+                       <div className="flex justify-between text-xs font-medium text-muted-foreground">
+                          <span>Ưu đãi sản phẩm</span>
+                          <span className="text-destructive font-bold">-{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(productDiscount)}</span>
+                       </div>
+                     )}
+                     {voucherDiscount > 0 && (
+                       <div className="flex justify-between text-xs font-medium text-muted-foreground">
+                          <span>Giảm giá (Voucher)</span>
+                          <span className="text-emerald-500 font-bold">-{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(voucherDiscount)}</span>
+                       </div>
+                     )}
                      <div className="flex justify-between text-xs font-medium text-muted-foreground">
                         <span>Vận chuyển ({selectedShipping === "EXPRESS" ? "Hỏa tốc" : "Tiêu chuẩn"})</span>
                         <span className="text-foreground font-bold">
