@@ -1,0 +1,96 @@
+export const ROLES = {
+  SUPER_ADMIN: "Super Admin",
+  ADMIN: "Admin",
+  MANAGER: "Manager",
+  PRODUCT_MANAGER: "Product Manager",
+  INVENTORY_MANAGER: "Inventory Manager",
+  ORDER_MANAGER: "Order Manager",
+  CUSTOMER_SUPPORT: "Customer Support",
+  FINANCE_MANAGER: "Finance Manager",
+  MARKETING_MANAGER: "Marketing Manager",
+  MODERATOR: "Moderator",
+  READ_ONLY_ANALYST: "Read-only Analyst",
+  USER: "User",
+};
+
+export const PERMISSIONS = {
+  // Products
+  PRODUCT_CREATE: "product.create",
+  PRODUCT_READ: "product.read",
+  PRODUCT_UPDATE: "product.update",
+  PRODUCT_DELETE: "product.delete",
+  
+  // Categories
+  CATEGORY_CREATE: "category.create",
+  CATEGORY_READ: "category.read",
+  CATEGORY_UPDATE: "category.update",
+  CATEGORY_DELETE: "category.delete",
+
+  // Orders
+  ORDER_READ: "order.read",
+  ORDER_UPDATE: "order.update",
+  ORDER_DELETE: "order.delete",
+  ORDER_REFUND: "order.refund",
+
+  // Users
+  USER_CREATE: "users.create",
+  USER_READ: "users.read",
+  USER_UPDATE: "users.update",
+  USER_DELETE: "users.delete",
+  USER_MANAGE: "users.manage",
+
+  // Roles & Permissions
+  ROLE_MANAGE: "roles.manage",
+
+  // Analytics
+  ANALYTICS_READ: "analytics.read",
+
+  // Settings
+  SETTINGS_EDIT: "settings.edit",
+  
+  // Inventory
+  INVENTORY_READ: "inventory.read",
+  INVENTORY_UPDATE: "inventory.update",
+  
+  // Finance
+  FINANCE_READ: "finance.read",
+  FINANCE_EXPORT: "finance.export",
+
+  // Marketing
+  PROMOTION_MANAGE: "promotions.manage",
+  
+  // Content
+  CONTENT_MANAGE: "content.manage",
+
+  // Reviews
+  REVIEW_MANAGE: "reviews.manage",
+};
+
+export const ROLE_PERMISSIONS = {
+  [ROLES.SUPER_ADMIN]: Object.values(PERMISSIONS),
+  [ROLES.ADMIN]: Object.values(PERMISSIONS).filter(p => p !== PERMISSIONS.ROLE_MANAGE),
+  [ROLES.PRODUCT_MANAGER]: [
+    PERMISSIONS.PRODUCT_CREATE, PERMISSIONS.PRODUCT_READ, PERMISSIONS.PRODUCT_UPDATE, PERMISSIONS.PRODUCT_DELETE,
+    PERMISSIONS.CATEGORY_CREATE, PERMISSIONS.CATEGORY_READ, PERMISSIONS.CATEGORY_UPDATE, PERMISSIONS.CATEGORY_DELETE,
+    PERMISSIONS.INVENTORY_READ,
+  ],
+  [ROLES.INVENTORY_MANAGER]: [
+    PERMISSIONS.PRODUCT_READ, PERMISSIONS.INVENTORY_READ, PERMISSIONS.INVENTORY_UPDATE
+  ],
+  [ROLES.ORDER_MANAGER]: [
+    PERMISSIONS.ORDER_READ, PERMISSIONS.ORDER_UPDATE, PERMISSIONS.ORDER_REFUND
+  ],
+  [ROLES.CUSTOMER_SUPPORT]: [
+    PERMISSIONS.USER_READ, PERMISSIONS.ORDER_READ, PERMISSIONS.REVIEW_MANAGE
+  ],
+  [ROLES.FINANCE_MANAGER]: [
+    PERMISSIONS.ORDER_READ, PERMISSIONS.FINANCE_READ, PERMISSIONS.FINANCE_EXPORT, PERMISSIONS.ANALYTICS_READ
+  ],
+  [ROLES.MARKETING_MANAGER]: [
+    PERMISSIONS.PROMOTION_MANAGE, PERMISSIONS.CONTENT_MANAGE, PERMISSIONS.ANALYTICS_READ
+  ],
+  [ROLES.READ_ONLY_ANALYST]: [
+    PERMISSIONS.PRODUCT_READ, PERMISSIONS.CATEGORY_READ, PERMISSIONS.ORDER_READ, PERMISSIONS.USER_READ, PERMISSIONS.ANALYTICS_READ, PERMISSIONS.FINANCE_READ, PERMISSIONS.INVENTORY_READ
+  ],
+  [ROLES.USER]: [],
+};

@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     phone: { type: String },
     isAdmin: { type: Boolean, default: false },
-    role: { type: String, enum: ["admin", "user", "support", "vendor"], default: "user" },
+    role: { type: String, default: "User" },
+    permissions: [{ type: String }], // Optional: fine-grained user specific permissions overriding role
     address: { type: String },
     avatar: { type: String },
     city: { type: String },

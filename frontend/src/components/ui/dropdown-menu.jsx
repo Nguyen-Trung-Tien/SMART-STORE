@@ -20,6 +20,7 @@ function DropdownMenuPortal({
 
 function DropdownMenuTrigger({
   asChild = false,
+  nativeButton,
   ...props
 }) {
   if (asChild) {
@@ -27,13 +28,13 @@ function DropdownMenuTrigger({
       <MenuPrimitive.Trigger
         data-slot="dropdown-menu-trigger"
         render={props.children}
-        nativeButton={false}
+        nativeButton={nativeButton}
         {...props}
         children={undefined}
       />
     );
   }
-  return <MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />;
+  return <MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" nativeButton={nativeButton} {...props} />;
 }
 
 function DropdownMenuContent({

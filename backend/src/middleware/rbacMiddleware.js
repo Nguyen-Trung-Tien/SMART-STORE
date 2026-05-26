@@ -1,19 +1,63 @@
-const checkRole = (roles) => (req, res, next) => {
-  if (!req.user) {
-    return res.status(401).json({
-      status: 'error',
-      message: 'Unauthorized',
-    });
-  }
+import { ROLE_PERMISSIONS } from "../constants/permissions.js";
+import Role from "../models/RoleModel.js";
 
-  if (!roles.includes(req.user.role)) {
-    return res.status(403).json({
-      status: 'error',
-      message: 'Forbidden: You do not have permission to access this resource',
-    });
-  }
+export const requirePermission = (requiredPermission) => {
+  return async (req, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ status: "ERROR", message: "Unauthorized" });
+      }
 
-  next();
+      // Check if user has direct permission
+      if (req.user.permissions && req.user.permissions.includes(requiredPermission)) {
+        return next();
+      }
+
+      // Check role-based permission
+      const userRole = req.user.role;
+      let rolePermissions = [];
+
+      // Check if role is in DB
+      const roleDoc = await Role.findOne({ name: userRole });
+      if (roleDoc) {
+        rolePermissions = roleDoc.permissions;
+      } else {
+        // Fallback to constants
+        rolePermissions = ROLE_PERMISSIONS[userRole] || [];
+      }
+
+      // Super Admin bypass
+      if (userRole === "Super Admin" || rolePermissions.includes(requiredPermission)) {
+        return next();
+      }
+
+      return res.status(403).json({
+        status: "ERROR",
+        message: `Forbidden: Missing required permission: ${requiredPermission}`,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: "ERROR",
+        message: "Error checking permissions",
+        error: error.message
+      });
+    }
+  };
 };
 
-module.exports = { checkRole };
+export const requireRole = (allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ status: "ERROR", message: "Unauthorized" });
+    }
+
+    if (!allowedRoles.includes(req.user.role) && req.user.role !== "Super Admin") {
+      return res.status(403).json({
+        status: "ERROR",
+        message: "Forbidden: Insufficient role",
+      });
+    }
+
+    next();
+  };
+};
