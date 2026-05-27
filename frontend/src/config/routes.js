@@ -1,0 +1,16 @@
+export const routePaths = {
+  home: "/",
+  products: "/products",
+  productDetail: "/product/:slug",
+  cart: "/cart",
+  login: "/login",
+  register: "/register",
+  checkout: "/checkout",
+  orders: "/orders",
+  profile: "/profile",
+  admin: "/admin",
+  adminDashboard: "/admin/dashboard",
+  adminProducts: "/admin/products",
+  adminOrders: "/admin/orders",
+  adminUsers: "/admin/users",
+};

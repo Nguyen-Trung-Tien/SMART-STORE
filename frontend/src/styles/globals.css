@@ -1,0 +1,35 @@
+@import "./variables.css";
+@import "./animations.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-background font-sans text-foreground antialiased;
+    background-image:
+      radial-gradient(circle at top, rgba(249, 115, 22, 0.12), transparent 28%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.95));
+  }
+
+  .dark body {
+    background-image:
+      radial-gradient(circle at top, rgba(249, 115, 22, 0.2), transparent 24%),
+      linear-gradient(to bottom, rgba(2, 6, 23, 0.92), rgba(2, 6, 23, 1));
+  }
+}
+
+@layer utilities {
+  .surface {
+    @apply rounded-3xl border border-border/60 bg-card/90 shadow-soft backdrop-blur;
+  }
+}
