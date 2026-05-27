@@ -14,7 +14,7 @@ function decodeJwt(token) {
 export const authService = {
   async login(payload) {
     const response = await authApi.login(payload);
-    tokenService.setAccessToken(response?.access_token);
+    tokenService.setAccessToken(response?.access_token || response?.data?.access_token);
     return response;
   },
   async register(payload) {
@@ -22,7 +22,7 @@ export const authService = {
   },
   async refresh() {
     const response = await authApi.refreshToken();
-    tokenService.setAccessToken(response?.access_token);
+    tokenService.setAccessToken(response?.access_token || response?.data?.access_token);
     return response;
   },
   getSessionUser(token) {

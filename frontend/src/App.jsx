@@ -17,12 +17,14 @@ function AppBootstrap({ error, reset }) {
     const hydrate = async () => {
       try {
         const refreshed = await authService.refresh();
-        if (!mounted || !refreshed?.access_token) {
+        const accessToken = refreshed?.access_token || refreshed?.data?.access_token;
+
+        if (!mounted || !accessToken) {
           dispatch(markHydrated());
           return;
         }
 
-        const sessionUser = authService.getSessionUser(refreshed.access_token);
+        const sessionUser = authService.getSessionUser(accessToken);
         let profile = sessionUser;
 
         if (sessionUser?.id) {
@@ -36,7 +38,7 @@ function AppBootstrap({ error, reset }) {
 
         dispatch(
           setCredentials({
-            accessToken: refreshed.access_token,
+            accessToken,
             user: profile,
           })
         );

@@ -35,10 +35,19 @@ export const reviewSchema = z.object({
 export const productSchema = z.object({
   name: z.string().min(3, "Product name is required."),
   type: z.string().min(2, "Type is required."),
+  brand: z.string().max(80, "Brand must be 80 characters or fewer.").optional(),
+  category: z.string().optional(),
   price: z.coerce.number().positive("Price must be positive."),
+  compareAtPrice: z
+    .union([z.coerce.number().nonnegative("Compare-at price must be 0 or more."), z.literal("")])
+    .optional()
+    .transform((value) => (value === "" || value == null ? undefined : value)),
   countInStock: z.coerce.number().int().nonnegative("Stock cannot be negative."),
-  rating: z.coerce.number().min(0).max(5),
-  image: z.string().url("Image must be a valid URL."),
+  status: z.enum(["draft", "active", "inactive", "archived"]).default("active"),
+  isFeatured: z.boolean().default(false),
   description: z.string().min(10, "Description is required."),
+  shortDescription: z.string().max(500, "Short description must be 500 characters or fewer.").optional(),
   discount: z.coerce.number().min(0).max(100).default(0),
+  tags: z.string().optional(),
+  searchKeywords: z.string().optional(),
 });

@@ -21,6 +21,8 @@ const LoginPage = lazy(() => import("@/pages/Auth/Login"));
 const RegisterPage = lazy(() => import("@/pages/Auth/Register"));
 const AdminDashboardPage = lazy(() => import("@/pages/Admin/Dashboard"));
 const AdminProductsPage = lazy(() => import("@/pages/Admin/Products"));
+const ProductCreatePage = lazy(() => import("@/pages/Admin/Product/ProductCreatePage"));
+const ProductEditPage = lazy(() => import("@/pages/Admin/Product/ProductEditPage"));
 const AdminOrdersPage = lazy(() => import("@/pages/Admin/Orders"));
 const AdminUsersPage = lazy(() => import("@/pages/Admin/Users"));
 const NotFoundPage = lazy(() => import("@/pages/NotFound"));
@@ -84,6 +86,8 @@ export const router = createBrowserRouter([
                   { path: "admin", element: <AdminDashboardPage /> },
                   { path: "admin/dashboard", element: <AdminDashboardPage /> },
                   { path: "admin/products", element: <AdminProductsPage /> },
+                  { path: "admin/products/create", element: <ProductCreatePage /> },
+                  { path: "admin/products/:id/edit", element: <ProductEditPage /> },
                   { path: "admin/orders", element: <AdminOrdersPage /> },
                   { path: "admin/users", element: <AdminUsersPage /> },
                 ],

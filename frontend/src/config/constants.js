@@ -1,10 +1,12 @@
+import { queryKeys as baseQueryKeys } from "@/lib/queryKeys";
+
 export const queryKeys = {
-  authUser: ["auth", "user"],
-  products: ["products"],
-  productDetail: (id) => ["products", id],
-  orders: (userId) => ["orders", userId],
-  adminOrders: ["admin-orders"],
-  users: ["users"],
+  ...baseQueryKeys,
+  users: baseQueryKeys.users.list,
+  orders: (userId) => baseQueryKeys.orders.list(userId),
+  adminOrders: baseQueryKeys.orders.admin,
+  products: baseQueryKeys.products.all,
+  productDetail: (id) => baseQueryKeys.products.byId(id),
 };
 
 export const storageKeys = {

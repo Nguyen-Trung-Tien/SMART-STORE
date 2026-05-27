@@ -1,23 +1,21 @@
 import { useMemo, useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { PageHeader } from "@/components/common/PageHeader";
 import { DataTable } from "@/components/table/DataTable";
 import { ConfirmDialog } from "@/components/modals/ConfirmDialog";
-import { ProductForm } from "@/features/admin/components/ProductForm";
 import { useDisclosure } from "@/hooks/useDisclosure";
 import { formatCurrency } from "@/lib/formatter";
 import { useAdminProductMutations, useProducts } from "@/features/product/hooks/useProducts";
 
 export default function AdminProductsPage() {
+  const navigate = useNavigate();
   const productsQuery = useProducts({ limit: 20, page: 0 });
-  const { createProduct, updateProduct, deleteProduct } = useAdminProductMutations();
+  const { deleteProduct } = useAdminProductMutations();
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const createDialog = useDisclosure(false);
-  const editDialog = useDisclosure(false);
   const deleteDialog = useDisclosure(false);
 
   const rows = productsQuery.data?.items || [];
@@ -36,8 +34,7 @@ export default function AdminProductsPage() {
               variant="outline"
               size="icon"
               onClick={() => {
-                setSelectedProduct(row);
-                editDialog.open();
+                navigate(`/admin/products/${row._id}/edit`);
               }}
             >
               <Pencil className="h-4 w-4" />
@@ -56,28 +53,8 @@ export default function AdminProductsPage() {
         ),
       },
     ],
-    [deleteDialog, editDialog]
+    [deleteDialog, navigate]
   );
-
-  const handleCreate = async (values) => {
-    try {
-      await createProduct.mutateAsync(values);
-      toast.success("Product created.");
-      createDialog.close();
-    } catch (error) {
-      toast.error(error.response?.data?.message || error.message || "Failed to create product.");
-    }
-  };
-
-  const handleUpdate = async (values) => {
-    try {
-      await updateProduct.mutateAsync({ id: selectedProduct._id, payload: values });
-      toast.success("Product updated.");
-      editDialog.close();
-    } catch (error) {
-      toast.error(error.response?.data?.message || error.message || "Failed to update product.");
-    }
-  };
 
   const handleDelete = async () => {
     try {
@@ -94,22 +71,12 @@ export default function AdminProductsPage() {
       <PageHeader
         eyebrow="Admin CRUD"
         title="Manage products"
-        description="This module shows modal forms, optimistic deletion, and per-domain API isolation."
+        description="Create and edit products on dedicated pages with media upload, preview, ordering, and optimistic list updates."
         actions={
-          <Dialog open={createDialog.isOpen} onOpenChange={(value) => (value ? createDialog.open() : createDialog.close())}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4" />
-                New product
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-3xl">
-              <DialogHeader>
-                <DialogTitle>Create product</DialogTitle>
-              </DialogHeader>
-              <ProductForm onSubmit={handleCreate} isSubmitting={createProduct.isPending} />
-            </DialogContent>
-          </Dialog>
+          <Button onClick={() => navigate("/admin/products/create")}>
+            <Plus className="h-4 w-4" />
+            New product
+          </Button>
         }
       />
       <Card>
@@ -117,15 +84,6 @@ export default function AdminProductsPage() {
           <DataTable columns={columns} rows={rows} />
         </CardContent>
       </Card>
-
-      <Dialog open={editDialog.isOpen} onOpenChange={(value) => (value ? editDialog.open() : editDialog.close())}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Edit product</DialogTitle>
-          </DialogHeader>
-          <ProductForm initialValues={selectedProduct} onSubmit={handleUpdate} isSubmitting={updateProduct.isPending} />
-        </DialogContent>
-      </Dialog>
 
       <ConfirmDialog
         open={deleteDialog.isOpen}

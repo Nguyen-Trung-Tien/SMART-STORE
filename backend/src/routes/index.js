@@ -8,10 +8,12 @@ import AnalyticsRouter from "./AnalyticsRouter.js";
 import WishlistRouter from "./WishlistRouter.js";
 import VoucherRouter from "./VoucherRouter.js";
 import ReviewRouter from "./ReviewRouter.js";
+import UploadRouter from "./UploadRouter.js";
 
 const routes = (app) => {
   app.use("/api/user", UserRouter);
   app.use("/api/product", ProductRouter);
+  app.use("/api/products", ProductRouter);
   app.use("/api/order", OrderRouter);
   app.use("/api/payment", PaymentRouter);
   app.use("/api/vnpay", vnpayRouter);
@@ -20,6 +22,7 @@ const routes = (app) => {
   app.use("/api/wishlist", WishlistRouter);
   app.use("/api/voucher", VoucherRouter);
   app.use("/api/review", ReviewRouter);
+  app.use("/api/upload", UploadRouter);
 };
 
 export default routes;

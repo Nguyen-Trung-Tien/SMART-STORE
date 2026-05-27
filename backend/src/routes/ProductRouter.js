@@ -6,12 +6,23 @@ import { PERMISSIONS } from "../constants/permissions.js";
 
 const router = express.Router();
 
-router.post("/create", authMiddleware, requirePermission(PERMISSIONS.PRODUCT_CREATE), productController.createProduct);
-router.put("/update/:id", authMiddleware, requirePermission(PERMISSIONS.PRODUCT_UPDATE), productController.updateProduct);
-router.get("/get-details/:id", productController.getDetailsProduct);
-router.delete("/delete/:id", authMiddleware, requirePermission(PERMISSIONS.PRODUCT_DELETE), productController.deleteProduct);
+const canCreateProduct = [authMiddleware, requirePermission(PERMISSIONS.PRODUCT_CREATE)];
+const canUpdateProduct = [authMiddleware, requirePermission(PERMISSIONS.PRODUCT_UPDATE)];
+const canDeleteProduct = [authMiddleware, requirePermission(PERMISSIONS.PRODUCT_DELETE)];
+
 router.get("/get-all", productController.getAllProduct);
-router.post("/delete-many", authMiddleware, requirePermission(PERMISSIONS.PRODUCT_DELETE), productController.deleteManyProduct);
+router.get("/get-details/:id", productController.getDetailsProduct);
 router.get("/get-all-type", productController.getAllType);
+router.post("/create", ...canCreateProduct, productController.createProduct);
+router.put("/update/:id", ...canUpdateProduct, productController.updateProduct);
+router.patch("/update/:id", ...canUpdateProduct, productController.updateProduct);
+router.delete("/delete/:id", ...canDeleteProduct, productController.deleteProduct);
+router.post("/delete-many", ...canDeleteProduct, productController.deleteManyProduct);
+
+router.get("/", productController.getAllProduct);
+router.post("/", ...canCreateProduct, productController.createProduct);
+router.patch("/:id", ...canUpdateProduct, productController.updateProduct);
+router.delete("/:id", ...canDeleteProduct, productController.deleteProduct);
+router.get("/:slug", productController.getProductBySlug);
 
 export default router;

@@ -1,14 +1,34 @@
-import mongoose from 'mongoose';
+import { Schema, baseSchemaOptions, registerModel } from "./schemaHelpers.js";
 
-const wishlistSchema = new mongoose.Schema(
+const wishlistSchema = new Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
+      index: true,
+    },
+    products: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Product",
+        },
+      ],
+      default: [],
+    },
   },
-  {
-    timestamps: true,
-  }
+  baseSchemaOptions
 );
 
-const Wishlist = mongoose.model('Wishlist', wishlistSchema);
+wishlistSchema.index({ updatedAt: -1 });
+
+wishlistSchema.pre("save", function wishlistPreSave(next) {
+  const uniqueIds = [...new Set(this.products.map((item) => item.toString()))];
+  this.products = uniqueIds;
+  return next();
+});
+
+const Wishlist = registerModel("Wishlist", wishlistSchema);
 export default Wishlist;
