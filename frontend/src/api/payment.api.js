@@ -8,7 +8,12 @@ export function getPaypalConfig() {
   return apiClient.get("/payment/config");
 }
 
+export function verifyVnpayPayment(params) {
+  return apiClient.post("/vnpay/verify", params);
+}
+
 export const paymentApi = {
   createVnpayPaymentUrl,
   getPaypalConfig,
+  verifyVnpayPayment,
 };

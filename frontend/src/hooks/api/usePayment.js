@@ -14,3 +14,10 @@ export function usePaypalConfig() {
     select: (response) => response?.data || "",
   });
 }
+
+export function useVerifyVnpayPayment() {
+  return useMutation({
+    mutationFn: (params) => paymentApi.verifyVnpayPayment(params),
+  });
+}
+

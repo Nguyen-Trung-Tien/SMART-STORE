@@ -102,6 +102,12 @@ const getAllOrder = async (req, res, next) => {
 
 const updateOrderStatus = async (req, res, next) => {
   try {
+    if (!req.user || !req.user.isAdmin) {
+      return res.status(403).json({
+        status: "ERR",
+        message: "Permission denied. Only administrators can update order status."
+      });
+    }
     const orderId = req.params.id;
     const data = req.body;
     if (!orderId) {

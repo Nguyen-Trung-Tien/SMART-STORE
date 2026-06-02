@@ -4,7 +4,7 @@ import { CheckCircle2, XCircle, Loader2, ArrowRight, ShoppingBag, Receipt } from
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { useUpdateOrderStatus } from "@/features/order/hooks/useOrders";
+import { useVerifyVnpayPayment } from "@/hooks/api/usePayment";
 import { formatCurrency } from "@/lib/formatter";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -13,7 +13,7 @@ dayjs.extend(customParseFormat);
 
 export default function VnpayReturnPage() {
   const [searchParams] = useSearchParams();
-  const updateOrderStatus = useUpdateOrderStatus();
+  const verifyVnpayPayment = useVerifyVnpayPayment();
   const [status, setStatus] = useState("loading"); // "loading" | "success" | "error"
   const [errorMsg, setErrorMsg] = useState("");
   const updateCalled = useRef(false);
@@ -32,41 +32,21 @@ export default function VnpayReturnPage() {
 
   useEffect(() => {
     if (updateCalled.current) return;
+    updateCalled.current = true;
+    setStatus("loading");
 
-    if (responseCode === "00") {
-      if (orderId) {
-        updateCalled.current = true;
-        setStatus("loading");
-        updateOrderStatus.mutate(
-          {
-            orderId,
-            payload: {
-              isPaid: true,
-              paymentStatus: "paid",
-              status: "Paid",
-              paidAt: new Date(),
-            },
-          },
-          {
-            onSuccess: () => {
-              setStatus("success");
-            },
-            onError: (err) => {
-              console.error("Failed to update order status", err);
-              setStatus("error");
-              setErrorMsg(err.message || "Failed to update order payment status on server.");
-            },
-          }
-        );
-      } else {
+    const params = Object.fromEntries(new URLSearchParams(window.location.search));
+    verifyVnpayPayment.mutate(params, {
+      onSuccess: () => {
+        setStatus("success");
+      },
+      onError: (err) => {
+        console.error("Failed to verify VNPay payment", err);
         setStatus("error");
-        setErrorMsg("Order reference was not provided in the payment response.");
-      }
-    } else {
-      setStatus("error");
-      setErrorMsg("Payment transaction was cancelled or failed by the merchant/bank.");
-    }
-  }, [responseCode, orderId, updateOrderStatus]);
+        setErrorMsg(err.message || "Failed to verify payment status on server.");
+      },
+    });
+  }, [verifyVnpayPayment]);
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 page-enter">
