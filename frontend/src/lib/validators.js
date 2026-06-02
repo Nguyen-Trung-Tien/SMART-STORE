@@ -2,14 +2,14 @@ import { z } from "zod";
 
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email."),
-  password: z.string().min(6, "Password must be at least 6 characters."),
+  password: z.string().min(5, "Password must be at least 5 characters."),
 });
 
 export const registerSchema = loginSchema
   .extend({
     name: z.string().min(2, "Name must be at least 2 characters."),
     phone: z.string().min(8, "Phone must be at least 8 digits."),
-    confirmPassword: z.string().min(6, "Confirm your password."),
+    confirmPassword: z.string().min(5, "Confirm your password."),
   })
   .refine((values) => values.password === values.confirmPassword, {
     path: ["confirmPassword"],
@@ -22,7 +22,7 @@ export const checkoutSchema = z.object({
   city: z.string().min(2, "City is required."),
   phone: z.string().min(8, "Phone is required."),
   email: z.string().email("Valid email is required."),
-  paymentMethod: z.enum(["COD", "CARD"], {
+  paymentMethod: z.enum(["COD", "CARD", "VNPAY"], {
     message: "Choose a payment method.",
   }),
 });
