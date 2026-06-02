@@ -18,6 +18,7 @@ const createReview = (userId, data) => {
         user: userId,
         rating,
         comment,
+        images: data.images, // Add this line
       });
 
       // Update product rating

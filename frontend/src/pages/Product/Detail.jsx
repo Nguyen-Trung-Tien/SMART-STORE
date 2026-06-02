@@ -14,6 +14,7 @@ import {
   Sparkles,
   Star,
   Heart,
+  X,
 } from "lucide-react";
 import { useWishlist, useToggleWishlist } from "@/hooks/api/useWishlist";
 import { Badge } from "@/components/ui/badge";
@@ -25,15 +26,17 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { LoadingScreen } from "@/components/feedback/LoadingScreen";
 import { ErrorState } from "@/components/common/ErrorState";
 import { extractIdFromSlug } from "@/lib/utils";
 import { formatCurrency, formatDate } from "@/lib/formatter";
 import { useProductById } from "@/hooks/api/useProduct";
-import { useProductReviews } from "@/hooks/api/useReviews";
+import { useProductReviews, useCreateReview } from "@/hooks/api/useReviews";
 import { addToCart } from "@/store/slices/cartSlice";
 import { toast } from "@/components/ui/sonner";
+import { uploadApi } from "@/api/upload.api";
 
 function buildProductImages(product) {
   const allImages = [
@@ -174,6 +177,14 @@ export default function ProductDetailPage() {
   const [isZoomActive, setIsZoomActive] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
+  const createReviewMutation = useCreateReview(productId);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+
   if (productQuery.isLoading) {
     return <LoadingScreen message="Loading product details..." />;
   }
@@ -243,6 +254,66 @@ export default function ProductDetailPage() {
       })
     );
     toast.success(`${product.name} added to cart.`);
+  };
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (rating < 1 || rating > 5) {
+      toast.error("Please select a rating between 1 and 5 stars.");
+      return;
+    }
+    if (comment.trim().length < 3) {
+      toast.error("Review comment must be at least 3 characters.");
+      return;
+    }
+
+    try {
+      let imageUrls = [];
+      if (selectedFiles.length > 0) {
+        setIsUploading(true);
+        const formData = new FormData();
+        selectedFiles.forEach((file) => {
+          formData.append("images", file);
+        });
+
+        const uploadRes = await uploadApi.uploadMultipleFiles(formData);
+        if (uploadRes?.status === "ERR") {
+          throw new Error(uploadRes?.message || "Failed to upload images");
+        }
+        
+        imageUrls = uploadRes?.data?.map((img) => img.url) || [];
+      }
+
+      createReviewMutation.mutate(
+        {
+          product: productId,
+          rating,
+          comment,
+          images: imageUrls,
+        },
+        {
+          onSuccess: (res) => {
+            setIsUploading(false);
+            if (res?.status === "ERR") {
+              toast.error(res?.message || "Failed to submit review");
+              return;
+            }
+            toast.success("Review submitted successfully!");
+            setIsReviewModalOpen(false);
+            setRating(5);
+            setComment("");
+            setSelectedFiles([]);
+          },
+          onError: (err) => {
+            setIsUploading(false);
+            toast.error(err?.message || "An error occurred while submitting review.");
+          },
+        }
+      );
+    } catch (err) {
+      setIsUploading(false);
+      toast.error(err?.message || "Failed to upload images.");
+    }
   };
 
   return (
@@ -569,14 +640,19 @@ export default function ProductDetailPage() {
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">Reviews</p>
               <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-950">What customers are saying</h2>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1">{renderStars(product.rating, "h-5 w-5")}</div>
-              <div>
-                <p className="font-bold text-slate-950">{Number(product.rating || 0).toFixed(1)} out of 5</p>
-                <p className="text-sm text-muted-foreground">
-                  {product.numReviews || reviewsQuery.reviews.length} verified impressions
-                </p>
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1">{renderStars(product.rating, "h-5 w-5")}</div>
+                <div>
+                  <p className="font-bold text-slate-950">{Number(product.rating || 0).toFixed(1)} out of 5</p>
+                  <p className="text-sm text-muted-foreground">
+                    {product.numReviews || reviewsQuery.reviews.length} verified impressions
+                  </p>
+                </div>
               </div>
+              {isAuthenticated && (
+                <Button onClick={() => setIsReviewModalOpen(true)}>Write a Review</Button>
+              )}
             </div>
           </div>
 
@@ -717,6 +793,113 @@ export default function ProductDetailPage() {
           setSelectedImageIndex(index);
         }}
       />
+
+      <Dialog open={isReviewModalOpen} onOpenChange={setIsReviewModalOpen}>
+        <DialogContent className="max-w-md bg-white border border-border">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-slate-900">Write a Review</DialogTitle>
+            <DialogDescription>
+              Share your thoughts about {product.name} with other customers.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmitReview} className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700 block">Overall Rating</label>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: 5 }, (_, index) => {
+                  const starValue = index + 1;
+                  const isFilled = hoverRating ? starValue <= hoverRating : starValue <= rating;
+                  return (
+                    <button
+                      key={`review-star-${index}`}
+                      type="button"
+                      className="transition-transform hover:scale-110 focus:outline-none"
+                      onClick={() => setRating(starValue)}
+                      onMouseEnter={() => setHoverRating(starValue)}
+                      onMouseLeave={() => setHoverRating(0)}
+                    >
+                      <Star
+                        className={`h-8 w-8 ${
+                          isFilled ? "fill-amber-400 text-amber-400" : "text-slate-300"
+                        }`}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700 block">Your Review</label>
+              <textarea
+                className="w-full min-h-[120px] rounded-2xl border border-border bg-slate-50 px-4 py-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none resize-none transition"
+                placeholder="Share details of your experience with this product..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700 block">Add photos (Optional, max 5)</label>
+              <div className="flex flex-wrap gap-3">
+                {selectedFiles.map((file, idx) => (
+                  <div key={idx} className="relative h-20 w-20 rounded-xl overflow-hidden border border-border bg-slate-100">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt="Preview"
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 hover:bg-black/80 transition"
+                      onClick={() => setSelectedFiles(selectedFiles.filter((_, i) => i !== idx))}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+                {selectedFiles.length < 5 && (
+                  <label className="flex h-20 w-20 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-border bg-slate-50 hover:bg-slate-100 transition">
+                    <Plus className="h-5 w-5 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground font-semibold mt-1">Upload</span>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        setSelectedFiles((prev) => [...prev, ...files].slice(0, 5));
+                      }}
+                    />
+                  </label>
+                )}
+              </div>
+            </div>
+
+            <DialogFooter className="mt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsReviewModalOpen(false);
+                  setRating(5);
+                  setComment("");
+                  setSelectedFiles([]);
+                }}
+                disabled={isUploading || createReviewMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isUploading || createReviewMutation.isPending}>
+                {isUploading ? "Uploading images..." : createReviewMutation.isPending ? "Submitting review..." : "Submit Review"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
