@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +15,7 @@ import { formatCurrency } from "@/lib/formatter";
 import { useAuth } from "@/hooks/useAuth";
 import { useCreateOrder } from "@/features/order/hooks/useOrders";
 import { clearCart } from "@/store/slices/cartSlice";
+import { useApplyVoucher } from "@/hooks/api/useVoucher";
 
 export default function CheckoutPage() {
   const dispatch = useDispatch();
@@ -22,6 +24,11 @@ export default function CheckoutPage() {
   const items = useSelector((state) => state.cart.items);
   const createOrder = useCreateOrder(user?._id || user?.id);
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const [voucherCode, setVoucherCode] = useState("");
+  const [appliedVoucher, setAppliedVoucher] = useState(null);
+
+  const applyVoucher = useApplyVoucher();
 
   const {
     register,
@@ -43,13 +50,48 @@ export default function CheckoutPage() {
 
   const paymentMethod = watch("paymentMethod");
 
+  const handleApplyVoucher = async () => {
+    if (!voucherCode.trim()) {
+      toast.error("Voucher code cannot be empty.");
+      return;
+    }
+    try {
+      const response = await applyVoucher.mutateAsync({
+        code: voucherCode.trim(),
+        orderValue: subtotal,
+      });
+
+      if (response?.status === "ERR") {
+        toast.error(response.message || "Invalid voucher code.");
+        setAppliedVoucher(null);
+      } else {
+        toast.success("Voucher applied successfully.");
+        setAppliedVoucher(response.data);
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to apply voucher.");
+      setAppliedVoucher(null);
+    }
+  };
+
+  const handleRemoveVoucher = () => {
+    setAppliedVoucher(null);
+    setVoucherCode("");
+  };
+
   const onSubmit = async (values) => {
     try {
+      const discountPrice = appliedVoucher ? appliedVoucher.discountAmount : 0;
+      const totalPrice = appliedVoucher ? Math.max(0, subtotal - appliedVoucher.discountAmount) : subtotal;
+      const couponCode = appliedVoucher ? appliedVoucher.code : undefined;
+
       await createOrder.mutateAsync({
         ...values,
         itemsPrice: subtotal,
         shippingPrice: 0,
-        totalPrice: subtotal,
+        discountPrice,
+        totalPrice,
+        couponCode,
         orderItems: items,
       });
       dispatch(clearCart());
@@ -112,10 +154,54 @@ export default function CheckoutPage() {
                 <span className="font-semibold">{formatCurrency(item.price * item.quantity)}</span>
               </div>
             ))}
+
+            {/* Voucher input form section */}
+            <div className="space-y-2 pt-2 border-t">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter voucher code"
+                  value={voucherCode}
+                  onChange={(e) => setVoucherCode(e.target.value)}
+                  disabled={applyVoucher.isPending || !!appliedVoucher}
+                  className="h-9"
+                />
+                <Button
+                  type="button"
+                  onClick={handleApplyVoucher}
+                  disabled={applyVoucher.isPending || !voucherCode.trim() || !!appliedVoucher}
+                  className="h-9"
+                >
+                  {applyVoucher.isPending ? "Applying..." : "Apply"}
+                </Button>
+              </div>
+            </div>
+
+            {/* Applied voucher display */}
+            {appliedVoucher && (
+              <div className="flex items-center justify-between text-sm text-green-600 bg-green-50 dark:bg-green-950/20 p-2 rounded">
+                <span>Discount ({appliedVoucher.code}): -{formatCurrency(appliedVoucher.discountAmount)}</span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleRemoveVoucher}
+                  className="h-7 px-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
+                >
+                  Remove
+                </Button>
+              </div>
+            )}
+
             <div className="border-t pt-4">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Total</span>
-                <span className="text-2xl font-extrabold">{formatCurrency(subtotal)}</span>
+                <span className="text-2xl font-extrabold">
+                  {formatCurrency(
+                    appliedVoucher
+                      ? Math.max(0, subtotal - appliedVoucher.discountAmount)
+                      : subtotal
+                  )}
+                </span>
               </div>
             </div>
           </CardContent>

@@ -19,6 +19,8 @@ const createOrder = (newOrder) => {
       isPaid,
       paidAt,
       email,
+      discountPrice,
+      couponCode,
     } = newOrder;
     try {
       const promises = orderItems.map(async (order) => {
@@ -75,6 +77,8 @@ const createOrder = (newOrder) => {
           user: user,
           isPaid,
           paidAt,
+          discountPrice,
+          couponCode,
         });
         if (createdOrder) {
           // Clear cart after successful order
