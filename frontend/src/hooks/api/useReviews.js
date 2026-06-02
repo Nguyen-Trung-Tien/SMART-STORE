@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { getProductReviews } from "@/api/review.api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getProductReviews, createReview } from "@/api/review.api";
 import { queryKeys } from "@/lib/queryKeys";
 
 function shouldRetry(failureCount, error) {
@@ -24,4 +24,14 @@ export function useProductReviews(productId) {
     ...query,
     reviews: query.data || [],
   };
+}
+
+export function useCreateReview(productId) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload) => createReview(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.reviews.product(productId) });
+    },
+  });
 }
