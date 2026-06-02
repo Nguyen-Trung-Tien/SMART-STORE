@@ -43,7 +43,7 @@ const loginUser = (userLogin) => {
     try {
       const checkUser = await User.findOne({
         email: email,
-      });
+      }).select("+password");
       if (checkUser === null) {
         return resolve({
           status: "ERR",
@@ -185,7 +185,7 @@ const getDetailsUser = (id) => {
 const updatePassword = (userId, oldPassword, newPassword) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const user = await User.findById(userId);
+      const user = await User.findById(userId).select("+password");
       if (!user) {
         return resolve({ status: "ERR", message: "User not found" });
       }
