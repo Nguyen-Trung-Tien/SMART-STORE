@@ -1,14 +1,14 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export function PasswordField(props) {
+export const PasswordField = React.forwardRef((props, ref) => {
   const [visible, setVisible] = useState(false);
 
   return (
     <div className="relative">
-      <Input {...props} type={visible ? "text" : "password"} className="pr-12" />
+      <Input {...props} ref={ref} type={visible ? "text" : "password"} className="pr-12" />
       <Button
         type="button"
         variant="ghost"
@@ -20,4 +20,7 @@ export function PasswordField(props) {
       </Button>
     </div>
   );
-}
+});
+
+PasswordField.displayName = "PasswordField";
+
