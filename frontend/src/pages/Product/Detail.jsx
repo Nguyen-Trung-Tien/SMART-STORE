@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Check,
   ChevronLeft,
@@ -13,7 +13,9 @@ import {
   ShoppingCart,
   Sparkles,
   Star,
+  Heart,
 } from "lucide-react";
+import { useWishlist, useToggleWishlist } from "@/hooks/api/useWishlist";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -157,6 +159,10 @@ export default function ProductDetailPage() {
   const { slug } = useParams();
   const productId = extractIdFromSlug(slug);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { wishlist } = useWishlist({ enabled: isAuthenticated });
+  const toggleWishlistMutation = useToggleWishlist();
   const productQuery = useProductById(productId);
   const reviewsQuery = useProductReviews(productId);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -183,6 +189,28 @@ export default function ProductDetailPage() {
 
   const product = productQuery.product;
   const galleryImages = buildProductImages(product);
+  const isLiked = wishlist.some((item) => item._id === product._id);
+
+  const handleToggleWishlist = () => {
+    if (!isAuthenticated) {
+      toast.error("Please login to manage your wishlist.");
+      navigate("/login");
+      return;
+    }
+
+    toggleWishlistMutation.mutate(product._id, {
+      onSuccess: () => {
+        if (isLiked) {
+          toast.success(`${product.name} removed from wishlist.`);
+        } else {
+          toast.success(`${product.name} added to wishlist.`);
+        }
+      },
+      onError: (error) => {
+        toast.error(error?.response?.data?.message || "Failed to update wishlist.");
+      },
+    });
+  };
   const activeImage = galleryImages[selectedImageIndex] || galleryImages[0];
   const reviewImages = reviewsQuery.reviews.flatMap((review) =>
     (review.images || []).map((image) => ({
@@ -433,10 +461,24 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-[1fr,auto]">
+                <div className="grid gap-3 sm:grid-cols-[1fr,auto,auto]">
                   <Button size="lg" className="h-14 text-base" disabled={!canAddToCart} onClick={handleAddToCart}>
                     <ShoppingCart className="h-5 w-5" />
                     {canAddToCart ? "Add to cart" : "Out of stock"}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="lg"
+                    variant="outline"
+                    className="h-14 border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                    onClick={handleToggleWishlist}
+                  >
+                    <Heart
+                      className={`h-5 w-5 ${
+                        isLiked ? "fill-red-500 text-red-500" : "text-white/75 hover:text-white"
+                      }`}
+                    />
+                    <span className="sr-only">Wishlist</span>
                   </Button>
                   <Button
                     type="button"

@@ -26,6 +26,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { routePaths } from "@/config/routes";
 import { authService } from "@/services/auth.service";
 import { logout } from "@/store/slices/authSlice";
+import { useWishlist } from "@/hooks/api/useWishlist";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -44,6 +45,8 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const cartCount = useSelector((state) => state.cart.items.reduce((sum, item) => sum + item.quantity, 0));
+  const { wishlist } = useWishlist({ enabled: isAuthenticated });
+  const wishlistCount = wishlist?.length || 0;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -120,8 +123,22 @@ export function Header() {
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
 
-            <Button variant="ghost" size="icon" className="hidden rounded-full sm:inline-flex">
-              <Heart className="h-4 w-4" />
+            <Button asChild variant="ghost" size="icon" className="relative rounded-full hidden sm:inline-flex">
+              <Link to={routePaths.wishlist || "/wishlist"}>
+                <Heart className="h-4 w-4" />
+                <AnimatePresence>
+                  {wishlistCount ? (
+                    <motion.span
+                      initial={{ scale: 0.7, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.7, opacity: 0 }}
+                      className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground"
+                    >
+                      {wishlistCount}
+                    </motion.span>
+                  ) : null}
+                </AnimatePresence>
+              </Link>
             </Button>
 
             <Button asChild variant="ghost" size="icon" className="relative rounded-full">
@@ -192,9 +209,12 @@ export function Header() {
                   <nav className="flex flex-col gap-4">{navContent}</nav>
 
                   <div className="flex items-center gap-3">
-                    <Button variant="outline" className="flex-1 rounded-full">
-                      <Heart className="h-4 w-4" />
-                      Wishlist
+                    <Button asChild variant="outline" className="flex-1 rounded-full">
+                      <Link to={routePaths.wishlist || "/wishlist"} onClick={() => setMobileOpen(false)}>
+                        <Heart className="h-4 w-4" />
+                        Wishlist
+                        {wishlistCount ? ` (${wishlistCount})` : ""}
+                      </Link>
                     </Button>
                     {!isAuthenticated ? (
                       <Button asChild className="flex-1 rounded-full">

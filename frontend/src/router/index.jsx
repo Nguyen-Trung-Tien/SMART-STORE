@@ -25,6 +25,7 @@ const ProductCreatePage = lazy(() => import("@/pages/Admin/Product/ProductCreate
 const ProductEditPage = lazy(() => import("@/pages/Admin/Product/ProductEditPage"));
 const AdminOrdersPage = lazy(() => import("@/pages/Admin/Orders"));
 const AdminUsersPage = lazy(() => import("@/pages/Admin/Users"));
+const WishlistPage = lazy(() => import("@/pages/Wishlist"));
 const NotFoundPage = lazy(() => import("@/pages/NotFound"));
 
 function RouteSuspense() {
@@ -70,6 +71,7 @@ export const router = createBrowserRouter([
               { path: "checkout", element: <CheckoutPage /> },
               { path: "orders", element: <OrdersPage /> },
               { path: "profile", element: <ProfilePage /> },
+              { path: "wishlist", element: <WishlistPage /> },
             ],
           },
         ],

@@ -8,6 +8,7 @@ export const routePaths = {
   checkout: "/checkout",
   orders: "/orders",
   profile: "/profile",
+  wishlist: "/wishlist",
   admin: "/admin",
   adminDashboard: "/admin/dashboard",
   adminProducts: "/admin/products",
