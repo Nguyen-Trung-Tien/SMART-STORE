@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Expand,
   ImageIcon,
+  Loader2,
   Minus,
   Plus,
   ShieldCheck,
@@ -183,7 +184,28 @@ export default function ProductDetailPage() {
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+
+  const previewUrlsRef = useRef([]);
+
+  useEffect(() => {
+    previewUrlsRef.current = previewUrls;
+  }, [previewUrls]);
+
+  useEffect(() => {
+    return () => {
+      previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isReviewModalOpen) {
+      previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+      setSelectedFiles([]);
+      setPreviewUrls([]);
+    }
+  }, [isReviewModalOpen]);
 
   if (productQuery.isLoading) {
     return <LoadingScreen message="Loading product details..." />;
@@ -302,7 +324,6 @@ export default function ProductDetailPage() {
             setIsReviewModalOpen(false);
             setRating(5);
             setComment("");
-            setSelectedFiles([]);
           },
           onError: (err) => {
             setIsUploading(false);
@@ -844,23 +865,27 @@ export default function ProductDetailPage() {
             <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-700 block">Add photos (Optional, max 5)</label>
               <div className="flex flex-wrap gap-3">
-                {selectedFiles.map((file, idx) => (
+                {previewUrls.map((previewUrl, idx) => (
                   <div key={idx} className="relative h-20 w-20 rounded-xl overflow-hidden border border-border bg-slate-100">
                     <img
-                      src={URL.createObjectURL(file)}
+                      src={previewUrl}
                       alt="Preview"
                       className="h-full w-full object-cover"
                     />
                     <button
                       type="button"
                       className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 hover:bg-black/80 transition"
-                      onClick={() => setSelectedFiles(selectedFiles.filter((_, i) => i !== idx))}
+                      onClick={() => {
+                        URL.revokeObjectURL(previewUrl);
+                        setSelectedFiles((prev) => prev.filter((_, i) => i !== idx));
+                        setPreviewUrls((prev) => prev.filter((_, i) => i !== idx));
+                      }}
                     >
                       <X className="h-3 w-3" />
                     </button>
                   </div>
                 ))}
-                {selectedFiles.length < 5 && (
+                {previewUrls.length < 5 && (
                   <label className="flex h-20 w-20 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-border bg-slate-50 hover:bg-slate-100 transition">
                     <Plus className="h-5 w-5 text-muted-foreground" />
                     <span className="text-[10px] text-muted-foreground font-semibold mt-1">Upload</span>
@@ -871,7 +896,30 @@ export default function ProductDetailPage() {
                       className="hidden"
                       onChange={(e) => {
                         const files = Array.from(e.target.files || []);
-                        setSelectedFiles((prev) => [...prev, ...files].slice(0, 5));
+                        const validFiles = [];
+                        
+                        for (const file of files) {
+                          if (file.size > 5 * 1024 * 1024) {
+                            toast.error(`File ${file.name} is larger than 5MB.`);
+                            continue;
+                          }
+                          if (!file.type.startsWith("image/")) {
+                            toast.error(`File ${file.name} must be an image.`);
+                            continue;
+                          }
+                          validFiles.push(file);
+                        }
+
+                        if (validFiles.length > 0) {
+                          const currentCount = previewUrls.length;
+                          const allowedCount = Math.max(0, 5 - currentCount);
+                          const filesToAdd = validFiles.slice(0, allowedCount);
+                          const addedUrls = filesToAdd.map((file) => URL.createObjectURL(file));
+
+                          setSelectedFiles((prev) => [...prev, ...filesToAdd]);
+                          setPreviewUrls((prev) => [...prev, ...addedUrls]);
+                        }
+                        e.target.value = "";
                       }}
                     />
                   </label>
@@ -887,13 +935,15 @@ export default function ProductDetailPage() {
                   setIsReviewModalOpen(false);
                   setRating(5);
                   setComment("");
-                  setSelectedFiles([]);
                 }}
                 disabled={isUploading || createReviewMutation.isPending}
               >
                 Cancel
               </Button>
               <Button type="submit" disabled={isUploading || createReviewMutation.isPending}>
+                {(isUploading || createReviewMutation.isPending) && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 {isUploading ? "Uploading images..." : createReviewMutation.isPending ? "Submitting review..." : "Submit Review"}
               </Button>
             </DialogFooter>

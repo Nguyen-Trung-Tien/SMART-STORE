@@ -24,7 +24,10 @@ const createReview = (userId, data) => {
       // Update product rating
       const reviews = await Review.find({ product });
       const avgRating = reviews.reduce((acc, item) => acc + item.rating, 0) / reviews.length;
-      await Product.findByIdAndUpdate(product, { rating: Number(avgRating.toFixed(1)) });
+      await Product.findByIdAndUpdate(product, {
+        rating: Number(avgRating.toFixed(1)),
+        numReviews: reviews.length,
+      });
 
       resolve({
         status: "OK",
