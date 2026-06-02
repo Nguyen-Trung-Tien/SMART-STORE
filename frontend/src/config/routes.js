@@ -6,6 +6,7 @@ export const routePaths = {
   login: "/login",
   register: "/register",
   checkout: "/checkout",
+  vnpayReturn: "/checkout/vnpay-return",
   orders: "/orders",
   profile: "/profile",
   wishlist: "/wishlist",

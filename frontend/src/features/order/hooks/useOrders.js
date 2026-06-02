@@ -29,3 +29,16 @@ export function useCreateOrder(userId) {
     },
   });
 }
+
+export function useUpdateOrderStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ orderId, payload }) => orderApi.updateStatus(orderId, payload),
+    onSuccess: (response, variables) => {
+      // Invalidate both user and admin orders queries
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.adminOrders });
+    },
+  });
+}

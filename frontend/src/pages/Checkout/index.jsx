@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCreateOrder } from "@/features/order/hooks/useOrders";
 import { clearCart } from "@/store/slices/cartSlice";
 import { useApplyVoucher } from "@/hooks/api/useVoucher";
+import { useCreateVnpayPaymentUrl } from "@/hooks/api/usePayment";
 
 export default function CheckoutPage() {
   const dispatch = useDispatch();
@@ -29,6 +30,7 @@ export default function CheckoutPage() {
   const [appliedVoucher, setAppliedVoucher] = useState(null);
 
   const applyVoucher = useApplyVoucher();
+  const createVnpayPayment = useCreateVnpayPaymentUrl();
 
   const {
     register,
@@ -85,7 +87,7 @@ export default function CheckoutPage() {
       const totalPrice = appliedVoucher ? Math.max(0, subtotal - appliedVoucher.discountAmount) : subtotal;
       const couponCode = appliedVoucher ? appliedVoucher.code : undefined;
 
-      await createOrder.mutateAsync({
+      const response = await createOrder.mutateAsync({
         ...values,
         itemsPrice: subtotal,
         shippingPrice: 0,
@@ -94,6 +96,31 @@ export default function CheckoutPage() {
         couponCode,
         orderItems: items,
       });
+
+      const createdOrder = response?.data;
+      const orderId = createdOrder?._id || createdOrder?.id;
+
+      if (values.paymentMethod === "VNPAY") {
+        if (!orderId) {
+          toast.error("Created order details could not be retrieved.");
+          return;
+        }
+        const paymentRes = await createVnpayPayment.mutateAsync({
+          amount: totalPrice,
+          orderDescription: orderId,
+          orderId: orderId,
+          bankCode: "",
+        });
+        if (paymentRes && paymentRes.code === "00") {
+          dispatch(clearCart());
+          window.location.href = paymentRes.data;
+          return;
+        } else {
+          toast.error("Failed to generate VNPay payment URL.");
+          return;
+        }
+      }
+
       dispatch(clearCart());
       toast.success("Order placed successfully.");
       navigate("/orders");
@@ -131,13 +158,14 @@ export default function CheckoutPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="COD">Cash on delivery</SelectItem>
+                    <SelectItem value="VNPAY">VNPay</SelectItem>
                     <SelectItem value="CARD">Card</SelectItem>
                   </SelectContent>
                 </Select>
               </FormField>
               <div className="md:col-span-2">
-                <Button type="submit" disabled={isSubmitting || createOrder.isPending}>
-                  {isSubmitting || createOrder.isPending ? "Placing order..." : "Place order"}
+                <Button type="submit" disabled={isSubmitting || createOrder.isPending || createVnpayPayment.isPending}>
+                  {isSubmitting || createOrder.isPending || createVnpayPayment.isPending ? "Placing order..." : "Place order"}
                 </Button>
               </div>
             </form>

@@ -19,7 +19,7 @@ router.post("/create_payment_url", function (req, res, next) {
 
   var date = new Date();
   var createDate = moment(date).format("YYYYMMDDHHmmss");
-  var orderId = moment(date).format("HHmmss");
+  var orderId = req.body.orderId || moment(date).format("HHmmss");
   var amount = req.body.amount;
   var bankCode = req.body.bankCode;
 

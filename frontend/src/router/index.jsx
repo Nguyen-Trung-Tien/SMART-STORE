@@ -26,6 +26,7 @@ const ProductEditPage = lazy(() => import("@/pages/Admin/Product/ProductEditPage
 const AdminOrdersPage = lazy(() => import("@/pages/Admin/Orders"));
 const AdminUsersPage = lazy(() => import("@/pages/Admin/Users"));
 const WishlistPage = lazy(() => import("@/pages/Wishlist"));
+const VnpayReturnPage = lazy(() => import("@/pages/Checkout/VnpayReturn"));
 const NotFoundPage = lazy(() => import("@/pages/NotFound"));
 
 function RouteSuspense() {
@@ -69,6 +70,7 @@ export const router = createBrowserRouter([
             element: <MainLayout />,
             children: [
               { path: "checkout", element: <CheckoutPage /> },
+              { path: "checkout/vnpay-return", element: <VnpayReturnPage /> },
               { path: "orders", element: <OrdersPage /> },
               { path: "profile", element: <ProfilePage /> },
               { path: "wishlist", element: <WishlistPage /> },
