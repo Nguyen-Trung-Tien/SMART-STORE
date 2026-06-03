@@ -208,6 +208,28 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
+const changeRole = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const { role } = req.body;
+    if (!userId || !role) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "userId and role are required",
+      });
+    }
+    // Update the user's role and handle isAdmin flag simultaneously
+    const isAdmin = role !== "User"; // Simple logic: anyone not a User is considered admin-level for some views
+    const response = await UserService.updateUser(userId, { role, isAdmin });
+    if (response.status === "ERR") {
+      return res.status(400).json(response);
+    }
+    return res.status(200).json(response);
+  } catch (e) {
+    next(e);
+  }
+};
+
 export default {
   createUser,
   loginUser,
@@ -221,4 +243,5 @@ export default {
   updatePassword,
   forgotPassword,
   resetPassword,
+  changeRole,
 };

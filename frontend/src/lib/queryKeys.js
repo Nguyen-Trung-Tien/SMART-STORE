@@ -25,6 +25,10 @@ export const queryKeys = {
     list: (params = {}) => ["categories", "list", compactObject(params)],
     detail: (identifier) => ["categories", "detail", identifier],
   },
+  address: {
+    all: ["address"],
+    user: (userId) => ["address", "user", userId],
+  },
   cart: {
     all: ["cart"],
     detail: (userId) => ["cart", userId],
@@ -33,11 +37,19 @@ export const queryKeys = {
     all: ["reviews"],
     product: (productId) => ["reviews", "product", productId],
   },
+  chat: {
+    active: ["chat", "active"],
+    history: (userId) => ["chat", "history", userId],
+  },
   orders: {
     all: ["orders"],
     list: (userId) => ["orders", "list", userId],
     admin: ["orders", "admin"],
     detail: (orderId) => ["orders", "detail", orderId],
+  },
+  vouchers: {
+    all: ["vouchers"],
+    list: (params = {}) => ["vouchers", "list", compactObject(params)],
   },
   uploads: {
     all: ["uploads"],

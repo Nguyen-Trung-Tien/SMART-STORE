@@ -19,6 +19,7 @@ router.get("/getAll", authMiddleware, requirePermission(PERMISSIONS.USER_READ), 
 router.get("/get-details/:id", authMiddleware, userController.getDetailsUser);
 router.post("/refresh-token", userController.refreshToken);
 router.post("/delete-many", authMiddleware, requirePermission(PERMISSIONS.USER_DELETE), userController.deleteManyUser);
+router.patch("/change-role/:id", authMiddleware, requirePermission(PERMISSIONS.ROLE_MANAGE), userController.changeRole);
 router.post("/update-password", authMiddleware, userController.updatePassword);
 router.post("/forgot-password", userController.forgotPassword);
 router.post("/reset-password", userController.resetPassword);

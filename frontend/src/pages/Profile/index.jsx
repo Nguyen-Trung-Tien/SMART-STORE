@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProfile, useUpdateProfile } from "@/features/profile/hooks/useProfile";
 import { toast } from "@/components/ui/sonner";
 import { setUser } from "@/store/slices/authSlice";
+import { AddressBook } from "@/features/profile/components/AddressBook";
 
 export default function ProfilePage() {
   const dispatch = useDispatch();
@@ -45,27 +46,32 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-8 page-enter">
-      <PageHeader eyebrow="Protected route" title="Profile" description="This form updates the authenticated user through the backend profile endpoint." />
-      <Card>
-        <CardContent className="p-6">
-          <form className="grid gap-4 md:grid-cols-2" onSubmit={handleSubmit(onSubmit)}>
-            <FormField label="Name">
-              <Input {...register("name")} />
-            </FormField>
-            <FormField label="Phone">
-              <Input {...register("phone")} />
-            </FormField>
-            <FormField label="Email" className="md:col-span-2">
-              <Input type="email" {...register("email")} />
-            </FormField>
-            <div className="md:col-span-2">
-              <Button type="submit" disabled={isSubmitting || updateProfile.isPending}>
-                {isSubmitting || updateProfile.isPending ? "Saving..." : "Save changes"}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+      <PageHeader eyebrow="Protected route" title="Profile" description="Manage your personal information and delivery addresses." />
+      <div className="grid gap-8">
+        <Card>
+          <CardContent className="p-6">
+            <h2 className="text-xl font-bold mb-4">Personal Information</h2>
+            <form className="grid gap-4 md:grid-cols-2" onSubmit={handleSubmit(onSubmit)}>
+              <FormField label="Name">
+                <Input {...register("name")} />
+              </FormField>
+              <FormField label="Phone">
+                <Input {...register("phone")} />
+              </FormField>
+              <FormField label="Email" className="md:col-span-2">
+                <Input type="email" {...register("email")} />
+              </FormField>
+              <div className="md:col-span-2">
+                <Button type="submit" disabled={isSubmitting || updateProfile.isPending}>
+                  {isSubmitting || updateProfile.isPending ? "Saving..." : "Save changes"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        <AddressBook />
+      </div>
     </div>
   );
 }

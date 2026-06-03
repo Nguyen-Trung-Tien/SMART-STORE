@@ -1,28 +1,28 @@
 import { apiClient, publicClient } from "@/api/axios";
 
 export function getCategories(params = {}) {
-  return publicClient.get("/categories", { params });
+  return publicClient.get("/category/get-all", { params });
 }
 
-export function getCategoryBySlug(slug) {
-  return publicClient.get(`/categories/${slug}`);
+export function getCategoryDetails(id) {
+  return publicClient.get(`/category/get-details/${id}`);
 }
 
 export function createCategory(payload) {
-  return apiClient.post("/categories", payload);
+  return apiClient.post("/category/create", payload);
 }
 
 export function updateCategory(id, payload) {
-  return apiClient.patch(`/categories/${id}`, payload);
+  return apiClient.put(`/category/update/${id}`, payload);
 }
 
 export function deleteCategory(id) {
-  return apiClient.delete(`/categories/${id}`);
+  return apiClient.delete(`/category/delete/${id}`);
 }
 
 export const categoryApi = {
   getCategories,
-  getCategoryBySlug,
+  getCategoryDetails,
   createCategory,
   updateCategory,
   deleteCategory,

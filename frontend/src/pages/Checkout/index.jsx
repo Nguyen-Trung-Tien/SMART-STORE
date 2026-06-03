@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +17,7 @@ import { useCreateOrder } from "@/features/order/hooks/useOrders";
 import { clearCart } from "@/store/slices/cartSlice";
 import { useApplyVoucher } from "@/hooks/api/useVoucher";
 import { useCreateVnpayPaymentUrl } from "@/hooks/api/usePayment";
+import { useAddresses } from "@/hooks/api/useAddress";
 
 export default function CheckoutPage() {
   const dispatch = useDispatch();
@@ -28,15 +29,18 @@ export default function CheckoutPage() {
 
   const [voucherCode, setVoucherCode] = useState("");
   const [appliedVoucher, setAppliedVoucher] = useState(null);
+  const [selectedAddressId, setSelectedAddressId] = useState("new");
 
   const applyVoucher = useApplyVoucher();
   const createVnpayPayment = useCreateVnpayPaymentUrl();
+  const { addresses } = useAddresses(user?._id || user?.id);
 
   const {
     register,
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(checkoutSchema),
@@ -49,6 +53,35 @@ export default function CheckoutPage() {
       paymentMethod: "COD",
     },
   });
+
+  useEffect(() => {
+    if (addresses && addresses.length > 0) {
+      const defaultAddr = addresses.find(a => a.isDefault) || addresses[0];
+      setSelectedAddressId(defaultAddr._id);
+      setValue("fullName", defaultAddr.fullName);
+      setValue("phone", defaultAddr.phone);
+      setValue("address", defaultAddr.addressLine1);
+      setValue("city", defaultAddr.city);
+    }
+  }, [addresses, setValue]);
+
+  const handleAddressSelect = (addrId) => {
+    setSelectedAddressId(addrId);
+    if (addrId === "new") {
+      setValue("fullName", user?.name || "");
+      setValue("phone", user?.phone || "");
+      setValue("address", "");
+      setValue("city", "");
+    } else {
+      const addr = addresses.find(a => a._id === addrId);
+      if (addr) {
+        setValue("fullName", addr.fullName);
+        setValue("phone", addr.phone);
+        setValue("address", addr.addressLine1);
+        setValue("city", addr.city);
+      }
+    }
+  };
 
   const paymentMethod = watch("paymentMethod");
 
@@ -136,6 +169,26 @@ export default function CheckoutPage() {
         <Card>
           <CardContent className="p-6">
             <form className="grid gap-4 md:grid-cols-2" onSubmit={handleSubmit(onSubmit)}>
+              
+              {addresses && addresses.length > 0 && (
+                <div className="md:col-span-2 mb-4">
+                  <label className="text-sm font-medium leading-none mb-2 block">Saved Addresses</label>
+                  <Select value={selectedAddressId} onValueChange={handleAddressSelect}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose a saved address" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {addresses.map((addr) => (
+                        <SelectItem key={addr._id} value={addr._id}>
+                          {addr.label} - {addr.addressLine1}, {addr.city}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="new">Use a new address</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <FormField label="Full name" error={errors.fullName?.message}>
                 <Input {...register("fullName")} />
               </FormField>
@@ -163,8 +216,8 @@ export default function CheckoutPage() {
                   </SelectContent>
                 </Select>
               </FormField>
-              <div className="md:col-span-2">
-                <Button type="submit" disabled={isSubmitting || createOrder.isPending || createVnpayPayment.isPending}>
+              <div className="md:col-span-2 mt-4">
+                <Button type="submit" className="w-full" disabled={isSubmitting || createOrder.isPending || createVnpayPayment.isPending}>
                   {isSubmitting || createOrder.isPending || createVnpayPayment.isPending ? "Placing order..." : "Place order"}
                 </Button>
               </div>
@@ -184,7 +237,7 @@ export default function CheckoutPage() {
             ))}
 
             {/* Voucher input form section */}
-            <div className="space-y-2 pt-2 border-t">
+            <div className="space-y-2 pt-4 border-t">
               <div className="flex gap-2">
                 <Input
                   placeholder="Enter voucher code"
@@ -223,7 +276,7 @@ export default function CheckoutPage() {
             <div className="border-t pt-4">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Total</span>
-                <span className="text-2xl font-extrabold">
+                <span className="text-2xl font-extrabold text-primary">
                   {formatCurrency(
                     appliedVoucher
                       ? Math.max(0, subtotal - appliedVoucher.discountAmount)

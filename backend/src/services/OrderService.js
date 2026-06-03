@@ -24,15 +24,16 @@ const createOrder = (newOrder) => {
     } = newOrder;
     try {
       const promises = orderItems.map(async (order) => {
+        const amount = Number(order.amount || order.quantity || 0);
         const productData = await Product.findOneAndUpdate(
           {
             _id: order.product,
-            countInStock: { $gte: order.amount },
+            countInStock: { $gte: amount },
           },
           {
             $inc: {
-              countInStock: -order.amount,
-              selled: +order.amount,
+              countInStock: -amount,
+              selled: +amount,
             },
           },
           { new: true }
@@ -63,7 +64,11 @@ const createOrder = (newOrder) => {
         });
       } else {
         const createdOrder = await Order.create({
-          orderItems,
+          orderItems: orderItems.map(item => ({
+            ...item,
+            product: item.product || item._id,
+            amount: Number(item.amount || item.quantity || 0)
+          })),
           shippingAddress: {
             fullName,
             address,
@@ -151,15 +156,16 @@ const cancelOrderDetails = (id, data) => {
     try {
       let order = [];
       const promises = data.map(async (order) => {
+        const amount = Number(order.amount || order.quantity || 0);
         const productData = await Product.findOneAndUpdate(
           {
             _id: order.product,
-            selled: { $gte: order.amount },
+            selled: { $gte: amount },
           },
           {
             $inc: {
-              countInStock: +order.amount,
-              selled: -order.amount,
+              countInStock: +amount,
+              selled: -amount,
             },
           },
           { new: true }

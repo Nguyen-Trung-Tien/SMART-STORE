@@ -81,6 +81,16 @@ export const isValidUrl = (value) => {
     return true;
   }
 
+  // Allow relative paths
+  if (value.startsWith("/")) {
+    return true;
+  }
+
+  // Allow data URLs (base64)
+  if (value.startsWith("data:")) {
+    return true;
+  }
+
   try {
     const url = new URL(value);
     return ["http:", "https:"].includes(url.protocol);

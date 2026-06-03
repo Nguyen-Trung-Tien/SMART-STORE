@@ -21,6 +21,10 @@ const LoginPage = lazy(() => import("@/pages/Auth/Login"));
 const RegisterPage = lazy(() => import("@/pages/Auth/Register"));
 const AdminDashboardPage = lazy(() => import("@/pages/Admin/Dashboard"));
 const AdminProductsPage = lazy(() => import("@/pages/Admin/Products"));
+const AdminCategoriesPage = lazy(() => import("@/pages/Admin/Categories"));
+const AdminVouchersPage = lazy(() => import("@/pages/Admin/Vouchers"));
+const AdminReviewsPage = lazy(() => import("@/pages/Admin/Reviews"));
+const AdminChatPage = lazy(() => import("@/pages/Admin/Chat"));
 const ProductCreatePage = lazy(() => import("@/pages/Admin/Product/ProductCreatePage"));
 const ProductEditPage = lazy(() => import("@/pages/Admin/Product/ProductEditPage"));
 const AdminOrdersPage = lazy(() => import("@/pages/Admin/Orders"));
@@ -89,11 +93,15 @@ export const router = createBrowserRouter([
                 children: [
                   { path: "admin", element: <AdminDashboardPage /> },
                   { path: "admin/dashboard", element: <AdminDashboardPage /> },
+                  { path: "admin/categories", element: <AdminCategoriesPage /> },
                   { path: "admin/products", element: <AdminProductsPage /> },
                   { path: "admin/products/create", element: <ProductCreatePage /> },
                   { path: "admin/products/:id/edit", element: <ProductEditPage /> },
                   { path: "admin/orders", element: <AdminOrdersPage /> },
                   { path: "admin/users", element: <AdminUsersPage /> },
+                  { path: "admin/vouchers", element: <AdminVouchersPage /> },
+                  { path: "admin/reviews", element: <AdminReviewsPage /> },
+                  { path: "admin/chat", element: <AdminChatPage /> },
                 ],
               },
             ],

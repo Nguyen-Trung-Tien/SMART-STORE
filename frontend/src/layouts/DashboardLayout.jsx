@@ -1,13 +1,17 @@
-import { LayoutDashboard, Package, Receipt, Users } from "lucide-react";
+import { LayoutDashboard, Package, Folder, Receipt, Users, Ticket, MessageSquareQuote, MessageCircle } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { Logo } from "@/components/common/Logo";
 import { cn } from "@/lib/utils";
 
 const adminLinks = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/admin/categories", label: "Categories", icon: Folder },
   { to: "/admin/products", label: "Products", icon: Package },
   { to: "/admin/orders", label: "Orders", icon: Receipt },
   { to: "/admin/users", label: "Users", icon: Users },
+  { to: "/admin/vouchers", label: "Vouchers", icon: Ticket },
+  { to: "/admin/reviews", label: "Reviews", icon: MessageSquareQuote },
+  { to: "/admin/chat", label: "Live Chat", icon: MessageCircle },
 ];
 
 export function DashboardLayout() {

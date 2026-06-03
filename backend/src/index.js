@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 import { initSocket } from "./config/socket.js";
 import http from "http";
+import RoleService from "./services/RoleService.js";
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ mongoose
   .connect(`${process.env.MONGO_DB}`)
   .then(() => {
     console.log("Kết nối với Mongoose thành công!");
+    RoleService.initializeRoles();
   })
   .catch((err) => {
     console.error("Không thể kết nối với Mongoose!", err);

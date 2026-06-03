@@ -5,11 +5,16 @@ export const requirePermission = (requiredPermission) => {
   return async (req, res, next) => {
     try {
       if (!req.user) {
-        return res.status(401).json({ status: "ERROR", message: "Unauthorized" });
+        return res
+          .status(401)
+          .json({ status: "ERROR", message: "Unauthorized" });
       }
 
       // Check if user has direct permission
-      if (req.user.permissions && req.user.permissions.includes(requiredPermission)) {
+      if (
+        req.user.permissions &&
+        req.user.permissions.includes(requiredPermission)
+      ) {
         return next();
       }
 
@@ -26,8 +31,12 @@ export const requirePermission = (requiredPermission) => {
         rolePermissions = ROLE_PERMISSIONS[userRole] || [];
       }
 
-      // Super Admin bypass
-      if (userRole === "Super Admin" || rolePermissions.includes(requiredPermission)) {
+      // Super Admin and legacy isAdmin bypass
+      if (
+        userRole === "Admin" ||
+        req.user.isAdmin ||
+        rolePermissions.includes(requiredPermission)
+      ) {
         return next();
       }
 
@@ -39,7 +48,7 @@ export const requirePermission = (requiredPermission) => {
       return res.status(500).json({
         status: "ERROR",
         message: "Error checking permissions",
-        error: error.message
+        error: error.message,
       });
     }
   };
@@ -51,7 +60,11 @@ export const requireRole = (allowedRoles) => {
       return res.status(401).json({ status: "ERROR", message: "Unauthorized" });
     }
 
-    if (!allowedRoles.includes(req.user.role) && req.user.role !== "Super Admin") {
+    if (
+      !allowedRoles.includes(req.user.role) &&
+      req.user.role !== "Admin" &&
+      !req.user.isAdmin
+    ) {
       return res.status(403).json({
         status: "ERROR",
         message: "Forbidden: Insufficient role",

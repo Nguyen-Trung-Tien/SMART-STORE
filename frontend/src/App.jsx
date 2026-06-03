@@ -7,6 +7,7 @@ import { ErrorFallback } from "@/components/feedback/ErrorFallback";
 import { authApi } from "@/api/auth.api";
 import { authService } from "@/services/auth.service";
 import { markHydrated, setCredentials, logout } from "@/store/slices/authSlice";
+import { FloatingChatWidget } from "@/components/chat/FloatingChatWidget";
 
 function AppBootstrap({ error, reset }) {
   const dispatch = useDispatch();
@@ -61,7 +62,12 @@ function AppBootstrap({ error, reset }) {
     return <ErrorFallback error={error} resetErrorBoundary={reset} />;
   }
 
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <FloatingChatWidget />
+    </>
+  );
 }
 
 export default function App(props) {
