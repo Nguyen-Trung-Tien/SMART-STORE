@@ -2,6 +2,7 @@ import express from "express";
 import moment from "moment";
 import crypto from "crypto";
 import qs from "qs";
+import Order from "../models/OrderModel.js";
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ router.post("/create_payment_url", function (req, res, next) {
 
   var date = new Date();
   var createDate = moment(date).format("YYYYMMDDHHmmss");
-  var orderId = moment(date).format("HHmmss");
+  var orderId = req.body.orderId || moment(date).format("HHmmss");
   var amount = req.body.amount;
   var bankCode = req.body.bankCode;
 
@@ -51,12 +52,54 @@ router.post("/create_payment_url", function (req, res, next) {
 
   var signData = qs.stringify(vnp_Params, { encode: false });
   var hmac = crypto.createHmac("sha512", secretKey);
-  var signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+  var signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
   vnp_Params["vnp_SecureHash"] = signed;
   vnpUrl += "?" + qs.stringify(vnp_Params, { encode: false });
 
   res.status(200).json({ code: "00", data: vnpUrl });
 });
+
+router.post("/verify", async (req, res) => {
+  try {
+    const vnp_Params = req.body;
+    const secureHash = vnp_Params["vnp_SecureHash"];
+    
+    delete vnp_Params["vnp_SecureHash"];
+    delete vnp_Params["vnp_SecureHashType"];
+    
+    const sortedParams = sortObject(vnp_Params);
+    const secretKey = process.env.VNP_HASH_SECRET;
+    
+    const signData = qs.stringify(sortedParams, { encode: false });
+    const hmac = crypto.createHmac("sha512", secretKey);
+    const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
+    
+    if (secureHash === signed) {
+      const orderId = vnp_Params["vnp_TxnRef"] || vnp_Params["vnp_OrderInfo"];
+      const responseCode = vnp_Params["vnp_ResponseCode"];
+      
+      if (responseCode === "00") {
+        const order = await Order.findById(orderId);
+        if (order) {
+          order.isPaid = true;
+          order.paidAt = new Date();
+          order.paymentStatus = "paid";
+          order.status = "Paid";
+          await order.save();
+          return res.status(200).json({ status: "OK", message: "Success" });
+        } else {
+          return res.status(404).json({ status: "ERR", message: "Order not found" });
+        }
+      }
+      return res.status(400).json({ status: "ERR", message: "Payment failed response code" });
+    } else {
+      return res.status(400).json({ status: "ERR", message: "Invalid signature" });
+    }
+  } catch (e) {
+    return res.status(500).json({ status: "ERR", message: e.message });
+  }
+});
+
 
 function sortObject(obj) {
   let sorted = {};

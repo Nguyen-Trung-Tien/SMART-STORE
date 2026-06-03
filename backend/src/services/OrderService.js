@@ -1,5 +1,6 @@
 import Order from "../models/OrderProduct.js";
 import Product from "../models/ProductModel.js";
+import Cart from "../models/CartModel.js";
 import EmailService from "./EmailService.js";
 
 const createOrder = (newOrder) => {
@@ -18,18 +19,21 @@ const createOrder = (newOrder) => {
       isPaid,
       paidAt,
       email,
+      discountPrice,
+      couponCode,
     } = newOrder;
     try {
       const promises = orderItems.map(async (order) => {
+        const amount = Number(order.amount || order.quantity || 0);
         const productData = await Product.findOneAndUpdate(
           {
             _id: order.product,
-            countInStock: { $gte: order.amount },
+            countInStock: { $gte: amount },
           },
           {
             $inc: {
-              countInStock: -order.amount,
-              selled: +order.amount,
+              countInStock: -amount,
+              selled: +amount,
             },
           },
           { new: true }
@@ -60,7 +64,11 @@ const createOrder = (newOrder) => {
         });
       } else {
         const createdOrder = await Order.create({
-          orderItems,
+          orderItems: orderItems.map(item => ({
+            ...item,
+            product: item.product || item._id,
+            amount: Number(item.amount || item.quantity || 0)
+          })),
           shippingAddress: {
             fullName,
             address,
@@ -74,12 +82,18 @@ const createOrder = (newOrder) => {
           user: user,
           isPaid,
           paidAt,
+          discountPrice,
+          couponCode,
         });
         if (createdOrder) {
+          // Clear cart after successful order
+          await Cart.findOneAndUpdate({ user: user }, { cartItems: [] });
+          
           await EmailService.sendEmailCreateOrder(email, orderItems);
           resolve({
             status: "OK",
             message: "success",
+            data: createdOrder
           });
         }
       }
@@ -142,15 +156,16 @@ const cancelOrderDetails = (id, data) => {
     try {
       let order = [];
       const promises = data.map(async (order) => {
+        const amount = Number(order.amount || order.quantity || 0);
         const productData = await Product.findOneAndUpdate(
           {
             _id: order.product,
-            selled: { $gte: order.amount },
+            selled: { $gte: amount },
           },
           {
             $inc: {
-              countInStock: +order.amount,
-              selled: -order.amount,
+              countInStock: +amount,
+              selled: -amount,
             },
           },
           { new: true }
@@ -205,10 +220,32 @@ const getAllOrder = () => {
   });
 };
 
+const updateOrderStatus = (id, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const updatedOrder = await Order.findByIdAndUpdate(id, data, { new: true });
+      if (updatedOrder === null) {
+        resolve({
+          status: "ERR",
+          message: "The order is not defined",
+        });
+      }
+      resolve({
+        status: "OK",
+        message: "SUCCESS",
+        data: updatedOrder,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 export default {
   createOrder,
   getAllOrderDetails,
   getOrderDetails,
   cancelOrderDetails,
   getAllOrder,
+  updateOrderStatus,
 };

@@ -1,36 +1,79 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { MainLayout } from "./components/layout/MainLayout";
-import HomePage from "./pages/HomePage/HomePage";
-import LoginPage from "./pages/LoginPage/LoginPage";
-import RegisterPage from "./pages/RegisterPage/RegisterPage";
-import ProfilePage from "./pages/ProfilePage/ProfilePage";
-import { AdminLayout } from "./components/layout/AdminLayout";
-import DashboardPage from "./pages/Admin/Dashboard/DashboardPage";
-import AdminProductsPage from "./pages/Admin/Products/AdminProductsPage";
+import { RouterProvider } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { router } from "@/router";
+import { AppProvider } from "@/app/provider";
+import { ErrorFallback } from "@/components/feedback/ErrorFallback";
+import { authApi } from "@/api/auth.api";
+import { authService } from "@/services/auth.service";
+import { markHydrated, setCredentials, logout } from "@/store/slices/authSlice";
+import { FloatingChatWidget } from "@/components/chat/FloatingChatWidget";
 
-function App() {
+function AppBootstrap({ error, reset }) {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    let mounted = true;
+
+    const hydrate = async () => {
+      try {
+        const refreshed = await authService.refresh();
+        const accessToken = refreshed?.access_token || refreshed?.data?.access_token;
+
+        if (!mounted || !accessToken) {
+          dispatch(markHydrated());
+          return;
+        }
+
+        const sessionUser = authService.getSessionUser(accessToken);
+        let profile = sessionUser;
+
+        if (sessionUser?.id) {
+          try {
+            const profileResponse = await authApi.getProfile(sessionUser.id);
+            profile = profileResponse?.data || sessionUser;
+          } catch {
+            profile = sessionUser;
+          }
+        }
+
+        dispatch(
+          setCredentials({
+            accessToken,
+            user: profile,
+          })
+        );
+      } catch {
+        dispatch(logout());
+      } finally {
+        if (mounted) {
+          dispatch(markHydrated());
+        }
+      }
+    };
+
+    hydrate();
+    return () => {
+      mounted = false;
+    };
+  }, [dispatch]);
+
+  if (error) {
+    return <ErrorFallback error={error} resetErrorBoundary={reset} />;
+  }
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path="products" element={<div className="container mx-auto py-10 px-4 text-center"><h1 className="text-3xl font-bold">Danh sách Sản phẩm (Đang phát triển)</h1></div>} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="register" element={<RegisterPage />} />
-          <Route path="profile" element={<ProfilePage />} />
-        </Route>
-
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<DashboardPage />} />
-          <Route path="products" element={<AdminProductsPage />} />
-          <Route path="users" element={<div>Quản lý người dùng (Đang phát triển)</div>} />
-          <Route path="vouchers" element={<div>Quản lý voucher (Đang phát triển)</div>} />
-          <Route path="support" element={<div>Hỗ trợ trực tuyến (Đang phát triển)</div>} />
-          <Route path="settings" element={<div>Cài đặt (Đang phát triển)</div>} />
-        </Route>
-      </Routes>
-    </Router>
+    <>
+      <RouterProvider router={router} />
+      <FloatingChatWidget />
+    </>
   );
 }
 
-export default App;
+export default function App(props) {
+  return (
+    <AppProvider>
+      <AppBootstrap {...props} />
+    </AppProvider>
+  );
+}

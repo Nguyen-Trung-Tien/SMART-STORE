@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 import { initSocket } from "./config/socket.js";
 import http from "http";
+import RoleService from "./services/RoleService.js";
 
 dotenv.config();
 
@@ -17,10 +18,16 @@ initSocket(server);
 
 const port = process.env.PORT || 3001;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "token"],
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
-app.use(bodyParser.json());
 app.use(cookieParser());
 
 routes(app);
@@ -31,6 +38,7 @@ mongoose
   .connect(`${process.env.MONGO_DB}`)
   .then(() => {
     console.log("Kết nối với Mongoose thành công!");
+    RoleService.initializeRoles();
   })
   .catch((err) => {
     console.error("Không thể kết nối với Mongoose!", err);

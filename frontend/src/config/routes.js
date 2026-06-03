@@ -1,0 +1,18 @@
+export const routePaths = {
+  home: "/",
+  products: "/products",
+  productDetail: "/product/:slug",
+  cart: "/cart",
+  login: "/login",
+  register: "/register",
+  checkout: "/checkout",
+  vnpayReturn: "/checkout/vnpay-return",
+  orders: "/orders",
+  profile: "/profile",
+  wishlist: "/wishlist",
+  admin: "/admin",
+  adminDashboard: "/admin/dashboard",
+  adminProducts: "/admin/products",
+  adminOrders: "/admin/orders",
+  adminUsers: "/admin/users",
+};

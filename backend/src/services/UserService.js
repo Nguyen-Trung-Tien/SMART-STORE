@@ -12,7 +12,7 @@ const createUser = (newUser) => {
         email: email,
       });
       if (checkUser !== null) {
-        resolve({
+        return resolve({
           status: "ERR",
           message: "The email is already",
         });
@@ -25,7 +25,7 @@ const createUser = (newUser) => {
         phone,
       });
       if (createdUser) {
-        resolve({
+        return resolve({
           status: "OK",
           message: "SUCCESS",
           data: createdUser,
@@ -43,9 +43,9 @@ const loginUser = (userLogin) => {
     try {
       const checkUser = await User.findOne({
         email: email,
-      });
+      }).select("+password");
       if (checkUser === null) {
-        resolve({
+        return resolve({
           status: "ERR",
           message: "The user is not defined",
         });
@@ -53,7 +53,7 @@ const loginUser = (userLogin) => {
       const comparePassword = bcrypt.compareSync(password, checkUser.password);
 
       if (!comparePassword) {
-        resolve({
+        return resolve({
           status: "ERR",
           message: "The password or user is incorrect",
         });
@@ -68,7 +68,7 @@ const loginUser = (userLogin) => {
         isAdmin: checkUser.isAdmin,
       });
 
-      resolve({
+      return resolve({
         status: "OK",
         message: "SUCCESS",
         access_token,
@@ -88,14 +88,14 @@ const updateUser = (id, data) => {
         _id: id,
       });
       if (checkUser === null) {
-        resolve({
+        return resolve({
           status: "ERR",
           message: "The user is not defined",
         });
       }
 
       const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
-      resolve({
+      return resolve({
         status: "OK",
         message: "SUCCESS",
         data: updatedUser,
@@ -113,14 +113,14 @@ const deleteUser = (id) => {
         _id: id,
       });
       if (checkUser === null) {
-        resolve({
+        return resolve({
           status: "ERR",
           message: "The user is not defined",
         });
       }
 
       await User.findByIdAndDelete(id);
-      resolve({
+      return resolve({
         status: "OK",
         message: "Delete user success",
       });
@@ -134,7 +134,7 @@ const deleteManyUser = (ids) => {
   return new Promise(async (resolve, reject) => {
     try {
       await User.deleteMany({ _id: ids });
-      resolve({
+      return resolve({
         status: "OK",
         message: "Delete user success",
       });
@@ -148,7 +148,7 @@ const getAllUser = () => {
   return new Promise(async (resolve, reject) => {
     try {
       const allUser = await User.find().sort({ createdAt: -1, updatedAt: -1 });
-      resolve({
+      return resolve({
         status: "OK",
         message: "Success",
         data: allUser,
@@ -166,12 +166,12 @@ const getDetailsUser = (id) => {
         _id: id,
       });
       if (user === null) {
-        resolve({
+        return resolve({
           status: "ERR",
           message: "The user is not defined",
         });
       }
-      resolve({
+      return resolve({
         status: "OK",
         message: "SUCESS",
         data: user,
@@ -185,7 +185,7 @@ const getDetailsUser = (id) => {
 const updatePassword = (userId, oldPassword, newPassword) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const user = await User.findById(userId);
+      const user = await User.findById(userId).select("+password");
       if (!user) {
         return resolve({ status: "ERR", message: "User not found" });
       }

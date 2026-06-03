@@ -1,28 +1,26 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "../schemas";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { toast } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuthStore } from "@/store/useAuthStore";
-import { authService } from "../services/authService";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { PasswordField } from "@/components/form/PasswordField";
+import { routePaths } from "@/config/routes";
+import { loginSchema } from "@/features/auth/schemas";
+import { authService } from "@/services/auth.service";
+import { setCredentials } from "@/store/slices/authSlice";
 
 export function LoginForm() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const setAuth = useAuthStore((state) => state.setAuth);
-
-  const form = useForm({
+  const location = useLocation();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -30,65 +28,46 @@ export function LoginForm() {
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: authService.login,
-    onSuccess: (data) => {
-      setAuth(data.data, data.access_token);
-      toast.success("Đăng nhập thành công!");
-      navigate("/");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
-  function onSubmit(values) {
-    mutation.mutate(values);
-  }
+  const onSubmit = async (values) => {
+    try {
+      const response = await authService.login(values);
+      dispatch(
+        setCredentials({
+          accessToken: response.access_token,
+          user: response.data,
+        })
+      );
+      toast.success("Welcome back.");
+      navigate(location.state?.from?.pathname || routePaths.home, { replace: true });
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message || "Login failed.");
+    }
+  };
 
   return (
-    <Card className="w-[400px]">
-      <CardHeader>
-        <CardTitle>Đăng nhập</CardTitle>
-        <CardDescription>
-          Nhập email và mật khẩu của bạn để truy cập tài khoản.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Mật khẩu</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="******" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full" disabled={mutation.isPending}>
-              {mutation.isPending ? "Đang xử lý..." : "Đăng nhập"}
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-xs font-bold uppercase tracking-[0.35em] text-primary">Sign in</p>
+        <h1 className="text-3xl font-extrabold">Access your workspace</h1>
+        <p className="text-muted-foreground">Secure JWT authentication with silent refresh and guarded routes.</p>
+      </div>
+      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+        <FormField label="Email" error={errors.email?.message}>
+          <Input type="email" placeholder="you@company.com" {...register("email")} />
+        </FormField>
+        <FormField label="Password" error={errors.password?.message}>
+          <PasswordField placeholder="Enter your password" {...register("password")} />
+        </FormField>
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? "Signing in..." : "Sign in"}
+        </Button>
+      </form>
+      <p className="text-sm text-muted-foreground">
+        New here?{" "}
+        <Link to={routePaths.register} className="font-semibold text-primary">
+          Create an account
+        </Link>
+      </p>
+    </div>
   );
 }
